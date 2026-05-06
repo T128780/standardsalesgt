@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#1C1C1C">
+  <meta name="description" content="Conecta con vendedores de repuestos en Guatemala. Envía tu solicitud y recibe respuesta por WhatsApp.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Standard Repuestos GT">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Standard Repuestos GT</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ─── NAVBAR ──────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    Standard<span>Repuestos</span>
+    <small>Guatemala</small>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" data-page="page-landing">Inicio</a>
+    <a class="nav-link" data-page="page-solicitud">Buscar repuesto</a>
+    <a class="nav-link" data-page="page-vendedor">Soy vendedor</a>
+    <a class="nav-link" data-page="page-panel-vendedor">Panel</a>
+    <a class="nav-link" data-page="page-admin">Admin</a>
+  </div>
+  <button class="hamburger" id="hamburger">☰</button>
+</nav>
+
+<!-- ─── MOBILE MENU ──────────────────────── -->
+<div class="mobile-menu" id="mobile-menu">
+  <a class="nav-link" data-page="page-landing">🏠 Inicio</a>
+  <a class="nav-link" data-page="page-solicitud">🔍 Buscar repuesto</a>
+  <a class="nav-link" data-page="page-vendedor">🏪 Soy vendedor</a>
+  <a class="nav-link" data-page="page-panel-vendedor">📋 Panel vendedor</a>
+  <a class="nav-link" data-page="page-admin">⚙️ Admin</a>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PÁGINA: LANDING
+════════════════════════════════════════ -->
+<div class="page active" id="page-landing">
+
+  <div class="hero">
+    <div class="hero-label">🇬🇹 Plataforma de repuestos Guatemala</div>
+    <h1>Encuentra el repuesto<br>que necesitas, <span>rápido</span></h1>
+    <p>Describe lo que buscas y conectamos con vendedores especializados en Guatemala. El vendedor te contacta por WhatsApp.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary btn-lg" data-page="page-solicitud">🔍 Buscar repuesto</button>
+      <button class="btn btn-outline btn-lg" data-page="page-vendedor">Soy vendedor</button>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="how">
+    <div class="section-title">¿Cómo funciona?</div>
+    <div class="section-sub">Simple, rápido y por WhatsApp</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Llena tu solicitud</h3>
+        <p>Describe el repuesto, tu vehículo y la condición que buscas.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Clasificamos tu pedido</h3>
+        <p>La plataforma identifica vendedores compatibles con tu solicitud.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>El vendedor te contacta</h3>
+        <p>Recibes la oferta directamente por WhatsApp. Tú decides.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Negocias directamente</h3>
+        <p>Todo se resuelve entre tú y el vendedor. Sin intermediarios.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="pricing">
+    <div class="section-title">Planes para vendedores</div>
+    <div class="section-sub">El comprador siempre usa la plataforma gratis</div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Gratis</div>
+        <div class="plan-price">Q0 <small>/mes</small></div>
+        <div class="plan-desc">Para probar la plataforma</div>
+        <div class="plan-feature">Hasta 5 solicitudes/mes</div>
+        <div class="plan-feature">Sin prioridad</div>
+        <div class="plan-feature">Perfil básico</div>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price">Q99 <small>/mes</small></div>
+        <div class="plan-desc">Para vendedores regulares</div>
+        <div class="plan-feature">Hasta 20 solicitudes/mes</div>
+        <div class="plan-feature">Prioridad baja</div>
+        <div class="plan-feature">Perfil completo</div>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">⭐ Más popular</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">Q199 <small>/mes</small></div>
+        <div class="plan-desc">Para vendedores activos</div>
+        <div class="plan-feature">Hasta 75 solicitudes/mes</div>
+        <div class="plan-feature">Prioridad media</div>
+        <div class="plan-feature">Badge Pro</div>
+        <div class="plan-feature">Estadísticas básicas</div>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">Q399 <small>/mes</small></div>
+        <div class="plan-desc">Para empresas y yonkers</div>
+        <div class="plan-feature">Solicitudes ilimitadas</div>
+        <div class="plan-feature">Prioridad alta</div>
+        <div class="plan-feature">Vendedor verificado ✓</div>
+        <div class="plan-feature">Analítica avanzada</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA final -->
+  <div style="background:var(--dark);padding:48px 20px;text-align:center;">
+    <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:white;margin-bottom:12px;">¿Listo para probarlo?</div>
+    <p style="color:#AAA;margin-bottom:24px;font-size:15px;">Envía tu primera solicitud gratis ahora mismo</p>
+    <button class="btn btn-primary btn-lg" data-page="page-solicitud">Enviar solicitud →</button>
+  </div>
+
+  <div class="footer">
+    <p>© 2025 Standard Repuestos GT · <a href="#">Términos</a> · <a href="#">Privacidad</a></p>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PÁGINA: SOLICITUD COMPRADOR
+════════════════════════════════════════ -->
+<div class="page form-page" id="page-solicitud">
+  <div class="form-hero">
+    <h2>🔍 Solicitar repuesto</h2>
+    <p>Gratis · El vendedor te contacta por WhatsApp</p>
+  </div>
+
+  <div class="form-body">
+    <form id="form-comprador" novalidate>
+
+      <!-- VEHÍCULO -->
+      <div class="form-section">
+        <div class="form-section-title">🚗 Datos del vehículo</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Marca <span class="req">*</span></label>
+            <select name="marca"><option value="">Marca</option></select>
+          </div>
+          <div class="form-group">
+            <label>Línea / Modelo</label>
+            <select name="linea"><option value="">Línea / Modelo</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Año</label>
+          <select name="anio"><option value="">Año</option></select>
+        </div>
+        <div class="form-group">
+          <label>Origen del vehículo</label>
+          <div class="option-pills">
+            <label class="option-pill"><input type="radio" name="origen" value="No sé"><span>No sé</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="Agencia Guatemala"><span>Agencia GT</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="Importado de Estados Unidos"><span>Importado USA</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="JDM / Japón"><span>JDM / Japón</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="Coreano"><span>Coreano</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="Europeo"><span>Europeo</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="Mexicano"><span>Mexicano</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="Rodado / salvage"><span>Rodado</span></label>
+            <label class="option-pill"><input type="radio" name="origen" value="Otro"><span>Otro</span></label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Timón</label>
+            <div class="option-pills">
+              <label class="option-pill"><input type="radio" name="timon" value="No sé"><span>No sé</span></label>
+              <label class="option-pill"><input type="radio" name="timon" value="Timón izquierdo"><span>Izquierdo</span></label>
+              <label class="option-pill"><input type="radio" name="timon" value="Timón derecho / JDM"><span>Derecho / JDM</span></label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Combustible</label>
+            <div class="option-pills">
+              <label class="option-pill"><input type="radio" name="combustible" value="No sé"><span>No sé</span></label>
+              <label class="option-pill"><input type="radio" name="combustible" value="Gasolina"><span>Gasolina</span></label>
+              <label class="option-pill"><input type="radio" name="combustible" value="Diésel"><span>Diésel</span></label>
+              <label class="option-pill"><input type="radio" name="combustible" value="Híbrido"><span>Híbrido</span></label>
+              <label class="option-pill"><input type="radio" name="combustible" value="Eléctrico"><span>Eléctrico</span></label>
+              <label class="option-pill"><input type="radio" name="combustible" value="GLP"><span>GLP</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TÉCNICO -->
+      <div class="form-section">
+        <div class="form-section-title">⚙️ Datos técnicos</div>
+        <div class="form-group">
+          <label>Tracción</label>
+          <div class="option-pills">
+            <label class="option-pill"><input type="radio" name="traccion" value="No sé"><span>No sé</span></label>
+            <label class="option-pill"><input type="radio" name="traccion" value="Delantera / FWD"><span>FWD</span></label>
+            <label class="option-pill"><input type="radio" name="traccion" value="Trasera / RWD"><span>RWD</span></label>
+            <label class="option-pill"><input type="radio" name="traccion" value="4x2"><span>4x2</span></label>
+            <label class="option-pill"><input type="radio" name="traccion" value="4x4"><span>4x4</span></label>
+            <label class="option-pill"><input type="radio" name="traccion" value="AWD / Integral"><span>AWD</span></label>
+            <label class="option-pill"><input type="radio" name="traccion" value="4WD conectable"><span>4WD</span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Transmisión</label>
+          <div class="option-pills">
+            <label class="option-pill"><input type="radio" name="transmision" value="No sé"><span>No sé</span></label>
+            <label class="option-pill"><input type="radio" name="transmision" value="Mecánica"><span>Mecánica</span></label>
+            <label class="option-pill"><input type="radio" name="transmision" value="Automática"><span>Automática</span></label>
+            <label class="option-pill"><input type="radio" name="transmision" value="CVT"><span>CVT</span></label>
+            <label class="option-pill"><input type="radio" name="transmision" value="Tiptronic"><span>Tiptronic</span></label>
+            <label class="option-pill"><input type="radio" name="transmision" value="Doble clutch / DCT"><span>DCT</span></label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cilindraje (litros)</label>
+            <select name="cilindraje"><option value="">No sé</option></select>
+          </div>
+          <div class="form-group">
+            <label>CC (aprox.)</label>
+            <select name="cc">
+              <option value="">No sé</option>
+              <option>800</option><option>1000</option><option>1200</option>
+              <option>1300</option><option>1400</option><option>1500</option>
+              <option>1600</option><option>1800</option><option>2000</option>
+              <option>2200</option><option>2400</option><option>2500</option>
+              <option>2700</option><option>3000</option><option>3200</option>
+              <option>3500</option><option>4000</option><option>4600</option>
+              <option>5000</option><option>5700</option><option>6000</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPUESTO -->
+      <div class="form-section">
+        <div class="form-section-title">🔧 Repuesto buscado</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Categoría <span class="req">*</span></label>
+            <select name="categoria"><option value="">Categoría del repuesto</option></select>
+          </div>
+          <div class="form-group">
+            <label>Parte específica</label>
+            <select name="parte"><option value="">Parte específica</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Condición deseada</label>
+          <div class="option-pills">
+            <label class="option-pill"><input type="radio" name="condicion" value="Me es indiferente"><span>Me es indiferente</span></label>
+            <label class="option-pill"><input type="radio" name="condicion" value="Nueva"><span>Nueva</span></label>
+            <label class="option-pill"><input type="radio" name="condicion" value="Usada"><span>Usada</span></label>
+            <label class="option-pill"><input type="radio" name="condicion" value="Reconstruida"><span>Reconstruida</span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Detalles adicionales</label>
+          <textarea name="detalles" placeholder="Color, lado (derecho/izquierdo), versión, si acepta reconstruido, etc."></textarea>
+        </div>
+      </div>
+
+      <!-- UBICACIÓN -->
+      <div class="form-section">
+        <div class="form-section-title">📍 Ubicación del vendedor que buscas</div>
+        <p class="muted" style="margin-bottom:12px;font-size:13px;">¿En qué zona de Guatemala buscas al vendedor?</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Departamento</label>
+            <select name="depto"><option value="">Departamento</option></select>
+          </div>
+          <div class="form-group">
+            <label>Municipio</label>
+            <select name="muni"><option value="">Municipio</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Zona (opcional)</label>
+          <input type="text" name="zona" placeholder="Ej: Zona 10">
+        </div>
+      </div>
+
+      <!-- COMPRADOR -->
+      <div class="form-section">
+        <div class="form-section-title">👤 Tus datos</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tu nombre <span class="req">*</span></label>
+            <input type="text" name="nombre" placeholder="Nombre completo">
+          </div>
+          <div class="form-group">
+            <label>Tu WhatsApp <span class="req">*</span></label>
+            <input type="tel" name="waComprador" placeholder="Ej: 50255551234">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Urgencia</label>
+          <input type="hidden" name="urgencia" value="Media">
+          <div class="urgencia-btns">
+            <button type="button" class="urgencia-btn" data-val="Alta">🔴 Alta — Lo necesito hoy</button>
+            <button type="button" class="urgencia-btn active" data-val="Media">🟡 Media — Esta semana</button>
+            <button type="button" class="urgencia-btn" data-val="Baja">🟢 Baja — Sin prisa</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Comentarios adicionales</label>
+          <textarea name="comentarios" placeholder="Cualquier detalle extra que ayude al vendedor..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.559 4.14 1.535 5.874L0 24l6.335-1.52A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.004-1.367l-.358-.214-3.762.902.952-3.67-.234-.376A9.818 9.818 0 1121.818 12 9.83 9.83 0 0112 21.818z"/></svg>
+        Enviar solicitud por WhatsApp
+      </button>
+      <p class="muted" style="text-align:center;margin-top:10px;font-size:12px;">Se abrirá WhatsApp con el mensaje ya escrito. Es gratis para ti.</p>
+    </form>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PÁGINA: CONFIRMACIÓN
+════════════════════════════════════════ -->
+<div class="page" id="page-confirmacion">
+  <div class="confirm-page">
+    <div class="confirm-card">
+      <div class="confirm-icon">✅</div>
+      <h2>¡Solicitud enviada!</h2>
+      <p>Tu solicitud fue registrada y abrimos WhatsApp para que el vendedor la reciba. El vendedor te contactará directamente.</p>
+      <button class="btn btn-primary btn-block" data-page="page-solicitud">Nueva solicitud</button>
+      <button class="btn btn-ghost btn-block" style="margin-top:10px;" data-page="page-landing">Volver al inicio</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PÁGINA: ADHESIÓN VENDEDOR
+════════════════════════════════════════ -->
+<div class="page form-page" id="page-vendedor">
+  <div class="form-hero">
+    <h2>🏪 Únete como vendedor</h2>
+    <p>Recibe leads calificados de compradores en Guatemala</p>
+  </div>
+
+  <div class="form-body">
+    <form id="form-vendedor" novalidate>
+
+      <!-- BÁSICOS -->
+      <div class="form-section">
+        <div class="form-section-title">📋 Datos básicos</div>
+        <div class="form-group">
+          <label>Nombre comercial <span class="req">*</span></label>
+          <input type="text" name="vnombre" placeholder="Nombre de tu negocio">
+        </div>
+        <div class="form-group">
+          <label>Tipo de vendedor</label>
+          <div class="option-pills">
+            <label class="option-pill"><input type="radio" name="vtipo" value="Importadora"><span>Importadora</span></label>
+            <label class="option-pill"><input type="radio" name="vtipo" value="Yonker"><span>Yonker</span></label>
+            <label class="option-pill"><input type="radio" name="vtipo" value="Taller"><span>Taller</span></label>
+            <label class="option-pill"><input type="radio" name="vtipo" value="Vendedor independiente"><span>Independiente</span></label>
+            <label class="option-pill"><input type="radio" name="vtipo" value="Distribuidor"><span>Distribuidor</span></label>
+            <label class="option-pill"><input type="radio" name="vtipo" value="Otro"><span>Otro</span></label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre del encargado</label>
+            <input type="text" name="vencargado" placeholder="Tu nombre">
+          </div>
+          <div class="form-group">
+            <label>WhatsApp <span class="req">*</span></label>
+            <input type="tel" name="vwhatsapp" placeholder="502XXXXXXXX">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Correo electrónico</label>
+            <input type="email" name="vemail" placeholder="correo@negocio.com">
+          </div>
+          <div class="form-group">
+            <label>NIT (opcional)</label>
+            <input type="text" name="vnit" placeholder="NIT del negocio">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Dirección</label>
+          <input type="text" name="vdireccion" placeholder="Dirección del local">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Departamento <span class="req">*</span></label>
+            <select name="vdepto"><option value="">Departamento</option></select>
+          </div>
+          <div class="form-group">
+            <label>Municipio</label>
+            <select name="vmuni"><option value="">Municipio</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Zona</label>
+            <input type="text" name="vzona" placeholder="Zona (si aplica)">
+          </div>
+          <div class="form-group">
+            <label>Horario de atención</label>
+            <input type="text" name="vhorario" placeholder="Ej: Lun-Sáb 8am-6pm">
+          </div>
+        </div>
+      </div>
+
+      <!-- PERFIL AUTOMOTRIZ -->
+      <div class="form-section">
+        <div class="form-section-title">🚗 Marcas que trabajas</div>
+        <div class="check-pills" id="vend-marcas"></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">🔧 Categorías que atiendes</div>
+        <div class="check-pills" id="vend-categorias"></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">⚙️ Especialización</div>
+        <div class="form-group">
+          <label>Condición de piezas que ofreces</label>
+          <div class="option-pills">
+            <label class="option-pill"><input type="radio" name="vcondicion" value="Nueva"><span>Nueva</span></label>
+            <label class="option-pill"><input type="radio" name="vcondicion" value="Usada"><span>Usada</span></label>
+            <label class="option-pill"><input type="radio" name="vcondicion" value="Reconstruida"><span>Reconstruida</span></label>
+            <label class="option-pill"><input type="radio" name="vcondicion" value="Todas"><span>Todas</span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tracción que atiendes</label>
+          <div class="option-pills">
+            <label class="option-pill"><input type="radio" name="vtraccion" value="Todas"><span>Todas</span></label>
+            <label class="option-pill"><input type="radio" name="vtraccion" value="FWD"><span>FWD</span></label>
+            <label class="option-pill"><input type="radio" name="vtraccion" value="RWD"><span>RWD</span></label>
+            <label class="option-pill"><input type="radio" name="vtraccion" value="4x4"><span>4x4</span></label>
+            <label class="option-pill"><input type="radio" name="vtraccion" value="AWD"><span>AWD</span></label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Cobertura</label>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;">
+            <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+              <input type="checkbox" name="venvios" style="width:18px;height:18px;accent-color:var(--brand);">
+              Hace envíos
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
+              <input type="checkbox" name="ventregas" style="width:18px;height:18px;accent-color:var(--brand);">
+              Hace entregas
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:8px;">
+        Enviar solicitud de adhesión →
+      </button>
+      <p class="muted" style="text-align:center;margin-top:10px;font-size:12px;">Revisaremos tu perfil y te contactaremos en menos de 24h.</p>
+    </form>
+  </div>
+</div>
+
+
+<!-- ─── VENDEDOR OK ──────────────────────── -->
+<div class="page" id="page-vendedor-ok">
+  <div class="confirm-page">
+    <div class="confirm-card">
+      <div class="confirm-icon">🎉</div>
+      <h2>¡Solicitud recibida!</h2>
+      <p>Revisaremos tu perfil de vendedor y te contactaremos pronto para activar tu cuenta y empezar a recibir leads.</p>
+      <button class="btn btn-primary btn-block" data-page="page-panel-vendedor" onclick="renderPanelVendedor()">Ver panel de demo →</button>
+      <button class="btn btn-ghost btn-block" style="margin-top:10px;" data-page="page-landing">Volver al inicio</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PANEL VENDEDOR
+════════════════════════════════════════ -->
+<div class="page panel-page" id="page-panel-vendedor">
+  <div class="panel-header">
+    <div>
+      <h2>📋 Panel del vendedor</h2>
+      <p>Solicitudes recibidas · Demo con datos de prueba</p>
+    </div>
+    <div class="panel-header-actions">
+      <button class="btn btn-ghost" id="btn-demo-data">Cargar datos demo</button>
+      <button class="btn btn-primary" id="btn-export-sol">⬇ Exportar JSON</button>
+    </div>
+  </div>
+
+  <div class="panel-body">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="num" id="v-total">0</div>
+        <div class="lbl">Solicitudes</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" style="color:var(--danger)" id="v-alta">0</div>
+        <div class="lbl">Urgentes</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" style="color:var(--success)">Pro</div>
+        <div class="lbl">Plan activo</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" style="color:var(--info)">✓</div>
+        <div class="lbl">Verificado</div>
+      </div>
+    </div>
+
+    <div id="panel-solicitudes">
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <p>Aún no hay solicitudes.<br>Presiona "Cargar datos demo" para ver cómo funciona.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PANEL ADMIN
+════════════════════════════════════════ -->
+<div class="page panel-page" id="page-admin">
+  <div class="panel-header">
+    <div>
+      <h2>⚙️ Panel administrativo</h2>
+      <p>Standard Repuestos GT — Gestión interna</p>
+    </div>
+    <div class="panel-header-actions">
+      <button class="btn btn-ghost" id="btn-demo-data">Cargar datos demo</button>
+      <button class="btn btn-ghost" id="btn-export-sol">⬇ Solicitudes JSON</button>
+      <button class="btn btn-ghost" id="btn-export-vend">⬇ Vendedores JSON</button>
+    </div>
+  </div>
+
+  <div class="panel-body">
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="num" id="admin-total-sol">0</div>
+        <div class="lbl">Solicitudes</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" id="admin-total-vend">0</div>
+        <div class="lbl">Vendedores</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" style="color:var(--warning)" id="admin-pend-vend">0</div>
+        <div class="lbl">Pendientes</div>
+      </div>
+      <div class="stat-card">
+        <div class="num" style="color:var(--success)">GT</div>
+        <div class="lbl">País</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="panel-tabs">
+      <button class="panel-tab active" onclick="switchTab('tab-solicitudes', this)">📋 Solicitudes</button>
+      <button class="panel-tab" onclick="switchTab('tab-vendedores', this)">🏪 Vendedores</button>
+      <button class="panel-tab" onclick="switchTab('tab-metricas', this)">📊 Métricas</button>
+    </div>
+
+    <!-- Tab: Solicitudes -->
+    <div id="tab-solicitudes" class="tab-content">
+      <div id="admin-solicitudes">
+        <div class="empty-state"><div class="empty-icon">📋</div><p>Sin solicitudes aún.<br>Carga datos de demo para ver la vista.</p></div>
+      </div>
+    </div>
+
+    <!-- Tab: Vendedores -->
+    <div id="tab-vendedores" class="tab-content" style="display:none;">
+      <div id="admin-vendedores">
+        <div class="empty-state"><div class="empty-icon">🏪</div><p>Sin vendedores registrados.</p></div>
+      </div>
+    </div>
+
+    <!-- Tab: Métricas -->
+    <div id="tab-metricas" class="tab-content" style="display:none;">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h4>Top marcas solicitadas</h4>
+          <div id="metricas-marcas"><p class="muted">Sin datos</p></div>
+        </div>
+        <div class="metric-card">
+          <h4>Top categorías</h4>
+          <div id="metricas-cat"><p class="muted">Sin datos</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOASTS ──────────────────────────── -->
+<div id="toasts"></div>
+
+<!-- ─── SERVICE WORKER REGISTER ─────────── -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+</script>
+
+<script src="catalogos.js"></script>
+<script src="app.js"></script>
+
+<script>
+// Tab switcher for admin
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.panel-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).style.display = 'block';
+  btn.classList.add('active');
+}
+
+// Update panel stats after render
+const _orig = window.renderPanelVendedor;
+document.addEventListener('DOMContentLoaded', () => {
+  // Patch panel vendedor to also update stats
+  const origRender = renderPanelVendedor;
+  window.renderPanelVendedor = function() {
+    origRender();
+    const s = DB.getSolicitudes();
+    const vTotal = document.getElementById('v-total');
+    const vAlta = document.getElementById('v-alta');
+    if (vTotal) vTotal.textContent = s.length;
+    if (vAlta) vAlta.textContent = s.filter(x => x.urgencia === 'Alta').length;
+  };
+});
+</script>
+
+</body>
+</html>
