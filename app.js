@@ -229,7 +229,7 @@ function initFormComprador() {
     }
 
     DB.addSolicitud(solicitud);
-    fetch('https://script.google.com/macros/s/AKfycbx7xhYk556FbfDC_kQJWHEH3Jo45pxp2UJGSte8sJZtZlcD3tZRv8S89UZhg1FcJFP3/exec', { method: 'POST', body: JSON.stringify(solicitud), mode: 'no-cors' });
+    fetch('https://script.google.com/macros/s/AKfycbwe6aUKyi5zK8tvVWWg-IDI9Y08sLTybfJSpYbJD57bMtuw3wmqz0KXrso24DPZ-klt/exec?nombre='+encodeURIComponent(solicitud.nombre||'')+'&waComprador='+encodeURIComponent(solicitud.waComprador||'')+'&marca='+encodeURIComponent(solicitud.marca||'')+'&linea='+encodeURIComponent(solicitud.linea||'')+'&categoria='+encodeURIComponent(solicitud.categoria||'')+'&parte='+encodeURIComponent(solicitud.parte||'')+'&anio='+encodeURIComponent(solicitud.anio||'')+'&depto='+encodeURIComponent(solicitud.depto||'')+'&urgencia='+encodeURIComponent(solicitud.urgencia||'')+'&condicion='+encodeURIComponent(solicitud.condicion||'')+'&detalles='+encodeURIComponent(solicitud.detalles||''), {mode:'no-cors'});
     const msg = buildWAMessage(solicitud);
     toast('¡Solicitud enviada! Abriendo WhatsApp...');
     setTimeout(() => abrirWhatsApp(WA_VENDEDOR_PRUEBA, msg), 800);
