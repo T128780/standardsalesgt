@@ -2,7 +2,7 @@
 //  STANDARD REPUESTOS GT — App Logic
 // ═══════════════════════════════════════════
 
-const WA_VENDEDOR_PRUEBA = "50246494710";
+const WA_VENDEDOR_PRUEBA = "50230317750";
 
 // ─── STORAGE ────────────────────────────────
 const DB = {
@@ -229,6 +229,7 @@ function initFormComprador() {
     }
 
     DB.addSolicitud(solicitud);
+    fetch('https://script.google.com/macros/s/AKfycbx7xhYk556FbfDC_kQJWHEH3Jo45pxp2UJGSte8sJZtZlcD3tZRv8S89UZhg1FcJFP3/exec', { method: 'POST', body: JSON.stringify(solicitud) });
     const msg = buildWAMessage(solicitud);
     toast('¡Solicitud enviada! Abriendo WhatsApp...');
     setTimeout(() => abrirWhatsApp(WA_VENDEDOR_PRUEBA, msg), 800);
@@ -519,7 +520,7 @@ function cargarDemoData() {
   DB.saveSolicitudes(demos);
 
   const demoVend = [
-    { id: genId(), fecha: new Date().toISOString(), estado: 'pendiente', nombre: 'Repuestos El Gallito', tipo: 'Yonker', encargado: 'Roberto Juárez', whatsapp: '50246494710', email: 'gallito@gmail.com', nit: '', direccion: '5a Calle 3-20 Zona 3', depto: 'Guatemala', muni: 'Guatemala', zona: '3', horario: 'Lunes a Sábado 8am-6pm', marcas: ['Toyota', 'Honda', 'Nissan'], categorias: ['Motor', 'Suspensión', 'Frenos'], condicionPiezas: 'Todas', traccion: '', envios: true, entregas: false },
+    { id: genId(), fecha: new Date().toISOString(), estado: 'pendiente', nombre: 'Repuestos El Gallito', tipo: 'Yonker', encargado: 'Roberto Juárez', whatsapp: '50230317750', email: 'gallito@gmail.com', nit: '', direccion: '5a Calle 3-20 Zona 3', depto: 'Guatemala', muni: 'Guatemala', zona: '3', horario: 'Lunes a Sábado 8am-6pm', marcas: ['Toyota', 'Honda', 'Nissan'], categorias: ['Motor', 'Suspensión', 'Frenos'], condicionPiezas: 'Todas', traccion: '', envios: true, entregas: false },
     { id: genId(), fecha: new Date().toISOString(), estado: 'aprobado', nombre: 'Deshuasadero Villa Nueva', tipo: 'Yonker', encargado: 'Ana Morales', whatsapp: '50255554321', email: '', nit: '', direccion: '12 Av 8-15', depto: 'Guatemala', muni: 'Villa Nueva', zona: '', horario: 'Lunes a Viernes 7am-5pm', marcas: ['Mitsubishi', 'Suzuki', 'Chevrolet'], categorias: ['Carrocería', 'Eléctrico', 'Interior'], condicionPiezas: 'Usada', traccion: '', envios: false, entregas: true }
   ];
   DB.saveVendedores(demoVend);
