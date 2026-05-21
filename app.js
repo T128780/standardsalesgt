@@ -229,7 +229,7 @@ function initFormComprador() {
     }
 
     DB.addSolicitud(solicitud);
-    fetch('https://script.google.com/macros/s/AKfycbx7xhYk556FbfDC_kQJWHEH3Jo45pxp2UJGSte8sJZtZlcD3tZRv8S89UZhg1FcJFP3/exec', { method: 'POST', body: JSON.stringify(solicitud) });
+    fetch('https://script.google.com/macros/s/AKfycbx7xhYk556FbfDC_kQJWHEH3Jo45pxp2UJGSte8sJZtZlcD3tZRv8S89UZhg1FcJFP3/exec', { method: 'POST', body: JSON.stringify(solicitud), mode: 'no-cors' });
     const msg = buildWAMessage(solicitud);
     toast('¡Solicitud enviada! Abriendo WhatsApp...');
     setTimeout(() => abrirWhatsApp(WA_VENDEDOR_PRUEBA, msg), 800);
