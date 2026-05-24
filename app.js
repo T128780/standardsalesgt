@@ -1,8 +1,17 @@
 // Standard Repuestos GT — App Logic
-// v15: MVP funcional. Envía formulario comprador a Google Sheets con URLSearchParams.
+// v16: MVP funcional. Compatible con CAT global de catalogos.js y envío robusto a Google Sheets.
 
 const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
+
+function catalogos() {
+  // catalogos.js declara `const CAT`; eso no siempre aparece como window.CAT.
+  // Esta función soporta ambas formas.
+  try {
+    if (typeof CAT !== "undefined") return CAT;
+  } catch (error) {}
+  return window.CAT || { marcas: {}, categorias: {}, departamentos: {}, cilindraje: {} };
+}
 
 const DB = {
   getSolicitudes: () => JSON.parse(localStorage.getItem("srgt_solicitudes") || "[]"),
@@ -80,35 +89,41 @@ function setOptions(select, placeholder, values) {
 }
 
 function buildMarcas(select) {
-  const values = Object.keys(window.CAT?.marcas || {}).sort();
+  const cat = catalogos();
+  const values = Object.keys(cat.marcas || {}).sort();
   setOptions(select, "Marca", values);
 }
 
 function buildLineas(marcaSelect, lineaSelect) {
+  const cat = catalogos();
   const marca = marcaSelect?.value || "";
-  const values = marca && window.CAT?.marcas?.[marca] ? window.CAT.marcas[marca] : [];
+  const values = marca && cat.marcas?.[marca] ? cat.marcas[marca] : [];
   setOptions(lineaSelect, "Línea / Modelo", values);
 }
 
 function buildCategorias(select) {
-  const values = Object.keys(window.CAT?.categorias || {}).sort();
+  const cat = catalogos();
+  const values = Object.keys(cat.categorias || {}).sort();
   setOptions(select, "Categoría del repuesto", values);
 }
 
 function buildPartes(categoriaSelect, parteSelect) {
+  const cat = catalogos();
   const categoria = categoriaSelect?.value || "";
-  const values = categoria && window.CAT?.categorias?.[categoria] ? window.CAT.categorias[categoria] : [];
+  const values = categoria && cat.categorias?.[categoria] ? cat.categorias[categoria] : [];
   setOptions(parteSelect, "Parte específica", values);
 }
 
 function buildDeptos(select) {
-  const values = Object.keys(window.CAT?.departamentos || {}).sort();
+  const cat = catalogos();
+  const values = Object.keys(cat.departamentos || {}).sort();
   setOptions(select, "Departamento", values);
 }
 
 function buildMunicipios(deptoSelect, muniSelect) {
+  const cat = catalogos();
   const depto = deptoSelect?.value || "";
-  const values = depto && window.CAT?.departamentos?.[depto] ? window.CAT.departamentos[depto] : [];
+  const values = depto && cat.departamentos?.[depto] ? cat.departamentos[depto] : [];
   setOptions(muniSelect, "Municipio", values);
 }
 
@@ -125,14 +140,16 @@ function buildYearOptions(select) {
 }
 
 function buildCilindraje(select) {
-  const values = Object.keys(window.CAT?.cilindraje || {}).sort((a, b) => Number(a) - Number(b));
+  const cat = catalogos();
+  const values = Object.keys(cat.cilindraje || {}).sort((a, b) => Number(a) - Number(b));
   setOptions(select, "No sé", values.map((v) => `${v}`));
 }
 
 function syncCC(cilindrajeSelect, ccSelect) {
   if (!ccSelect) return;
+  const cat = catalogos();
   const value = cilindrajeSelect?.value || "";
-  ccSelect.value = value && window.CAT?.cilindraje?.[value] ? window.CAT.cilindraje[value] : "";
+  ccSelect.value = value && cat.cilindraje?.[value] ? cat.cilindraje[value] : "";
 }
 
 function getFormValue(form, name) {
@@ -325,7 +342,7 @@ function initFormVendedor() {
 
   const marcasWrap = document.getElementById("vend-marcas");
   if (marcasWrap && marcasWrap.children.length === 0) {
-    Object.keys(window.CAT?.marcas || {}).sort().forEach((marca) => {
+    Object.keys(catalogos().marcas || {}).sort().forEach((marca) => {
       const label = document.createElement("label");
       label.className = "check-pill";
       label.innerHTML = `<input type="checkbox" name="marcas" value="${marca}"><span>${marca}</span>`;
@@ -335,7 +352,7 @@ function initFormVendedor() {
 
   const categoriasWrap = document.getElementById("vend-categorias");
   if (categoriasWrap && categoriasWrap.children.length === 0) {
-    Object.keys(window.CAT?.categorias || {}).sort().forEach((categoria) => {
+    Object.keys(catalogos().categorias || {}).sort().forEach((categoria) => {
       const label = document.createElement("label");
       label.className = "check-pill";
       label.innerHTML = `<input type="checkbox" name="vcat" value="${categoria}"><span>${categoria}</span>`;
