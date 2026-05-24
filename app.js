@@ -191,7 +191,7 @@ function initFormComprador() {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
     const getValue = (name) => {
-      const field = form.elements[name];
+      const field = form.elements.namedItem(name);
       if (!field) return '';
       if (field instanceof RadioNodeList) return field.value || '';
       return (field.value || '').trim();
