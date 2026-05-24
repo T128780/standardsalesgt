@@ -1,10 +1,10 @@
 // Standard Repuestos GT — Service Worker
-const CACHE = 'srgt-v2';
+const CACHE = 'srgt-v3';
 const ASSETS = [
   '/',
   '/index.html',
   '/styles.css?v=12',
-  '/app.js?v=12',
+  '/app.js?v=13',
   '/catalogos.js',
   '/manifest.json'
 ];

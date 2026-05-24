@@ -190,37 +190,56 @@ function initFormComprador() {
   // Submit
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const fd = new FormData(form);
+    const getValue = (name) => {
+      const field = form.elements[name];
+      if (!field) return '';
+      if (field instanceof RadioNodeList) return field.value || '';
+      return (field.value || '').trim();
+    };
+    const notas = [getValue('detalles'), getValue('comentarios')].filter(Boolean).join(' | ');
+    const sheetPayload = {
+      nombre: getValue('nombre'),
+      whatsapp: getValue('waComprador'),
+      marca: getValue('marca'),
+      linea: getValue('linea'),
+      categoria: getValue('categoria'),
+      parte: getValue('parte'),
+      anio: getValue('anio'),
+      depto: getValue('depto'),
+      urgencia: getValue('urgencia') || 'Media',
+      condicion: getValue('condicion'),
+      notas
+    };
     const solicitud = {
       id: genId(),
       fecha: new Date().toISOString(),
       estado: 'nueva',
       // vehículo
-      marca: fd.get('marca') || '',
-      linea: fd.get('linea') || '',
-      anio: fd.get('anio') || '',
-      origen: fd.get('origen') || '',
-      timon: fd.get('timon') || '',
-      combustible: fd.get('combustible') || '',
+      marca: sheetPayload.marca,
+      linea: sheetPayload.linea,
+      anio: sheetPayload.anio,
+      origen: getValue('origen'),
+      timon: getValue('timon'),
+      combustible: getValue('combustible'),
       // técnico
-      traccion: fd.get('traccion') || '',
-      transmision: fd.get('transmision') || '',
-      cilindraje: fd.get('cilindraje') || '',
-      cc: fd.get('cc') || '',
+      traccion: getValue('traccion'),
+      transmision: getValue('transmision'),
+      cilindraje: getValue('cilindraje'),
+      cc: getValue('cc'),
       // repuesto
-      categoria: fd.get('categoria') || '',
-      parte: fd.get('parte') || '',
-      condicion: fd.get('condicion') || '',
-      detalles: fd.get('detalles') || '',
+      categoria: sheetPayload.categoria,
+      parte: sheetPayload.parte,
+      condicion: sheetPayload.condicion,
+      detalles: getValue('detalles'),
       // ubicación
-      depto: fd.get('depto') || '',
-      muni: fd.get('muni') || '',
-      zona: fd.get('zona') || '',
+      depto: sheetPayload.depto,
+      muni: getValue('muni'),
+      zona: getValue('zona'),
       // comprador
-      nombre: fd.get('nombre') || '',
-      waComprador: fd.get('waComprador') || '',
-      urgencia: fd.get('urgencia') || 'Media',
-      comentarios: fd.get('comentarios') || ''
+      nombre: sheetPayload.nombre,
+      waComprador: sheetPayload.whatsapp,
+      urgencia: sheetPayload.urgencia,
+      comentarios: getValue('comentarios')
     };
 
     // Validación básica
@@ -232,17 +251,19 @@ function initFormComprador() {
     DB.addSolicitud(solicitud);
 
     const data = new FormData();
-    data.append("nombre", solicitud.nombre);
-    data.append("whatsapp", solicitud.waComprador);
-    data.append("marca", solicitud.marca);
-    data.append("linea", solicitud.linea);
-    data.append("categoria", solicitud.categoria);
-    data.append("parte", solicitud.parte);
-    data.append("anio", solicitud.anio);
-    data.append("depto", solicitud.depto);
-    data.append("urgencia", solicitud.urgencia);
-    data.append("condicion", solicitud.condicion);
-    data.append("notas", [solicitud.detalles, solicitud.comentarios].filter(Boolean).join(" | "));
+    data.append("nombre", sheetPayload.nombre);
+    data.append("whatsapp", sheetPayload.whatsapp);
+    data.append("marca", sheetPayload.marca);
+    data.append("linea", sheetPayload.linea);
+    data.append("categoria", sheetPayload.categoria);
+    data.append("parte", sheetPayload.parte);
+    data.append("anio", sheetPayload.anio);
+    data.append("depto", sheetPayload.depto);
+    data.append("urgencia", sheetPayload.urgencia);
+    data.append("condicion", sheetPayload.condicion);
+    data.append("notas", sheetPayload.notas);
+
+    console.log("Datos enviados a Google Sheets:", sheetPayload);
 
     await fetch(GOOGLE_SCRIPT_URL, {
       method: "POST",
