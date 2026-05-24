@@ -638,7 +638,7 @@
 </script>
 
 <script src="catalogos.js"></script>
-<script src="app.js?v=14"></script>
+<script src="app.js?v=16"></script>
 
 <script>
 // Tab switcher for admin
@@ -648,22 +648,6 @@ function switchTab(id, btn) {
   document.getElementById(id).style.display = 'block';
   btn.classList.add('active');
 }
-
-// Update panel stats after render
-const _orig = window.renderPanelVendedor;
-document.addEventListener('DOMContentLoaded', () => {
-  // Patch panel vendedor to also update stats
-  const origRender = renderPanelVendedor;
-  window.renderPanelVendedor = function() {
-    origRender();
-    const s = DB.getSolicitudes();
-    const vTotal = document.getElementById('v-total');
-    const vAlta = document.getElementById('v-alta');
-    if (vTotal) vTotal.textContent = s.length;
-    if (vAlta) vAlta.textContent = s.filter(x => x.urgencia === 'Alta').length;
-  };
-});
 </script>
-
 </body>
 </html>
