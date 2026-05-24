@@ -4,37 +4,35 @@
   <meta charset="UTF-8"><!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-HHW9L5LXNJ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];h
+  window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-HHW9L5LXNJ');h
+  gtag('config', 'G-HHW9L5LXNJ');
 </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#1C1C1C">
+  <meta name="theme-color" content="#120A2A">
   <meta name="description" content="Conecta con vendedores de repuestos en Guatemala. Envía tu solicitud y recibe respuesta por WhatsApp.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Standard Repuestos GT">
+  <meta name="apple-mobile-web-app-title" content="StandardSales GT">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>Standard Repuestos GT</title>
-  <link rel="stylesheet" href="styles.css?v=12">
+  <title>StandardSales GT Guatemala</title>
+  <link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
 
 <!-- ─── NAVBAR ──────────────────────────── -->
 <nav class="navbar">
   <div class="navbar-brand">
-    Standard<span>Repuestos</span>
+    Standard<span>Sales</span> GT
     <small>Guatemala</small>
   </div>
   <div class="nav-links">
     <a class="nav-link" data-page="page-landing">Inicio</a>
-    <a class="nav-link" data-page="page-solicitud">Buscar repuesto</a>
+    <a class="nav-link" data-page="page-solicitud">Solicitar repuesto</a>
     <a class="nav-link" data-page="page-vendedor">Soy vendedor</a>
-    <a class="nav-link" data-page="page-panel-vendedor">Panel</a>
-    <a class="nav-link" data-page="page-admin">Admin</a>
   </div>
   <button class="hamburger" id="hamburger">☰</button>
 </nav>
@@ -42,10 +40,8 @@
 <!-- ─── MOBILE MENU ──────────────────────── -->
 <div class="mobile-menu" id="mobile-menu">
   <a class="nav-link" data-page="page-landing">🏠 Inicio</a>
-  <a class="nav-link" data-page="page-solicitud">🔍 Buscar repuesto</a>
+  <a class="nav-link" data-page="page-solicitud">🔍 Solicitar repuesto</a>
   <a class="nav-link" data-page="page-vendedor">🏪 Soy vendedor</a>
-  <a class="nav-link" data-page="page-panel-vendedor">📋 Panel vendedor</a>
-  <a class="nav-link" data-page="page-admin">⚙️ Admin</a>
 </div>
 
 <!-- ═══════════════════════════════════════
@@ -54,11 +50,11 @@
 <div class="page active" id="page-landing">
 
   <div class="hero">
-    <div class="hero-label">🇬🇹 Plataforma de repuestos Guatemala</div>
-    <h1>Encuentra el repuesto<br>que necesitas, <span>rápido</span></h1>
-    <p>Describe lo que buscas y conectamos con vendedores especializados en Guatemala. El vendedor te contacta por WhatsApp.</p>
+    <div class="hero-label">Plataforma activa en Guatemala</div>
+    <h1>En minutos,<br>no en <span>días</span></h1>
+    <p>Llena una solicitud gratuita. Vendedores especializados en Guatemala te contactan directamente por WhatsApp con precio y disponibilidad.</p>
     <div class="hero-btns">
-      <button class="btn btn-primary btn-lg" data-page="page-solicitud">🔍 Buscar repuesto</button>
+      <button class="btn btn-primary btn-lg" data-page="page-solicitud">Solicitar repuesto gratis</button>
       <button class="btn btn-outline btn-lg" data-page="page-vendedor">Soy vendedor</button>
     </div>
   </div>
@@ -135,14 +131,14 @@
   </div>
 
   <!-- CTA final -->
-  <div style="background:var(--dark);padding:48px 20px;text-align:center;">
+  <div class="final-cta">
     <div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:white;margin-bottom:12px;">¿Listo para probarlo?</div>
     <p style="color:#AAA;margin-bottom:24px;font-size:15px;">Envía tu primera solicitud gratis ahora mismo</p>
-    <button class="btn btn-primary btn-lg" data-page="page-solicitud">Enviar solicitud →</button>
+    <button class="btn btn-primary btn-lg" data-page="page-solicitud">Solicitar repuesto gratis</button>
   </div>
 
   <div class="footer">
-    <p>© 2025 Standard Repuestos GT · <a href="#">Términos</a> · <a href="#">Privacidad</a></p>
+    <p>© 2025 StandardSales GT · <a href="#">Términos</a> · <a href="#">Privacidad</a></p>
   </div>
 </div>
 
@@ -630,15 +626,17 @@
 <!-- ─── TOASTS ──────────────────────────── -->
 <div id="toasts"></div>
 
-<!-- ─── SERVICE WORKER REGISTER ─────────── -->
+<!-- ─── SERVICE WORKER CLEANUP ─────────── -->
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.getRegistrations()
+      .then(registrations => registrations.forEach(registration => registration.unregister()))
+      .catch(() => {});
   }
 </script>
 
-<script src="catalogos.js"></script>
-<script src="app.js?v=16"></script>
+<script src="catalogos.js?v=18"></script>
+<script src="app.js?v=18"></script>
 
 <script>
 // Tab switcher for admin
