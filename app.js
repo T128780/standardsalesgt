@@ -3,6 +3,7 @@
 // ═══════════════════════════════════════════
 
 const WA_VENDEDOR_PRUEBA = "50230317750";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
 
 // ─── STORAGE ────────────────────────────────
 const DB = {
@@ -187,7 +188,7 @@ function initFormComprador() {
   });
 
   // Submit
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
     const fd = new FormData(form);
     const solicitud = {
@@ -229,10 +230,27 @@ function initFormComprador() {
     }
 
     DB.addSolicitud(solicitud);
-    fetch('https://script.google.com/macros/s/AKfycbwe6aUKyi5zK8tvVWWg-IDI9Y08sLTybfJSpYbJD57bMtuw3wmqz0KXrso24DPZ-klt/exec?nombre='+encodeURIComponent(solicitud.nombre||'')+'&waComprador='+encodeURIComponent(solicitud.waComprador||'')+'&marca='+encodeURIComponent(solicitud.marca||'')+'&linea='+encodeURIComponent(solicitud.linea||'')+'&categoria='+encodeURIComponent(solicitud.categoria||'')+'&parte='+encodeURIComponent(solicitud.parte||'')+'&anio='+encodeURIComponent(solicitud.anio||'')+'&depto='+encodeURIComponent(solicitud.depto||'')+'&urgencia='+encodeURIComponent(solicitud.urgencia||'')+'&condicion='+encodeURIComponent(solicitud.condicion||'')+'&detalles='+encodeURIComponent(solicitud.detalles||''), {mode:'no-cors'});
-    const msg = buildWAMessage(solicitud);
-    toast('¡Solicitud enviada! Abriendo WhatsApp...');
-    setTimeout(() => abrirWhatsApp(WA_VENDEDOR_PRUEBA, msg), 800);
+
+    const data = new FormData();
+    data.append("nombre", solicitud.nombre);
+    data.append("whatsapp", solicitud.waComprador);
+    data.append("marca", solicitud.marca);
+    data.append("linea", solicitud.linea);
+    data.append("categoria", solicitud.categoria);
+    data.append("parte", solicitud.parte);
+    data.append("anio", solicitud.anio);
+    data.append("depto", solicitud.depto);
+    data.append("urgencia", solicitud.urgencia);
+    data.append("condicion", solicitud.condicion);
+    data.append("notas", [solicitud.detalles, solicitud.comentarios].filter(Boolean).join(" | "));
+
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: data
+    });
+
+    toast("Solicitud enviada correctamente. Te contactaremos por WhatsApp.");
     form.reset();
     // rebuild selects
     buildMarcas(form.querySelector('[name="marca"]'));
@@ -243,7 +261,6 @@ function initFormComprador() {
     form.querySelector('[name="linea"]').innerHTML = '<option value="">Línea / Modelo</option>';
     form.querySelector('[name="parte"]').innerHTML = '<option value="">Parte específica</option>';
     form.querySelector('[name="muni"]').innerHTML = '<option value="">Municipio</option>';
-    showPage('page-confirmacion');
   });
 }
 
