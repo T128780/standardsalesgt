@@ -59,7 +59,7 @@ const CAT = {
   },
 
   categorias: {
-    "Motor":["Motor completo","Block","Culata","Tapadera de válvulas","Cárter","Pistones","Bielas","Cigüeñal","Eje de levas","Cadena de tiempo","Faja de tiempo","Tensor","Bomba de aceite","Bomba de agua","Termostato","Radiador","Ventilador","Depósito de refrigerante","Mangueras","Múltiple de admisión","Múltiple de escape","Cuerpo de aceleración","Inyectores","Bobinas","Sensor MAF","Sensor MAP","Sensor TPS","Sensor de oxígeno","Sensor de cigüeñal","Sensor de eje de levas","Soportes de motor"],
+    "Motor":["Motor completo","Block","Culata","Tapadera de válvulas","Cárter","Pistones","Bielas","Cigüeñal","Eje de levas","Cadena de tiempo","Faja de tiempo","Tensor","Bomba de aceite","Bomba de agua","Termostato","Radiador","Ventilador","Depósito de refrigerante","Mangueras","Múltiple de admisión","Múltiple de escape","Cuerpo de aceleración","Inyectores","Bobinas","Alternador","Sensor MAF","Sensor MAP","Sensor TPS","Sensor de oxígeno","Sensor de cigüeñal","Sensor de eje de levas","Soportes de motor"],
     "Transmisión":["Caja automática","Caja mecánica","Convertidor de torque","Clutch","Canasta","Disco","Collarín","Volante","Palanca","Cable de cambios","Diferencial","Flechas","Punta de flecha","Homocinética","Soporte de caja","Módulo TCM"],
     "Suspensión":["Shock delantero","Shock trasero","Strut","Resorte","Base de shock","Muleta superior","Muleta inferior","Buje","Rótula","Terminal","Barra estabilizadora","Bieleta","Eje trasero","Mango de rueda","Cubo","Cojinete"],
     "Dirección":["Cremallera","Bomba hidráulica","Manguera hidráulica","Columna de dirección","Timón","Caja de dirección","Terminal","Rótula axial","Módulo EPS"],
