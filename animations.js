@@ -1,162 +1,83 @@
-// STANDARD REPUESTOS GT - GSAP animations
-// Inspirado en el plan de animaciones de Kimi
+// STANDARD SALES GT — Animaciones (v20)
+// Sin librerías externas: IntersectionObserver + transiciones CSS.
 
 (function () {
-  if (typeof gsap === 'undefined') return;
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  gsap.registerPlugin(ScrollTrigger);
+  // Navbar: fondo sólido al hacer scroll
+  const navbar = document.getElementById("navbar");
+  if (navbar) {
+    window.addEventListener("scroll", () => {
+      navbar.classList.toggle("scrolled", window.scrollY > 50);
+    }, { passive: true });
+  }
 
-  // Navbar scroll
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 50);
-  }, { passive: true });
+  // Entrada del hero (escalonada)
+  function initHero() {
+    const ids = ["heroBadge", "heroTitle", "heroSubtitle", "heroCtas", "heroStats"];
+    ids.forEach((id, index) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (prefersReduced) { el.classList.add("in"); return; }
+      setTimeout(() => el.classList.add("in"), 250 + index * 160);
+    });
+  }
 
-  // Hero entrance timeline
-  function initHeroAnimations() {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) {
-      ['heroBadge','heroTitle','heroSubtitle','heroCtas','heroStats'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
-      });
-      return;
+  // Contadores animados
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.target, 10);
+    const prefix = el.dataset.prefix || "";
+    const suffix = el.dataset.suffix !== undefined ? el.dataset.suffix : "";
+
+    if (target === 0) { el.textContent = "Q0"; return; }
+    if (prefersReduced) { el.textContent = `${prefix}${target}${suffix}`; return; }
+
+    const duration = 1800;
+    const start = performance.now();
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = `${prefix}${Math.round(target * eased)}${suffix}`;
+      if (progress < 1) requestAnimationFrame(tick);
     }
-
-    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-
-    tl.to('#heroBadge',    { y: 0, opacity: 1, duration: 0.6, delay: 0.3 })
-      .to('#heroTitle',    { y: 0, opacity: 1, duration: 0.8 }, '-=0.3')
-      .to('#heroSubtitle', { y: 0, opacity: 1, duration: 0.6 }, '-=0.4')
-      .to('#heroCtas',     { y: 0, opacity: 1, duration: 0.6 }, '-=0.3')
-      .to('#heroStats',    { y: 0, opacity: 1, duration: 0.6 }, '-=0.3');
+    requestAnimationFrame(tick);
   }
 
-  // Animated counters
-  function initCounters() {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    document.querySelectorAll('.stat-num[data-target]').forEach(el => {
-      const target = parseInt(el.dataset.target);
-      const prefix = el.dataset.prefix || '';
-      const suffix = el.dataset.suffix !== undefined ? el.dataset.suffix : '';
-
-      if (target === 0) {
-        el.textContent = 'Q0';
-        return;
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
       }
+    });
+  }, { threshold: 0.4 });
 
-      if (prefersReduced) {
-        el.textContent = `${prefix}${target}${suffix}`;
-        return;
+  document.querySelectorAll(".stat-num[data-target]").forEach((el) => {
+    counterObserver.observe(el);
+  });
+
+  // Reveal al hacer scroll
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+
+      if (el.classList.contains("reveal-stagger")) {
+        // Escalonar dentro del mismo contenedor
+        const siblings = [...el.parentElement.querySelectorAll(".reveal-stagger")];
+        const index = siblings.indexOf(el);
+        setTimeout(() => el.classList.add("in"), index * 110);
+      } else {
+        el.classList.add("in");
       }
-
-      const obj = { value: 0 };
-      gsap.to(obj, {
-        value: target,
-        duration: 2,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        },
-        onUpdate: () => {
-          el.textContent = `${prefix}${Math.round(obj.value)}${suffix}`;
-        },
-      });
+      revealObserver.unobserve(el);
     });
-  }
+  }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
 
-  // Scroll reveal
-  function initScrollReveal() {
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll(".reveal, .reveal-stagger").forEach((el) => {
+    if (prefersReduced) { el.classList.add("in"); return; }
+    revealObserver.observe(el);
+  });
 
-    // Single reveal elements
-    document.querySelectorAll('.reveal').forEach(el => {
-      if (prefersReduced) {
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-        return;
-      }
-      gsap.to(el, {
-        y: 0,
-        opacity: 1,
-        duration: 0.7,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 80%',
-          toggleActions: 'play none none none',
-        },
-      });
-    });
-
-    // Staggered reveal (for grids of cards)
-    const staggerGroups = {};
-    document.querySelectorAll('.reveal-stagger').forEach(el => {
-      const parent = el.parentElement;
-      if (!staggerGroups[parent]) staggerGroups[parent] = [];
-      staggerGroups[parent].push(el);
-    });
-
-    Object.values(staggerGroups).forEach(group => {
-      if (prefersReduced) {
-        group.forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
-        return;
-      }
-      gsap.to(group, {
-        y: 0,
-        opacity: 1,
-        duration: 0.6,
-        ease: 'power2.out',
-        stagger: 0.13,
-        scrollTrigger: {
-          trigger: group[0].parentElement,
-          start: 'top 75%',
-          toggleActions: 'play none none none',
-        },
-      });
-    });
-  }
-
-  // Urgency bar entrance
-  function initUrgencyBar() {
-    gsap.from('#urgencyBar', {
-      y: -10,
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: '#urgencyBar',
-        start: 'top 90%',
-        toggleActions: 'play none none none',
-      },
-    });
-  }
-
-  // Init
-  function init() {
-    initHeroAnimations();
-    initCounters();
-    initScrollReveal();
-    initUrgencyBar();
-  }
-
-  // Run on page show (handles SPA navigation)
-  init();
-
-  // Re-init ScrollTrigger when landing page is shown
-  const originalShowPage = window.showPage;
-  if (typeof originalShowPage === 'function') {
-    window.showPage = function (id) {
-      originalShowPage(id);
-      if (id === 'page-landing') {
-        setTimeout(() => {
-          ScrollTrigger.refresh();
-        }, 100);
-      }
-    };
-  }
-
+  initHero();
 })();

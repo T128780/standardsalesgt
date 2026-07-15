@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2D2B3D">
-  <meta name="description" content="Encuentra repuestos de vehículo en Guatemala en minutos. Solicita gratis y vendedores te contactan por WhatsApp.">
+  <meta name="theme-color" content="#0A0B0E">
+  <meta name="description" content="Encuentra repuestos de vehículo en Guatemala en minutos. Solicita gratis y vendedores especializados te contactan por WhatsApp.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="StandardSales GT">
   <meta name="mobile-web-app-capable" content="yes">
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>StandardSales GT Guatemala</title>
+  <title>Standard Sales GT — Repuestos de vehículo en Guatemala</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=19">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20">
 </head>
 <body>
 
@@ -24,33 +25,29 @@
   <div class="nav-inner">
     <a href="#inicio" class="nav-logo" onclick="smoothTo(event,'#inicio')">
       <div class="nav-logo-icon">
-        <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <svg width="38" height="38" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <linearGradient id="nlg1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#4F46E5"/>
-              <stop offset="100%" style="stop-color:#9333EA"/>
+            <linearGradient id="nlg-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#E8CE8C"/>
+              <stop offset="50%" stop-color="#C9A24B"/>
+              <stop offset="100%" stop-color="#8C6D2B"/>
             </linearGradient>
-            <linearGradient id="nlg2" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color:#9333EA"/>
-              <stop offset="100%" style="stop-color:#EC4899"/>
-            </linearGradient>
-            <filter id="nglow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           </defs>
-          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="url(#nlg1)" filter="url(#nglow)"/>
-          <polygon points="50,16 81,33 81,67 50,84 19,67 19,33" fill="url(#nlg2)" opacity="0.35"/>
-          <text x="50" y="67" font-family="Space Grotesk,sans-serif" font-size="48" font-weight="700" fill="white" text-anchor="middle">S</text>
+          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="#12151C" stroke="url(#nlg-gold)" stroke-width="3"/>
+          <polygon points="50,14 84,33 84,67 50,86 16,67 16,33" fill="none" stroke="url(#nlg-gold)" stroke-width="1" opacity="0.45"/>
+          <text x="50" y="66" font-family="Fraunces,Georgia,serif" font-size="46" font-weight="600" fill="url(#nlg-gold)" text-anchor="middle">S</text>
         </svg>
       </div>
       <div class="logo-text">
-        <span class="logo-main">Standard<span>Sales GT</span></span>
-        <span class="logo-sub">Guatemala</span>
+        <span class="logo-main">Standard <span>Sales</span></span>
+        <span class="logo-sub">Repuestos · Guatemala</span>
       </div>
     </a>
     <div class="nav-links" id="navLinks">
       <a href="#inicio" onclick="smoothTo(event,'#inicio')">Inicio</a>
-      <a href="#como-funciona" onclick="smoothTo(event,'#como-funciona')">Buscar repuesto</a>
+      <a href="#como-funciona" onclick="smoothTo(event,'#como-funciona')">Cómo funciona</a>
       <a href="#planes" onclick="smoothTo(event,'#planes')">Soy vendedor</a>
-      <button class="nav-cta" onclick="showPage('page-solicitud')">→ Solicitar gratis</button>
+      <button class="nav-cta" onclick="showPage('page-solicitud')">Solicitar repuesto</button>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Menú">
       <span></span><span></span><span></span>
@@ -59,9 +56,9 @@
   <!-- Mobile menu -->
   <div class="mobile-menu" id="mobile-menu">
     <a href="#inicio" onclick="closeMobile();smoothTo(event,'#inicio')">Inicio</a>
-    <a href="#como-funciona" onclick="closeMobile();smoothTo(event,'#como-funciona')">Buscar repuesto</a>
+    <a href="#como-funciona" onclick="closeMobile();smoothTo(event,'#como-funciona')">Cómo funciona</a>
     <a href="#planes" onclick="closeMobile();smoothTo(event,'#planes')">Soy vendedor</a>
-    <button class="nav-cta" onclick="closeMobile();showPage('page-solicitud')">→ Solicitar gratis</button>
+    <button class="nav-cta" onclick="closeMobile();showPage('page-solicitud')">Solicitar repuesto</button>
   </div>
 </nav>
 
@@ -70,55 +67,31 @@
 
   <!-- HERO -->
   <section id="inicio" class="hero-section">
-    <!-- VIDEO DE FONDO -->
     <video class="hero-video" autoplay muted loop playsinline preload="auto">
       <source src="https://pub-19e3b3dd3ec34b1289fa8b489a85d387.r2.dev/8987200-uhd_3840_2160_30fps.mp4" type="video/mp4">
     </video>
     <div class="hero-overlay"></div>
-    <div class="hero-grid"></div>
-    <div class="hero-scan"></div>
-    <!-- Partículas flotantes -->
-    <div class="hero-particle" style="width:5px;height:5px;background:#818CF8;top:20%;left:12%;--d:3.5s;--delay:0s"></div>
-    <div class="hero-particle" style="width:4px;height:4px;background:#EC4899;top:65%;left:82%;--d:4.5s;--delay:-1s"></div>
-    <div class="hero-particle" style="width:6px;height:6px;background:#C084FC;top:78%;left:22%;--d:5s;--delay:-2s"></div>
-    <div class="hero-particle" style="width:3px;height:3px;background:#818CF8;top:35%;left:75%;--d:3s;--delay:-0.5s"></div>
-    <div class="hero-particle" style="width:4px;height:4px;background:#F472B6;top:55%;left:8%;--d:4s;--delay:-1.5s"></div>
+    <div class="hero-frame" aria-hidden="true"></div>
     <div class="hero-content">
-      <!-- Logo flotante -->
-      <div class="hero-logo-float">
-        <svg width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="hlg1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#4F46E5"/>
-              <stop offset="100%" style="stop-color:#9333EA"/>
-            </linearGradient>
-            <linearGradient id="hlg2" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" style="stop-color:#9333EA"/>
-              <stop offset="100%" style="stop-color:#EC4899"/>
-            </linearGradient>
-            <filter id="hglow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="url(#hlg1)" filter="url(#hglow)" opacity="0.95"/>
-          <polygon points="50,16 81,33 81,67 50,84 19,67 19,33" fill="url(#hlg2)" opacity="0.4"/>
-          <text x="50" y="67" font-family="Space Grotesk,sans-serif" font-size="50" font-weight="700" fill="white" text-anchor="middle" filter="url(#hglow)">S</text>
-        </svg>
-      </div>
       <div class="hero-badge" id="heroBadge">
         <span class="badge-dot"></span>
-        PLATAFORMA ACTIVA EN GUATEMALA
+        Plataforma activa en Guatemala
       </div>
       <h1 class="hero-title" id="heroTitle">
-        <em>Encuentra tu repuesto</em>
-        En <span class="grad-text">minutos,</span><br>no en días
+        El repuesto que buscas,<br>
+        <em>en minutos</em><span class="gold-dot">.</span><br>
+        No en días.
       </h1>
       <p class="hero-subtitle" id="heroSubtitle">
-        Llena una solicitud gratuita. Vendedores especializados en Guatemala te contactan directamente por WhatsApp con precio y disponibilidad.
+        Llena una solicitud gratuita y vendedores especializados de todo el país
+        te contactan directamente por WhatsApp, con precio y disponibilidad real.
       </p>
       <div class="hero-ctas" id="heroCtas">
-        <button class="btn-hero-primary" onclick="showPage('page-solicitud')">
-          → Solicitar repuesto gratis
+        <button class="btn-gold" onclick="showPage('page-solicitud')">
+          Solicitar repuesto gratis
+          <span class="btn-arrow">→</span>
         </button>
-        <button class="btn-hero-secondary" onclick="showPage('page-vendedor')">
+        <button class="btn-line" onclick="showPage('page-vendedor')">
           Soy vendedor
         </button>
       </div>
@@ -141,13 +114,13 @@
         </div>
       </div>
     </div>
+    <div class="hero-scrollcue" aria-hidden="true"><span></span></div>
   </section>
 
   <!-- URGENCY BAR -->
   <div class="urgency-bar" id="urgencyBar">
     <div class="urgency-inner">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="zap-icon"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-      <p>¿Necesitas el repuesto hoy? <span>Llena la solicitud en 2 minutos y recibe ofertas por WhatsApp</span></p>
+      <p>¿Lo necesitas hoy? <span>Llena la solicitud en 2 minutos y recibe ofertas por WhatsApp.</span></p>
       <button onclick="showPage('page-solicitud')">Solicitar ahora →</button>
     </div>
   </div>
@@ -157,42 +130,55 @@
     <div class="section-container">
       <div class="section-header reveal">
         <span class="section-eyebrow">Proceso simple</span>
-        <h2 class="section-title">¿Cómo funciona?</h2>
-        <p class="section-sub">Sin registro, sin pago, sin perder tiempo buscando de local en local</p>
+        <h2 class="section-title">Cómo <em>funciona</em></h2>
+        <p class="section-sub">Sin registro, sin pago y sin perder tiempo buscando de local en local.</p>
       </div>
       <div class="steps-grid">
         <div class="step-card reveal-stagger">
-          <span class="step-bg-num">01</span>
-          <div class="step-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
-          </div>
+          <span class="step-num">01</span>
           <h3>Llena tu solicitud</h3>
           <p>Describe el repuesto, tu vehículo y la condición que necesitas. Solo toma 2 minutos.</p>
         </div>
         <div class="step-card reveal-stagger">
-          <span class="step-bg-num">02</span>
-          <div class="step-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          </div>
+          <span class="step-num">02</span>
           <h3>Clasificamos tu pedido</h3>
-          <p>Identificamos vendedores en Guatemala que tienen lo que buscas.</p>
+          <p>Identificamos a los vendedores de Guatemala que tienen exactamente lo que buscas.</p>
         </div>
         <div class="step-card reveal-stagger">
-          <span class="step-bg-num">03</span>
-          <div class="step-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          </div>
+          <span class="step-num">03</span>
           <h3>Te contactan por WhatsApp</h3>
-          <p>El vendedor te escribe directamente con precio y disponibilidad real.</p>
+          <p>El vendedor te escribe directamente, con precio y disponibilidad real.</p>
         </div>
         <div class="step-card reveal-stagger">
-          <span class="step-bg-num">04</span>
-          <div class="step-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>
-          </div>
+          <span class="step-num">04</span>
           <h3>Tú decides</h3>
-          <p>Negocias directo. Sin comisiones, sin intermediarios. 100% gratis para ti.</p>
+          <p>Negocias directo, sin comisiones ni intermediarios. 100% gratis para ti.</p>
         </div>
+      </div>
+      <div class="how-cta reveal">
+        <button class="btn-gold" onclick="showPage('page-solicitud')">Comenzar mi solicitud <span class="btn-arrow">→</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAND -->
+  <section class="trust-band reveal">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <span class="trust-title">Gratis para el comprador</span>
+        <span class="trust-sub">Siempre, sin letra pequeña</span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-title">Trato directo</span>
+        <span class="trust-sub">Negocias tú, sin comisiones</span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-title">Cobertura nacional</span>
+        <span class="trust-sub">Vendedores en todo el país</span>
+      </div>
+      <div class="trust-item">
+        <span class="trust-title">Respuesta por WhatsApp</span>
+        <span class="trust-sub">Sin apps nuevas que instalar</span>
       </div>
     </div>
   </section>
@@ -201,9 +187,9 @@
   <section id="planes" class="pricing-section">
     <div class="section-container">
       <div class="section-header reveal">
-        <span class="section-eyebrow">Monetización</span>
-        <h2 class="section-title white">Planes para vendedores</h2>
-        <p class="section-sub dark">El comprador siempre usa la plataforma <strong>100% gratis</strong></p>
+        <span class="section-eyebrow">Para vendedores</span>
+        <h2 class="section-title">Planes de <em>membresía</em></h2>
+        <p class="section-sub">El comprador siempre usa la plataforma <strong>100% gratis</strong>. Estos planes son para vendedores.</p>
       </div>
       <div class="plans-grid">
         <div class="plan-card reveal-stagger">
@@ -211,7 +197,7 @@
           <div class="plan-price">Q0<span>/mes</span></div>
           <div class="plan-desc">Para probar la plataforma</div>
           <ul class="plan-features">
-            <li class="ok">Hasta 5 solicitudes/mes</li>
+            <li class="ok">Hasta 5 solicitudes al mes</li>
             <li class="no">Sin prioridad</li>
             <li class="ok">Perfil básico</li>
           </ul>
@@ -222,21 +208,21 @@
           <div class="plan-price">Q99<span>/mes</span></div>
           <div class="plan-desc">Para vendedores regulares</div>
           <ul class="plan-features">
-            <li class="ok">Hasta 20 solicitudes/mes</li>
+            <li class="ok">Hasta 20 solicitudes al mes</li>
             <li class="ok">Prioridad baja</li>
             <li class="ok">Perfil completo</li>
           </ul>
-          <button class="plan-btn" onclick="showPage('page-vendedor')">Elegir básico</button>
+          <button class="plan-btn" onclick="showPage('page-vendedor')">Elegir Básico</button>
         </div>
         <div class="plan-card popular reveal-stagger">
-          <div class="popular-badge"><span>⭐</span> Más popular</div>
+          <div class="popular-badge">Más popular</div>
           <div class="plan-name">Pro</div>
           <div class="plan-price">Q199<span>/mes</span></div>
           <div class="plan-desc">Para vendedores activos</div>
           <ul class="plan-features">
-            <li class="ok">Hasta 75 solicitudes/mes</li>
+            <li class="ok">Hasta 75 solicitudes al mes</li>
             <li class="ok">Prioridad media</li>
-            <li class="ok">Badge Pro</li>
+            <li class="ok">Distintivo Pro</li>
             <li class="ok">Estadísticas básicas</li>
           </ul>
           <button class="plan-btn primary" onclick="showPage('page-vendedor')">Elegir Pro</button>
@@ -260,14 +246,21 @@
   <!-- CTA FINAL -->
   <section class="cta-final-section reveal">
     <div class="cta-final-inner">
-      <h2>¿Ya perdiste tiempo<br>buscando ese repuesto?</h2>
+      <span class="section-eyebrow">Es gratis y toma 2 minutos</span>
+      <h2>¿Ya perdiste tiempo<br>buscando <em>ese repuesto</em>?</h2>
       <p>En menos de 2 minutos puedes tener vendedores contactándote por WhatsApp.</p>
-      <button onclick="showPage('page-solicitud')">→ Solicitar ahora — Es gratis</button>
+      <button class="btn-gold big" onclick="showPage('page-solicitud')">Solicitar ahora <span class="btn-arrow">→</span></button>
     </div>
   </section>
 
   <footer class="site-footer">
-    <p>© 2025 Standard Repuestos GT · <a href="#">Términos</a> · <a href="#">Privacidad</a> · Guatemala</p>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo">Standard <em>Sales</em> GT</span>
+        <span class="footer-tag">Repuestos de vehículo · Guatemala</span>
+      </div>
+      <p class="footer-legal">© 2025 Standard Repuestos GT · <a href="#">Términos</a> · <a href="#">Privacidad</a></p>
+    </div>
   </footer>
 </div>
 
@@ -275,13 +268,14 @@
 <div id="page-solicitud" class="page form-page">
   <div class="form-hero">
     <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
-    <h2>→ Solicitar repuesto</h2>
+    <span class="section-eyebrow">Solicitud gratuita</span>
+    <h2>Solicitar <em>repuesto</em></h2>
     <p>Gratis · 2 minutos · El vendedor te contacta por WhatsApp</p>
   </div>
   <div class="form-body">
     <form id="form-comprador" novalidate>
       <div class="form-section">
-        <div class="form-section-title">🚗 Datos del vehículo</div>
+        <div class="form-section-title"><span class="fs-num">1</span> Datos del vehículo</div>
         <div class="form-row">
           <div class="form-group"><label>Marca <span class="req">*</span></label><select name="marca"><option value="">Marca</option></select></div>
           <div class="form-group"><label>Línea / Modelo</label><select name="linea"><option value="">Línea / Modelo</option></select></div>
@@ -321,7 +315,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-section-title">⚙️ Datos técnicos</div>
+        <div class="form-section-title"><span class="fs-num">2</span> Datos técnicos</div>
         <div class="form-group">
           <label>Tracción</label>
           <div class="option-pills">
@@ -348,7 +342,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-section-title">🔧 Repuesto buscado</div>
+        <div class="form-section-title"><span class="fs-num">3</span> Repuesto buscado</div>
         <div class="form-row">
           <div class="form-group"><label>Categoría <span class="req">*</span></label><select name="categoria"><option value="">Categoría del repuesto</option></select></div>
           <div class="form-group"><label>Parte específica</label><select name="parte"><option value="">Parte específica</option></select></div>
@@ -366,7 +360,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-section-title">📍 Ubicación del vendedor que buscas</div>
+        <div class="form-section-title"><span class="fs-num">4</span> Ubicación del vendedor que buscas</div>
         <div class="form-row">
           <div class="form-group"><label>Departamento</label><select name="depto"><option value="">Departamento</option></select></div>
           <div class="form-group"><label>Municipio</label><select name="muni"><option value="">Municipio</option></select></div>
@@ -375,7 +369,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-section-title">👤 Tus datos</div>
+        <div class="form-section-title"><span class="fs-num">5</span> Tus datos</div>
         <div class="form-row">
           <div class="form-group"><label>Tu nombre <span class="req">*</span></label><input type="text" name="nombre" placeholder="Nombre completo"></div>
           <div class="form-group"><label>Tu WhatsApp <span class="req">*</span></label><input type="tel" name="waComprador" placeholder="502XXXXXXXX"></div>
@@ -384,16 +378,16 @@
           <label>Urgencia</label>
           <input type="hidden" name="urgencia" value="Media">
           <div class="urgencia-btns">
-            <button type="button" class="urgencia-btn" data-val="Alta">🔴 Alta — Hoy</button>
-            <button type="button" class="urgencia-btn active" data-val="Media">🟡 Media — Esta semana</button>
-            <button type="button" class="urgencia-btn" data-val="Baja">🟢 Baja — Sin prisa</button>
+            <button type="button" class="urgencia-btn" data-val="Alta"><span class="u-dot alta"></span>Alta — Hoy</button>
+            <button type="button" class="urgencia-btn active" data-val="Media"><span class="u-dot media"></span>Media — Esta semana</button>
+            <button type="button" class="urgencia-btn" data-val="Baja"><span class="u-dot baja"></span>Baja — Sin prisa</button>
           </div>
         </div>
         <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" placeholder="Cualquier detalle extra..."></textarea></div>
       </div>
 
-      <button type="submit" class="btn-submit">→ Enviar solicitud por WhatsApp — Es gratis</button>
-      <p style="text-align:center;font-size:12px;color:#666;margin-top:10px">Se abrirá WhatsApp con tu solicitud lista. Vendedores te responden rápido.</p>
+      <button type="submit" class="btn-submit">Enviar solicitud — Es gratis <span class="btn-arrow">→</span></button>
+      <p class="form-footnote">Tu solicitud queda registrada y los vendedores te responden por WhatsApp.</p>
     </form>
   </div>
 </div>
@@ -402,11 +396,11 @@
 <div id="page-confirmacion" class="page">
   <div class="confirm-page">
     <div class="confirm-card">
-      <div class="confirm-icon">✅</div>
+      <div class="confirm-icon ok">✓</div>
       <h2>¡Solicitud enviada!</h2>
-      <p>Tu solicitud fue registrada y abrimos WhatsApp para que el vendedor la reciba.</p>
+      <p>Tu solicitud fue registrada. Los vendedores que tengan tu repuesto te contactarán por WhatsApp.</p>
       <button class="btn-submit" onclick="showPage('page-solicitud')">Nueva solicitud</button>
-      <button class="btn-ghost-dark" style="margin-top:10px;width:100%" onclick="showPage('page-landing')">Volver al inicio</button>
+      <button class="btn-ghost-dark" onclick="showPage('page-landing')">Volver al inicio</button>
     </div>
   </div>
 </div>
@@ -415,15 +409,15 @@
 <div id="page-vendedor" class="page form-page">
   <div class="form-hero">
     <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
-    <h2>🏪 Únete como vendedor</h2>
+    <span class="section-eyebrow">Membresía de vendedor</span>
+    <h2>Únete como <em>vendedor</em></h2>
     <p>Recibe solicitudes calificadas de compradores en Guatemala</p>
   </div>
   <div class="form-body">
     <form id="form-vendedor" novalidate>
 
-      <!-- DATOS BÁSICOS -->
       <div class="form-section">
-        <div class="form-section-title">📋 Datos básicos</div>
+        <div class="form-section-title"><span class="fs-num">1</span> Datos básicos</div>
         <div class="form-group"><label>Nombre comercial <span class="req">*</span></label><input type="text" name="vnombre" placeholder="Nombre de tu negocio"></div>
         <div class="form-group">
           <label>Tipo de vendedor</label>
@@ -454,17 +448,15 @@
         </div>
       </div>
 
-      <!-- SEGMENTACIÓN: MARCAS -->
       <div class="form-section">
-        <div class="form-section-title">🚗 Marcas que trabajas <span class="req">*</span></div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Selecciona TODAS las marcas de vehículos que atiendes. Solo recibirás solicitudes de estas marcas.</p>
+        <div class="form-section-title"><span class="fs-num">2</span> Marcas que trabajas <span class="req">*</span></div>
+        <p class="form-hint">Selecciona TODAS las marcas de vehículos que atiendes. Solo recibirás solicitudes de estas marcas.</p>
         <div class="check-pills" id="vend-marcas"></div>
       </div>
 
-      <!-- SEGMENTACIÓN: LÍNEAS -->
       <div class="form-section">
-        <div class="form-section-title">🚙 Líneas / Modelos que trabajas <span class="req">*</span></div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Selecciona una marca primero para ver sus líneas. Puedes seleccionar varias.</p>
+        <div class="form-section-title"><span class="fs-num">3</span> Líneas / Modelos que trabajas <span class="req">*</span></div>
+        <p class="form-hint">Selecciona una marca primero para ver sus líneas. Puedes seleccionar varias.</p>
         <div class="form-group">
           <label>Filtrar líneas por marca</label>
           <select id="vend-marca-filtro" onchange="filtrarLineasVendedor()">
@@ -475,25 +467,23 @@
         <div id="vend-lineas-custom" style="margin-top:10px">
           <div class="form-group">
             <label>¿No encuentras tu línea? Agrégala manualmente</label>
-            <div style="display:flex;gap:8px">
+            <div class="inline-add">
               <input type="text" id="vend-linea-custom-input" placeholder="Ej: Tacoma, Prado, FJ...">
-              <button type="button" class="btn-ghost" onclick="agregarLineaCustom()" style="white-space:nowrap;padding:11px 16px">+ Agregar</button>
+              <button type="button" class="btn-ghost" onclick="agregarLineaCustom()">+ Agregar</button>
             </div>
           </div>
         </div>
         <input type="hidden" name="vlineas" id="vlineas-selected">
       </div>
 
-      <!-- SEGMENTACIÓN: CATEGORÍAS -->
       <div class="form-section">
-        <div class="form-section-title">🔧 Categorías que atiendes <span class="req">*</span></div>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Solo recibirás solicitudes de estas categorías de repuestos.</p>
+        <div class="form-section-title"><span class="fs-num">4</span> Categorías que atiendes <span class="req">*</span></div>
+        <p class="form-hint">Solo recibirás solicitudes de estas categorías de repuestos.</p>
         <div class="check-pills" id="vend-categorias"></div>
       </div>
 
-      <!-- ESPECIALIZACIÓN -->
       <div class="form-section">
-        <div class="form-section-title">⚙️ Especialización</div>
+        <div class="form-section-title"><span class="fs-num">5</span> Especialización</div>
         <div class="form-group">
           <label>Condición de piezas que ofreces</label>
           <div class="option-pills">
@@ -505,16 +495,15 @@
         </div>
         <div class="form-group">
           <label>Cobertura</label>
-          <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:6px">
-            <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" name="venvios" style="width:18px;height:18px;accent-color:#7C3AED"> Hace envíos</label>
-            <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer"><input type="checkbox" name="ventregas" style="width:18px;height:18px;accent-color:#7C3AED"> Hace entregas</label>
+          <div class="cover-checks">
+            <label><input type="checkbox" name="venvios"> Hace envíos</label>
+            <label><input type="checkbox" name="ventregas"> Hace entregas</label>
           </div>
         </div>
       </div>
 
-      <!-- PLAN -->
       <div class="form-section">
-        <div class="form-section-title">💳 Plan de membresía <span class="req">*</span></div>
+        <div class="form-section-title"><span class="fs-num">6</span> Plan de membresía <span class="req">*</span></div>
         <div class="option-pills">
           <label class="option-pill"><input type="radio" name="vplan" value="Gratis"><span>Gratis — Q0</span></label>
           <label class="option-pill"><input type="radio" name="vplan" value="Básico"><span>Básico — Q99/mes</span></label>
@@ -523,33 +512,31 @@
         </div>
       </div>
 
-      <!-- COMPROBANTE DE PAGO -->
       <div class="form-section" id="seccion-comprobante">
-        <div class="form-section-title">🧾 Comprobante de pago <span class="req">*</span></div>
-        <p style="font-size:13px;color:var(--text2);margin-bottom:16px">
-          Adjunta una foto o captura de tu transferencia electrónica o depósito bancario.<br>
-          <strong style="color:#C084FC">Datos bancarios para el pago:</strong>
+        <div class="form-section-title"><span class="fs-num">7</span> Comprobante de pago <span class="req">*</span></div>
+        <p class="form-hint">
+          Adjunta una foto o captura de tu transferencia electrónica o depósito bancario.
         </p>
-        <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:14px;margin-bottom:16px;font-size:13px;line-height:1.8;color:var(--text2)">
-          🏦 <strong style="color:#fff">Banco Industrial</strong><br>
-          Cuenta monetaria: <strong style="color:#fff">123-456789-0</strong><br>
-          A nombre de: <strong style="color:#fff">Standard Sales GT</strong><br>
-          NIT: <strong style="color:#fff">XXXXXXX-X</strong>
+        <div class="bank-box">
+          <strong>Banco Industrial</strong><br>
+          Cuenta monetaria: <strong>123-456789-0</strong><br>
+          A nombre de: <strong>Standard Sales GT</strong><br>
+          NIT: <strong>XXXXXXX-X</strong>
         </div>
         <div class="form-group">
           <label>Foto del comprobante <span class="req">*</span></label>
-          <div id="comprobante-drop" style="border:2px dashed rgba(124,58,237,.4);border-radius:8px;padding:28px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(124,58,237,.04)" onclick="document.getElementById('comprobante-file').click()" ondragover="event.preventDefault();this.style.borderColor='#C084FC'" ondragleave="this.style.borderColor='rgba(124,58,237,.4)'" ondrop="handleComprobanteDrop(event)">
-            <div style="font-size:32px;margin-bottom:8px">📎</div>
-            <div style="font-size:13px;color:var(--text2)">Haz clic o arrastra tu foto aquí</div>
-            <div style="font-size:11px;color:var(--text3);margin-top:4px">JPG, PNG o PDF · Máximo 5MB</div>
+          <div id="comprobante-drop" class="dropzone" onclick="document.getElementById('comprobante-file').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="handleComprobanteDrop(event)">
+            <div class="drop-icon">📎</div>
+            <div class="drop-main">Haz clic o arrastra tu foto aquí</div>
+            <div class="drop-sub">JPG, PNG o PDF · Máximo 5MB</div>
           </div>
           <input type="file" id="comprobante-file" name="vcomprobante" accept="image/*,.pdf" style="display:none" onchange="mostrarComprobante(this)">
           <div id="comprobante-preview" style="display:none;margin-top:10px"></div>
         </div>
       </div>
 
-      <button type="submit" class="btn-submit">Enviar solicitud de adhesión →</button>
-      <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:10px">Tu solicitud será revisada en máximo 24 horas. Te contactaremos por WhatsApp.</p>
+      <button type="submit" class="btn-submit">Enviar solicitud de adhesión <span class="btn-arrow">→</span></button>
+      <p class="form-footnote">Tu solicitud será revisada en máximo 24 horas. Te contactaremos por WhatsApp.</p>
     </form>
   </div>
 </div>
@@ -558,55 +545,59 @@
 <div id="page-vendedor-ok" class="page">
   <div class="confirm-page">
     <div class="confirm-card">
-      <div class="confirm-icon">🎉</div>
+      <div class="confirm-icon ok">✓</div>
       <h2>¡Solicitud recibida!</h2>
       <p>Revisaremos tu perfil y te contactaremos pronto para activar tu cuenta.</p>
       <button class="btn-submit" onclick="showPage('page-panel-vendedor');renderPanelVendedor()">Ver panel de demo →</button>
-      <button class="btn-ghost-dark" style="margin-top:10px;width:100%" onclick="showPage('page-landing')">Volver al inicio</button>
+      <button class="btn-ghost-dark" onclick="showPage('page-landing')">Volver al inicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN VENDEDOR -->
+<div id="page-vendor-login" class="page">
+  <div class="confirm-page">
+    <div class="confirm-card login-card">
+      <div class="login-logo">
+        <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="vlg-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#E8CE8C"/><stop offset="100%" stop-color="#8C6D2B"/>
+            </linearGradient>
+          </defs>
+          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="#12151C" stroke="url(#vlg-gold)" stroke-width="3"/>
+          <text x="50" y="66" font-family="Fraunces,Georgia,serif" font-size="44" font-weight="600" fill="url(#vlg-gold)" text-anchor="middle">S</text>
+        </svg>
+      </div>
+      <h2>Panel de Vendedor</h2>
+      <p class="login-sub">Ingresa con tu usuario y contraseña de membresía.</p>
+      <div class="login-fields">
+        <label>Usuario</label>
+        <input type="text" id="vendor-user" placeholder="Tu usuario" onkeydown="if(event.key==='Enter')document.getElementById('vendor-pass').focus()">
+        <label>Contraseña</label>
+        <input type="password" id="vendor-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkVendorLogin()">
+        <div id="vendor-error" class="login-error">Usuario o contraseña incorrectos.</div>
+      </div>
+      <button class="btn-submit" onclick="checkVendorLogin()">Ingresar →</button>
+      <button class="btn-ghost-dark" onclick="showPage('page-landing')">← Volver al inicio</button>
+      <div class="login-foot">
+        ¿Aún no tienes membresía? <a href="#" onclick="showPage('page-vendedor');return false">Regístrate aquí</a>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- PANEL VENDEDOR -->
-<!-- LOGIN VENDEDOR -->
-<div id="page-vendor-login" class="page">
-  <div class="confirm-page">
-    <div class="confirm-card" style="max-width:400px">
-      <div style="margin-bottom:20px">
-        <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="vlg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#4F46E5"/><stop offset="100%" style="stop-color:#EC4899"/></linearGradient></defs>
-          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="url(#vlg)"/>
-          <text x="50" y="67" font-family="Space Grotesk,sans-serif" font-size="42" font-weight="700" fill="white" text-anchor="middle">🏪</text>
-        </svg>
-      </div>
-      <h2 style="font-size:20px;margin-bottom:4px">Panel de Vendedor</h2>
-      <p style="margin-bottom:24px;font-size:13px">Ingresa con tu usuario y contraseña de membresía.</p>
-      <div style="text-align:left">
-        <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Usuario</label>
-        <input type="text" id="vendor-user" placeholder="Tu usuario" style="margin-bottom:12px" onkeydown="if(event.key==='Enter')document.getElementById('vendor-pass').focus()">
-        <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Contraseña</label>
-        <input type="password" id="vendor-pass" placeholder="••••••••" style="margin-bottom:6px" onkeydown="if(event.key==='Enter')checkVendorLogin()">
-        <div id="vendor-error" style="font-size:12px;color:#F472B6;margin-bottom:12px;display:none">❌ Usuario o contraseña incorrectos.</div>
-      </div>
-      <button class="btn-submit" onclick="checkVendorLogin()">Ingresar →</button>
-      <button class="btn-ghost-dark" style="margin-top:10px;width:100%" onclick="showPage('page-landing')">← Volver al inicio</button>
-      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)">
-        ¿Aún no tienes membresía? <a href="#" onclick="showPage('page-vendedor')" style="color:#C084FC">Regístrate aquí</a>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div id="page-panel-vendedor" class="page panel-page">
   <div class="panel-header">
     <div>
-      <button class="back-btn" onclick="showPage('page-landing')" style="margin-bottom:8px">← Volver</button>
-      <h2>📋 Panel del vendedor</h2>
-      <p>Solicitudes recibidas · Demo con datos de prueba</p>
+      <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
+      <h2>Panel del vendedor</h2>
+      <p>Solicitudes recibidas</p>
     </div>
     <div class="panel-header-actions">
       <button class="btn-ghost" id="btn-demo-data">Cargar demo</button>
-      <button class="btn-submit" style="padding:10px 18px;font-size:13px" id="btn-export-sol">⬇ Exportar</button>
+      <button class="btn-submit small" id="btn-export-sol">⬇ Exportar</button>
     </div>
   </div>
   <div class="panel-body">
@@ -614,7 +605,7 @@
       <div class="stat-card"><div class="num" id="v-total">0</div><div class="lbl">Solicitudes</div></div>
       <div class="stat-card"><div class="num red" id="v-alta">0</div><div class="lbl">Urgentes</div></div>
       <div class="stat-card"><div class="num">Pro</div><div class="lbl">Plan activo</div></div>
-      <div class="stat-card"><div class="num">✓</div><div class="lbl">Verificado</div></div>
+      <div class="stat-card"><div class="num gold">✓</div><div class="lbl">Verificado</div></div>
     </div>
     <div id="panel-solicitudes"><div class="empty-state"><div class="empty-icon">📋</div><p>Presiona "Cargar demo" para ver cómo funciona.</p></div></div>
   </div>
@@ -623,23 +614,27 @@
 <!-- LOGIN ADMIN -->
 <div id="page-admin-login" class="page">
   <div class="confirm-page">
-    <div class="confirm-card" style="max-width:380px">
-      <div style="margin-bottom:20px">
+    <div class="confirm-card login-card">
+      <div class="login-logo">
         <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="alg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#4F46E5"/><stop offset="100%" style="stop-color:#EC4899"/></linearGradient></defs>
-          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="url(#alg)"/>
-          <text x="50" y="67" font-family="Space Grotesk,sans-serif" font-size="48" font-weight="700" fill="white" text-anchor="middle">🔒</text>
+          <defs>
+            <linearGradient id="alg-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#E8CE8C"/><stop offset="100%" stop-color="#8C6D2B"/>
+            </linearGradient>
+          </defs>
+          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="#12151C" stroke="url(#alg-gold)" stroke-width="3"/>
+          <text x="50" y="68" font-size="40" text-anchor="middle">🔒</text>
         </svg>
       </div>
-      <h2 style="font-size:20px;margin-bottom:6px">Panel Administrativo</h2>
-      <p style="margin-bottom:24px;font-size:13px">Acceso restringido. Ingresa tu contraseña.</p>
-      <div style="text-align:left">
-        <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px">Contraseña</label>
-        <input type="password" id="admin-password" placeholder="••••••••" style="margin-bottom:6px" onkeydown="if(event.key==='Enter')checkAdminLogin()">
-        <div id="admin-error" style="font-size:12px;color:#F472B6;margin-bottom:12px;display:none">❌ Contraseña incorrecta.</div>
+      <h2>Panel Administrativo</h2>
+      <p class="login-sub">Acceso restringido. Ingresa tu contraseña.</p>
+      <div class="login-fields">
+        <label>Contraseña</label>
+        <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminLogin()">
+        <div id="admin-error" class="login-error">Contraseña incorrecta.</div>
       </div>
       <button class="btn-submit" onclick="checkAdminLogin()">Ingresar →</button>
-      <button class="btn-ghost-dark" style="margin-top:10px;width:100%" onclick="showPage('page-landing')">← Volver al inicio</button>
+      <button class="btn-ghost-dark" onclick="showPage('page-landing')">← Volver al inicio</button>
     </div>
   </div>
 </div>
@@ -648,19 +643,19 @@
 <div id="page-admin" class="page panel-page">
   <div class="panel-header">
     <div>
-      <button class="back-btn" onclick="showPage('page-landing')" style="margin-bottom:8px">← Volver</button>
-      <h2>⚙️ Panel administrativo</h2>
+      <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
+      <h2>Panel administrativo</h2>
       <p>Standard Repuestos GT — Gestión interna</p>
     </div>
     <div class="panel-header-actions">
-      <button class="btn-ghost" id="btn-demo-data">Cargar demo</button>
-      <button class="btn-ghost" id="btn-export-sol">⬇ Solicitudes</button>
+      <button class="btn-ghost" id="btn-demo-data-admin">Cargar demo</button>
+      <button class="btn-ghost" id="btn-export-sol-admin">⬇ Solicitudes</button>
       <button class="btn-ghost" id="btn-export-vend">⬇ Vendedores</button>
     </div>
   </div>
   <div class="panel-body">
     <div class="stat-grid">
-      <div class="stat-card"><div class="num red" id="admin-total-sol">0</div><div class="lbl">Solicitudes</div></div>
+      <div class="stat-card"><div class="num gold" id="admin-total-sol">0</div><div class="lbl">Solicitudes</div></div>
       <div class="stat-card"><div class="num" id="admin-total-vend">0</div><div class="lbl">Vendedores</div></div>
       <div class="stat-card"><div class="num red" id="admin-pend-vend">0</div><div class="lbl">Pendientes</div></div>
       <div class="stat-card"><div class="num">GT</div><div class="lbl">País</div></div>
@@ -675,19 +670,17 @@
     <div id="tab-vendedores" class="tab-content" style="display:none"><div id="admin-vendedores"><div class="empty-state"><div class="empty-icon">🏪</div><p>Sin vendedores registrados.</p></div></div></div>
     <div id="tab-metricas" class="tab-content" style="display:none"><div class="metrics-grid"><div class="metric-card"><h4>Top marcas</h4><div id="metricas-marcas"><p class="muted">Sin datos</p></div></div><div class="metric-card"><h4>Top categorías</h4><div id="metricas-cat"><p class="muted">Sin datos</p></div></div></div></div>
 
-    <!-- TAB ACCESOS: Gestión de vendedores con membresía -->
+    <!-- TAB ACCESOS -->
     <div id="tab-accesos" class="tab-content" style="display:none">
-
-      <!-- AGREGAR NUEVO VENDEDOR -->
-      <div style="background:var(--bg3);border:1px solid var(--border);border-left:3px solid #7C3AED;border-radius:8px;padding:20px;margin-bottom:20px">
-        <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#C084FC;margin-bottom:16px">➕ Agregar nuevo vendedor</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="acceso-form-box">
+        <div class="acceso-box-title">➕ Agregar nuevo vendedor</div>
+        <div class="acceso-grid">
           <div>
-            <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px">Nombre del negocio</label>
+            <label class="mini-label">Nombre del negocio</label>
             <input type="text" id="new-nombre" placeholder="Ej: Repuestos García">
           </div>
           <div>
-            <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px">Plan</label>
+            <label class="mini-label">Plan</label>
             <select id="new-plan">
               <option value="Gratis">Gratis</option>
               <option value="Básico">Básico — Q99/mes</option>
@@ -696,35 +689,31 @@
             </select>
           </div>
           <div>
-            <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px">Usuario</label>
+            <label class="mini-label">Usuario</label>
             <input type="text" id="new-user" placeholder="Ej: garcia2025">
           </div>
           <div>
-            <label style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:5px">Contraseña</label>
+            <label class="mini-label">Contraseña</label>
             <input type="text" id="new-pass" placeholder="Crea una contraseña">
           </div>
         </div>
-        <button class="btn-submit" style="max-width:200px;padding:12px;font-size:13px" onclick="agregarVendedorAcceso()">➕ Agregar vendedor</button>
+        <button class="btn-submit small" onclick="agregarVendedorAcceso()">➕ Agregar vendedor</button>
         <div id="acceso-msg" style="font-size:13px;margin-top:10px;display:none"></div>
       </div>
 
-      <!-- LISTA DE VENDEDORES CON ACCESO -->
-      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;overflow:hidden">
-        <div style="padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text2)">
-          🔑 Vendedores con acceso activo
-        </div>
+      <div class="acceso-lista-box">
+        <div class="acceso-lista-head">🔑 Vendedores con acceso activo</div>
         <div id="lista-accesos"></div>
       </div>
 
-      <!-- INSTRUCCIONES -->
-      <div style="margin-top:16px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:16px">
-        <div style="font-size:12px;font-weight:700;color:#C084FC;margin-bottom:8px">📋 Instrucciones para dar acceso a un vendedor</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.8">
-          1. Llena el formulario arriba y clic en "Agregar vendedor"<br>
+      <div class="acceso-instrucciones">
+        <div class="acceso-inst-title">Instrucciones para dar acceso a un vendedor</div>
+        <div class="acceso-inst-body">
+          1. Llena el formulario arriba y haz clic en "Agregar vendedor"<br>
           2. Envíale al vendedor por WhatsApp:<br>
-          &nbsp;&nbsp;&nbsp;• Link: <strong style="color:#fff">standardsalesgt.com/#panel</strong><br>
+          &nbsp;&nbsp;&nbsp;• Enlace: <strong>standardsalesgt.com/#panel</strong><br>
           &nbsp;&nbsp;&nbsp;• Su usuario y contraseña<br>
-          3. Para desactivar un vendedor, clic en "Desactivar" en la lista
+          3. Para desactivar un vendedor, haz clic en "Desactivar" en la lista
         </div>
       </div>
     </div>
@@ -733,12 +722,9 @@
 
 <div id="toasts"></div>
 
-<!-- GSAP desde CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="catalogos.js?v=19"></script>
-<script src="app.js?v=19"></script>
-<script src="animations.js?v=19"></script>
+<script src="catalogos.js?v=20"></script>
+<script src="app.js?v=20"></script>
+<script src="animations.js?v=20"></script>
 
 <script>
 if ('serviceWorker' in navigator) {
@@ -763,6 +749,7 @@ function switchTab(id, btn) {
   document.querySelectorAll('.panel-tab').forEach(tab => tab.classList.remove('active'));
   document.getElementById(id).style.display = 'block';
   btn.classList.add('active');
+  if (id === 'tab-accesos' && typeof renderListaAccesos === 'function') renderListaAccesos();
 }
 </script>
 </body>

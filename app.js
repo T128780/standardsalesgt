@@ -1,12 +1,13 @@
 // Standard Repuestos GT — App Logic
-// v16: MVP funcional. Compatible con CAT global de catalogos.js y envío robusto a Google Sheets.
+// v20: Rediseño de lujo. Misma lógica de envío a Google Sheets + WhatsApp.
+//      Se agregan las funciones de paneles (admin, vendedor y accesos) que
+//      la versión anterior referenciaba pero nunca incluyó.
 
 const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
+const ADMIN_PASSWORD = "StandardGT2025!";
 
 function catalogos() {
-  // catalogos.js declara `const CAT`; eso no siempre aparece como window.CAT.
-  // Esta función soporta ambas formas.
   try {
     if (typeof CAT !== "undefined") return CAT;
   } catch (error) {}
@@ -18,6 +19,8 @@ const DB = {
   saveSolicitudes: (items) => localStorage.setItem("srgt_solicitudes", JSON.stringify(items)),
   getVendedores: () => JSON.parse(localStorage.getItem("srgt_vendedores") || "[]"),
   saveVendedores: (items) => localStorage.setItem("srgt_vendedores", JSON.stringify(items)),
+  getAccesos: () => JSON.parse(localStorage.getItem("srgt_accesos") || "[]"),
+  saveAccesos: (items) => localStorage.setItem("srgt_accesos", JSON.stringify(items)),
   addSolicitud: (item) => {
     const items = DB.getSolicitudes();
     items.unshift(item);
@@ -202,8 +205,6 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   appendAliases(params, "condicion", sheetPayload.condicion, ["Condicion", "Condición"]);
   appendAliases(params, "notas", sheetPayload.notas, ["Notas", "mensaje", "Mensaje"]);
 
-  console.log("Payload Google Sheets:", Object.fromEntries(params.entries()));
-
   await fetch(GOOGLE_SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",
@@ -360,6 +361,17 @@ function initFormVendedor() {
     });
   }
 
+  // Selector de marca para filtrar líneas
+  const filtro = document.getElementById("vend-marca-filtro");
+  if (filtro && filtro.options.length <= 1) {
+    Object.keys(catalogos().marcas || {}).sort().forEach((marca) => {
+      const option = document.createElement("option");
+      option.value = marca;
+      option.textContent = marca;
+      filtro.appendChild(option);
+    });
+  }
+
   buildDeptos(form.querySelector('[name="vdepto"]'));
   form.querySelector('[name="vdepto"]')?.addEventListener("change", function () {
     buildMunicipios(this, form.querySelector('[name="vmuni"]'));
@@ -383,9 +395,10 @@ function initFormVendedor() {
       zona: getFormValue(form, "vzona"),
       horario: getFormValue(form, "vhorario"),
       marcas: [...form.querySelectorAll('[name="marcas"]:checked')].map((input) => input.value),
+      lineas: [...vendLineasSeleccionadas],
       categorias: [...form.querySelectorAll('[name="vcat"]:checked')].map((input) => input.value),
       condicionPiezas: getFormValue(form, "vcondicion"),
-      traccion: getFormValue(form, "vtraccion"),
+      plan: getFormValue(form, "vplan"),
       envios: form.querySelector('[name="venvios"]')?.checked || false,
       entregas: form.querySelector('[name="ventregas"]')?.checked || false
     };
@@ -398,12 +411,279 @@ function initFormVendedor() {
     DB.addVendedor(vendedor);
     toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
     form.reset();
+    vendLineasSeleccionadas.clear();
+    renderLineasVendedor();
     showPage("page-vendedor-ok");
   });
 }
 
+/* ══════════════════════════════════════════════════════════════
+   LÍNEAS DEL VENDEDOR (filtro por marca + líneas personalizadas)
+   ══════════════════════════════════════════════════════════════ */
+
+const vendLineasSeleccionadas = new Set();
+
+function syncLineasHidden() {
+  const hidden = document.getElementById("vlineas-selected");
+  if (hidden) hidden.value = [...vendLineasSeleccionadas].join(", ");
+}
+
+function renderLineasVendedor() {
+  const wrap = document.getElementById("vend-lineas");
+  if (!wrap) return;
+
+  const marca = document.getElementById("vend-marca-filtro")?.value || "";
+  const cat = catalogos();
+  const deMarca = marca && cat.marcas?.[marca] ? cat.marcas[marca] : [];
+
+  // Mostramos las líneas de la marca filtrada + todas las ya seleccionadas
+  const visibles = [...new Set([...deMarca, ...vendLineasSeleccionadas])].sort();
+
+  wrap.innerHTML = "";
+  if (visibles.length === 0) {
+    wrap.innerHTML = '<p class="muted" style="padding:6px">Selecciona una marca arriba para ver sus líneas.</p>';
+    return;
+  }
+
+  visibles.forEach((linea) => {
+    const label = document.createElement("label");
+    label.className = "check-pill";
+    const checked = vendLineasSeleccionadas.has(linea) ? "checked" : "";
+    label.innerHTML = `<input type="checkbox" value="${linea}" ${checked}><span>${linea}</span>`;
+    label.querySelector("input").addEventListener("change", function () {
+      if (this.checked) vendLineasSeleccionadas.add(linea);
+      else vendLineasSeleccionadas.delete(linea);
+      syncLineasHidden();
+    });
+    wrap.appendChild(label);
+  });
+  syncLineasHidden();
+}
+
+function filtrarLineasVendedor() {
+  renderLineasVendedor();
+}
+
+function agregarLineaCustom() {
+  const input = document.getElementById("vend-linea-custom-input");
+  const valor = (input?.value || "").trim();
+  if (!valor) {
+    toast("Escribe el nombre de la línea que quieres agregar", "error");
+    return;
+  }
+  vendLineasSeleccionadas.add(valor);
+  if (input) input.value = "";
+  renderLineasVendedor();
+  toast(`Línea "${valor}" agregada`);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COMPROBANTE DE PAGO (vista previa local)
+   ══════════════════════════════════════════════════════════════ */
+
+function mostrarComprobante(input) {
+  const preview = document.getElementById("comprobante-preview");
+  if (!preview) return;
+  const file = input.files && input.files[0];
+  if (!file) { preview.style.display = "none"; return; }
+
+  if (file.size > 5 * 1024 * 1024) {
+    toast("El archivo supera los 5MB. Usa una imagen más liviana.", "error");
+    input.value = "";
+    preview.style.display = "none";
+    return;
+  }
+
+  preview.style.display = "block";
+  if (file.type.startsWith("image/")) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      preview.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
+          <img src="${e.target.result}" alt="Comprobante" style="width:54px;height:54px;object-fit:cover;border-radius:3px">
+          <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
+        </div>`;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
+        <span style="font-size:26px">🧾</span>
+        <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
+      </div>`;
+  }
+}
+
+function handleComprobanteDrop(event) {
+  event.preventDefault();
+  document.getElementById("comprobante-drop")?.classList.remove("over");
+  const fileInput = document.getElementById("comprobante-file");
+  if (fileInput && event.dataTransfer.files.length > 0) {
+    fileInput.files = event.dataTransfer.files;
+    mostrarComprobante(fileInput);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LOGIN ADMIN (con bloqueo tras 3 intentos, según guía)
+   ══════════════════════════════════════════════════════════════ */
+
+let adminIntentosFallidos = 0;
+let adminBloqueadoHasta = 0;
+
+function checkAdminLogin() {
+  const input = document.getElementById("admin-password");
+  const errorEl = document.getElementById("admin-error");
+  if (!input) return;
+
+  const ahora = Date.now();
+  if (ahora < adminBloqueadoHasta) {
+    const segundos = Math.ceil((adminBloqueadoHasta - ahora) / 1000);
+    if (errorEl) {
+      errorEl.textContent = `Demasiados intentos. Espera ${segundos} segundos.`;
+      errorEl.style.display = "block";
+    }
+    return;
+  }
+
+  if (input.value === ADMIN_PASSWORD) {
+    adminIntentosFallidos = 0;
+    input.value = "";
+    if (errorEl) errorEl.style.display = "none";
+    showPage("page-admin");
+    renderPanelAdmin();
+    renderListaAccesos();
+  } else {
+    adminIntentosFallidos += 1;
+    if (adminIntentosFallidos >= 3) {
+      adminBloqueadoHasta = ahora + 30000;
+      adminIntentosFallidos = 0;
+      if (errorEl) {
+        errorEl.textContent = "Demasiados intentos. Espera 30 segundos.";
+        errorEl.style.display = "block";
+      }
+    } else if (errorEl) {
+      errorEl.textContent = "Contraseña incorrecta.";
+      errorEl.style.display = "block";
+    }
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
+   ══════════════════════════════════════════════════════════════ */
+
+function checkVendorLogin() {
+  const userInput = document.getElementById("vendor-user");
+  const passInput = document.getElementById("vendor-pass");
+  const errorEl = document.getElementById("vendor-error");
+  if (!userInput || !passInput) return;
+
+  const user = userInput.value.trim();
+  const pass = passInput.value;
+  const acceso = DB.getAccesos().find((a) => a.user === user && a.pass === pass && a.activo);
+
+  if (acceso) {
+    if (errorEl) errorEl.style.display = "none";
+    userInput.value = "";
+    passInput.value = "";
+    showPage("page-panel-vendedor");
+    renderPanelVendedor();
+    toast(`Bienvenido, ${acceso.nombre}`);
+  } else if (errorEl) {
+    errorEl.style.display = "block";
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GESTIÓN DE ACCESOS (pestaña Accesos del panel admin)
+   ══════════════════════════════════════════════════════════════ */
+
+function mostrarMsgAcceso(texto, esError) {
+  const msg = document.getElementById("acceso-msg");
+  if (!msg) return;
+  msg.textContent = texto;
+  msg.style.display = "block";
+  msg.style.color = esError ? "#E0655A" : "#7FB069";
+  msg.style.fontWeight = "700";
+}
+
+function agregarVendedorAcceso() {
+  const nombre = (document.getElementById("new-nombre")?.value || "").trim();
+  const plan = document.getElementById("new-plan")?.value || "Pro";
+  const user = (document.getElementById("new-user")?.value || "").trim();
+  const pass = (document.getElementById("new-pass")?.value || "").trim();
+
+  if (!nombre || !user || !pass) {
+    mostrarMsgAcceso("Completa: nombre del negocio, usuario y contraseña.", true);
+    return;
+  }
+  if (/\s/.test(user)) {
+    mostrarMsgAcceso("El usuario no debe llevar espacios.", true);
+    return;
+  }
+
+  const accesos = DB.getAccesos();
+  if (accesos.some((a) => a.user === user)) {
+    mostrarMsgAcceso(`El usuario "${user}" ya existe. Elige otro.`, true);
+    return;
+  }
+
+  accesos.unshift({ id: genId(), nombre, plan, user, pass, activo: true, fecha: new Date().toISOString() });
+  DB.saveAccesos(accesos);
+  mostrarMsgAcceso(`Vendedor agregado. Usuario: ${user}`, false);
+
+  ["new-nombre", "new-user", "new-pass"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  renderListaAccesos();
+}
+
+function toggleAcceso(id) {
+  const accesos = DB.getAccesos();
+  const acceso = accesos.find((a) => a.id === id);
+  if (!acceso) return;
+  acceso.activo = !acceso.activo;
+  DB.saveAccesos(accesos);
+  toast(acceso.activo ? `Acceso de "${acceso.nombre}" reactivado` : `Acceso de "${acceso.nombre}" desactivado`);
+  renderListaAccesos();
+}
+
+function renderListaAccesos() {
+  const lista = document.getElementById("lista-accesos");
+  if (!lista) return;
+  const accesos = DB.getAccesos();
+
+  if (accesos.length === 0) {
+    lista.innerHTML = '<div class="empty-state" style="padding:34px 20px"><p>Aún no has creado usuarios de vendedores.</p></div>';
+    return;
+  }
+
+  lista.innerHTML = accesos.map((a) => `
+    <div class="acceso-row">
+      <div class="a-info">
+        <span class="a-nombre">${a.nombre}</span>
+        <span class="a-user">Usuario: ${a.user} · Contraseña: ${a.pass}</span>
+      </div>
+      <span class="a-plan">${a.plan}</span>
+      <span class="a-estado ${a.activo ? "on" : "off"}">${a.activo ? "● Activo" : "● Inactivo"}</span>
+      <button class="btn-ghost" onclick="toggleAcceso('${a.id}')">${a.activo ? "Desactivar" : "Reactivar"}</button>
+    </div>
+  `).join("");
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PANELES
+   ══════════════════════════════════════════════════════════════ */
+
 function renderPanelVendedor() {
   const solicitudes = DB.getSolicitudes();
+  const total = document.getElementById("v-total");
+  const altas = document.getElementById("v-alta");
+  if (total) total.textContent = solicitudes.length;
+  if (altas) altas.textContent = solicitudes.filter((s) => s.urgencia === "Alta").length;
+
   const lista = document.getElementById("panel-solicitudes");
   if (!lista) return;
 
@@ -484,8 +764,15 @@ function renderAdminVendedores() {
 
   container.innerHTML = vendedores.map((v) => `
     <div class="solicitud-card">
-      <b>${v.nombre}</b><br>
-      <span>${v.whatsapp} · ${v.muni || ""}, ${v.depto || ""}</span>
+      <div class="sol-header">
+        <div class="sol-pieza">${v.nombre}</div>
+        ${v.plan ? `<span class="badge">${v.plan}</span>` : ""}
+      </div>
+      <div class="sol-meta">
+        <span>📱 ${v.whatsapp}</span>
+        <span>📍 ${v.muni || ""}, ${v.depto || ""}</span>
+        ${v.tipo ? `<span>🏪 ${v.tipo}</span>` : ""}
+      </div>
     </div>
   `).join("");
 }
@@ -583,7 +870,18 @@ function setupNavigation() {
 
   document.getElementById("hamburger")?.addEventListener("click", () => {
     document.getElementById("mobile-menu")?.classList.toggle("open");
+    document.getElementById("hamburger")?.classList.toggle("open");
   });
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RUTAS OCULTAS: #admin y #panel (según guía de administración)
+   ══════════════════════════════════════════════════════════════ */
+
+function manejarHash() {
+  const hash = (window.location.hash || "").toLowerCase();
+  if (hash === "#admin") showPage("page-admin-login");
+  else if (hash === "#panel") showPage("page-vendor-login");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -591,10 +889,18 @@ document.addEventListener("DOMContentLoaded", () => {
   setupUrgenciaButtons();
   initFormComprador();
   initFormVendedor();
+  renderLineasVendedor();
 
+  // Panel vendedor
   document.getElementById("btn-export-sol")?.addEventListener("click", exportarSolicitudes);
-  document.getElementById("btn-export-vend")?.addEventListener("click", exportarVendedores);
   document.getElementById("btn-demo-data")?.addEventListener("click", cargarDemoData);
 
+  // Panel admin (ids propios para no duplicar)
+  document.getElementById("btn-export-sol-admin")?.addEventListener("click", exportarSolicitudes);
+  document.getElementById("btn-demo-data-admin")?.addEventListener("click", cargarDemoData);
+  document.getElementById("btn-export-vend")?.addEventListener("click", exportarVendedores);
+
   showPage("page-landing");
+  manejarHash();
+  window.addEventListener("hashchange", manejarHash);
 });
