@@ -1370,8 +1370,14 @@ body { background: var(--ink); }
   background: #141519;
   border-color: var(--gold3);
   box-shadow: none;
+  overflow: visible;
 }
-.popular-badge { background: var(--gold2); border-radius: 2px; letter-spacing: .10em; }
+.popular-badge {
+  z-index: 2;
+  background: var(--gold2);
+  border-radius: 2px;
+  letter-spacing: .10em;
+}
 .plan-name { letter-spacing: .16em; }
 .plan-price { font-family: var(--font-body); font-weight: 500; }
 
