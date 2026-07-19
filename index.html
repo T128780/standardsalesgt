@@ -97,20 +97,20 @@
       </div>
       <div class="hero-stats" id="heroStats">
         <div class="stat-item">
-          <span class="stat-num" data-target="500" data-prefix="+">+0</span>
-          <span class="stat-label">Solicitudes</span>
+          <span class="stat-num">Gratis</span>
+          <span class="stat-label">Solicitudes gratuitas</span>
         </div>
         <div class="stat-item">
-          <span class="stat-num" data-target="60" data-prefix="+">+0</span>
-          <span class="stat-label">Marcas</span>
+          <span class="stat-num">Popular</span>
+          <span class="stat-label">Marcas populares</span>
         </div>
         <div class="stat-item">
-          <span class="stat-num" data-target="18" data-prefix="">0</span>
-          <span class="stat-label">Zonas GT</span>
+          <span class="stat-num">Guatemala</span>
+          <span class="stat-label">Cobertura nacional</span>
         </div>
         <div class="stat-item">
-          <span class="stat-num" data-target="0" data-prefix="" data-suffix="">Q0</span>
-          <span class="stat-label">Costo comprador</span>
+          <span class="stat-num">Q0</span>
+          <span class="stat-label">Para compradores</span>
         </div>
       </div>
     </div>
@@ -120,7 +120,7 @@
   <!-- URGENCY BAR -->
   <div class="urgency-bar" id="urgencyBar">
     <div class="urgency-inner">
-      <p>¿Lo necesitas hoy? <span>Llena la solicitud en 2 minutos y recibe ofertas por WhatsApp.</span></p>
+      <p>¿Lo necesitas hoy? <span>Registra tu solicitud en 2 minutos y vendedores compatibles podrán contactarte por WhatsApp.</span></p>
       <button onclick="showPage('page-solicitud')">Solicitar ahora →</button>
     </div>
   </div>
@@ -248,7 +248,7 @@
     <div class="cta-final-inner">
       <span class="section-eyebrow">Es gratis y toma 2 minutos</span>
       <h2>¿Ya perdiste tiempo<br>buscando <em>ese repuesto</em>?</h2>
-      <p>En menos de 2 minutos puedes tener vendedores contactándote por WhatsApp.</p>
+      <p>Registra tu solicitud en menos de 2 minutos y vendedores compatibles podrán contactarte por WhatsApp.</p>
       <button class="btn-gold big" onclick="showPage('page-solicitud')">Solicitar ahora <span class="btn-arrow">→</span></button>
     </div>
   </section>
@@ -257,9 +257,12 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <span class="footer-logo">Standard <em>Sales</em> GT</span>
-        <span class="footer-tag">Repuestos de vehículo · Guatemala</span>
+        <span class="footer-tag">Standard Repuestos GT · Repuestos de vehículo · Guatemala</span>
       </div>
-      <p class="footer-legal">© 2025 Standard Repuestos GT · <a href="#">Términos</a> · <a href="#">Privacidad</a></p>
+      <div>
+        <p class="footer-legal">Standard Repuestos GT es una plataforma operada por Importadora Luisa.</p>
+        <p class="footer-legal">© 2026 Standard Sales GT · Términos · Privacidad · Contacto</p>
+      </div>
     </div>
   </footer>
 </div>
@@ -270,7 +273,7 @@
     <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
     <span class="section-eyebrow">Solicitud gratuita</span>
     <h2>Solicitar <em>repuesto</em></h2>
-    <p>Gratis · 2 minutos · El vendedor te contacta por WhatsApp</p>
+    <p>Gratis · 2 minutos · Registramos tu solicitud para vendedores compatibles</p>
   </div>
   <div class="form-body">
     <form id="form-comprador" novalidate>
@@ -360,7 +363,7 @@
       </div>
 
       <div class="form-section">
-        <div class="form-section-title"><span class="fs-num">4</span> Ubicación del vendedor que buscas</div>
+        <div class="form-section-title"><span class="fs-num">4</span> ¿Dónde necesitas el repuesto?</div>
         <div class="form-row">
           <div class="form-group"><label>Departamento</label><select name="depto"><option value="">Departamento</option></select></div>
           <div class="form-group"><label>Municipio</label><select name="muni"><option value="">Municipio</option></select></div>
@@ -386,8 +389,8 @@
         <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" placeholder="Cualquier detalle extra..."></textarea></div>
       </div>
 
-      <button type="submit" class="btn-submit">Enviar solicitud — Es gratis <span class="btn-arrow">→</span></button>
-      <p class="form-footnote">Tu solicitud queda registrada y los vendedores te responden por WhatsApp.</p>
+      <button type="submit" class="btn-submit">Enviar solicitud gratis <span class="btn-arrow">→</span></button>
+      <p class="form-footnote">Registraremos tu solicitud y los vendedores compatibles podrán contactarte por WhatsApp.</p>
     </form>
   </div>
 </div>
@@ -398,7 +401,7 @@
     <div class="confirm-card">
       <div class="confirm-icon ok">✓</div>
       <h2>¡Solicitud enviada!</h2>
-      <p>Tu solicitud fue registrada. Los vendedores que tengan tu repuesto te contactarán por WhatsApp.</p>
+      <p>Tu solicitud fue registrada. Los vendedores compatibles que puedan atenderla podrán contactarte por WhatsApp.</p>
       <button class="btn-submit" onclick="showPage('page-solicitud')">Nueva solicitud</button>
       <button class="btn-ghost-dark" onclick="showPage('page-landing')">Volver al inicio</button>
     </div>
@@ -513,25 +516,9 @@
       </div>
 
       <div class="form-section" id="seccion-comprobante">
-        <div class="form-section-title"><span class="fs-num">7</span> Comprobante de pago <span class="req">*</span></div>
-        <p class="form-hint">
-          Adjunta una foto o captura de tu transferencia electrónica o depósito bancario.
-        </p>
+        <div class="form-section-title"><span class="fs-num">7</span> Activación</div>
         <div class="bank-box">
-          <strong>Banco Industrial</strong><br>
-          Cuenta monetaria: <strong>123-456789-0</strong><br>
-          A nombre de: <strong>Standard Sales GT</strong><br>
-          NIT: <strong>XXXXXXX-X</strong>
-        </div>
-        <div class="form-group">
-          <label>Foto del comprobante <span class="req">*</span></label>
-          <div id="comprobante-drop" class="dropzone" onclick="document.getElementById('comprobante-file').click()" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="handleComprobanteDrop(event)">
-            <div class="drop-icon">📎</div>
-            <div class="drop-main">Haz clic o arrastra tu foto aquí</div>
-            <div class="drop-sub">JPG, PNG o PDF · Máximo 5MB</div>
-          </div>
-          <input type="file" id="comprobante-file" name="vcomprobante" accept="image/*,.pdf" style="display:none" onchange="mostrarComprobante(this)">
-          <div id="comprobante-preview" style="display:none;margin-top:10px"></div>
+          Los datos de pago y activación serán confirmados directamente por el equipo de Standard Sales GT.
         </div>
       </div>
 
@@ -723,7 +710,7 @@
 <div id="toasts"></div>
 
 <script src="catalogos.js?v=20"></script>
-<script src="app.js?v=20"></script>
+<script src="app.js?v=21"></script>
 <script src="animations.js?v=20"></script>
 
 <script>
@@ -754,3 +741,4 @@ function switchTab(id, btn) {
 </script>
 </body>
 </html>
+
