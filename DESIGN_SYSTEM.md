@@ -2,7 +2,7 @@
 
 ## Esencia
 
-Standard Sales GT es la marca paraguas. Standard Repuestos GT es su vertical operativa de repuestos. La experiencia debe sentirse premium, tecnologica, confiable y cercana a Guatemala, sin adoptar codigos visuales de taller tradicional.
+Standard Sales GT es la marca paraguas. Standard Repuestos GT es su vertical operativa de repuestos. La experiencia debe sentirse premium, tecnologica, confiable y cercana a Guatemala, sin adoptar codigos visuales de taller tradicional. Premium significa precision, espacio, autenticidad y servicio; no acumulacion de efectos.
 
 ## Paleta
 
@@ -15,12 +15,12 @@ Standard Sales GT es la marca paraguas. Standard Repuestos GT es su vertical ope
 - Texto secundario `#A89F8C`: descripciones.
 - Exito `#7FB069` y alerta `#E0655A`: solo estados funcionales.
 
-El oro nunca debe dominar superficies completas. Se utiliza para orientar, confirmar y jerarquizar.
+El oro nunca debe dominar superficies completas ni usar brillos artificiales. Se utiliza para orientar, confirmar y jerarquizar. Los fondos son solidos y los gradientes se reservan para mejorar legibilidad sobre fotografia.
 
 ## Tipografia
 
-- Display: Fraunces, para marca, titulares y cifras editoriales.
-- Interfaz: Manrope, para navegacion, formularios y controles.
+- Display de producto: Manrope, para titulares, navegacion, formularios y controles.
+- Firma editorial: Fraunces, solo en el logotipo o detalles de marca muy puntuales.
 - Titulares: peso 400-550, line-height 1.05-1.2.
 - Cuerpo: peso 500-600, line-height 1.6-1.75.
 - Etiquetas: peso 700-800, mayusculas y tracking moderado.
@@ -56,7 +56,7 @@ Escala base: `4, 8, 12, 16, 24, 32, 48, 64, 96px`.
 - Microinteraccion: 160-260ms.
 - Entrada de seccion: 700ms maximo.
 - Curva estandar: `cubic-bezier(.2,.8,.2,1)`.
-- Hover: elevacion de 1-2px; tarjetas hasta 6px.
+- Hover: elevacion de 1-2px; tarjetas hasta 3px.
 - Respetar `prefers-reduced-motion` y evitar movimiento continuo decorativo.
 
 ## Confianza
@@ -65,4 +65,13 @@ Escala base: `4, 8, 12, 16, 24, 32, 48, 64, 96px`.
 - No publicar metricas, enlaces, cuentas o testimonios sin respaldo real.
 - Mantener siempre visible que Standard Repuestos GT pertenece a Standard Sales GT y es operada por Importadora Luisa.
 - Estados, foco, confirmaciones y errores deben ser claros en teclado, tactil y movil.
+
+## Referencias de direccion
+
+- Polestar: lujo basado en espacio, claridad, materialidad e innovacion.
+- Porsche: fotografia protagonista, tipografia firme y acciones directas.
+- Linear: jerarquia precisa, movimiento sobrio y superficies sin ruido.
+- Design Auto: propuesta simple, confianza y beneficios concretos antes que decoracion.
+
+Las referencias orientan principios, no se copian composiciones, marcas ni recursos visuales.
 
