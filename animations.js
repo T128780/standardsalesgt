@@ -1,8 +1,89 @@
-// STANDARD SALES GT — Animaciones (v20)
-// Sin librerías externas: IntersectionObserver + transiciones CSS.
+// STANDARD SALES GT — Interacciones visuales y sonoras (v24)
+// Lucide para iconografía; Web Audio solo después de una acción del usuario.
 
 (function () {
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function renderIcons() {
+    if (!window.lucide) return;
+    window.lucide.createIcons({
+      attrs: {
+        "aria-hidden": "true",
+        "stroke-width": "1.65"
+      }
+    });
+  }
+
+  function initConfirmationSound() {
+    const button = document.getElementById("sound-toggle");
+    const form = document.getElementById("form-comprador");
+    const confirmation = document.getElementById("page-confirmacion");
+    if (!button || !confirmation) return;
+
+    const storageKey = "srgt_confirmation_sound";
+    let soundEnabled = localStorage.getItem(storageKey) !== "off";
+    let audioContext = null;
+    let confirmationWasActive = confirmation.classList.contains("active");
+
+    function prepareAudio() {
+      if (!soundEnabled) return null;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      if (!audioContext) audioContext = new AudioContextClass();
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      return audioContext;
+    }
+
+    function updateButton() {
+      const label = `Sonido de confirmación: ${soundEnabled ? "activado" : "desactivado"}`;
+      button.setAttribute("aria-label", label);
+      button.setAttribute("aria-pressed", String(soundEnabled));
+      button.title = label;
+      button.innerHTML = `<i data-lucide="${soundEnabled ? "volume-2" : "volume-x"}" aria-hidden="true"></i>`;
+      renderIcons();
+    }
+
+    function playSuccessSound() {
+      const context = prepareAudio();
+      if (!context || context.state !== "running") return;
+
+      const start = context.currentTime + 0.02;
+      [
+        { frequency: 587.33, delay: 0, duration: 0.34, peak: 0.035 },
+        { frequency: 880, delay: 0.11, duration: 0.42, peak: 0.026 }
+      ].forEach(({ frequency, delay, duration, peak }) => {
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        const noteStart = start + delay;
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, noteStart);
+        gain.gain.setValueAtTime(0.0001, noteStart);
+        gain.gain.exponentialRampToValueAtTime(peak, noteStart + 0.035);
+        gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + duration);
+        oscillator.connect(gain).connect(context.destination);
+        oscillator.start(noteStart);
+        oscillator.stop(noteStart + duration + 0.02);
+      });
+    }
+
+    button.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem(storageKey, soundEnabled ? "on" : "off");
+      if (soundEnabled) prepareAudio();
+      updateButton();
+    });
+
+    form?.querySelector('button[type="submit"]')?.addEventListener("pointerdown", prepareAudio, { passive: true });
+
+    new MutationObserver(() => {
+      const isActive = confirmation.classList.contains("active");
+      if (isActive && !confirmationWasActive) playSuccessSound();
+      confirmationWasActive = isActive;
+    }).observe(confirmation, { attributes: true, attributeFilter: ["class"] });
+
+    updateButton();
+  }
 
   // Navbar: fondo sólido al hacer scroll
   const navbar = document.getElementById("navbar");
@@ -79,5 +160,7 @@
     revealObserver.observe(el);
   });
 
+  renderIcons();
+  initConfirmationSound();
   initHero();
 })();
