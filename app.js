@@ -321,7 +321,7 @@ function initFormComprador() {
     try {
       DB.addSolicitud(solicitud);
       await enviarSolicitudAGoogleSheets(sheetPayload);
-      toast("Solicitud enviada correctamente. Te contactaremos por WhatsApp.");
+      toast("Solicitud registrada. Vendedores compatibles podrán contactarte por WhatsApp.");
       resetCompradorForm(form);
       showPage("page-confirmacion");
     } catch (error) {
@@ -904,3 +904,4 @@ document.addEventListener("DOMContentLoaded", () => {
   manejarHash();
   window.addEventListener("hashchange", manejarHash);
 });
+
