@@ -212,6 +212,33 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   });
 }
 
+async function enviarSolicitudVendedor(vendedor) {
+  const params = new URLSearchParams();
+
+  params.append("accion", "registrar_vendedor");
+  params.append("origenLead", "web_standard_repuestos_gt");
+  params.append("estado", "Pendiente");
+  params.append("nombreComercial", vendedor.nombre);
+  params.append("nombreContacto", vendedor.encargado);
+  params.append("whatsapp", vendedor.whatsapp);
+  params.append("departamento", vendedor.depto);
+  params.append("municipio", vendedor.muni);
+  params.append("zona", vendedor.zona);
+  params.append("marcas", vendedor.marcas.join(", "));
+  params.append("lineas", vendedor.lineas.join(", "));
+  params.append("categorias", vendedor.categorias.join(", "));
+  params.append("condicion", vendedor.condicionPiezas);
+  params.append("plan", vendedor.plan);
+  params.append("entregas", vendedor.entregas);
+  params.append("observaciones", vendedor.observaciones);
+
+  await fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: params
+  });
+}
+
 function resetCompradorForm(form) {
   form.reset();
   buildMarcas(form.querySelector('[name="marca"]'));
@@ -377,7 +404,7 @@ function initFormVendedor() {
     buildMunicipios(this, form.querySelector('[name="vmuni"]'));
   });
 
-  form.addEventListener("submit", function (event) {
+  form.addEventListener("submit", async function (event) {
     event.preventDefault();
     const vendedor = {
       id: genId(),
@@ -400,7 +427,9 @@ function initFormVendedor() {
       condicionPiezas: getFormValue(form, "vcondicion"),
       plan: getFormValue(form, "vplan"),
       envios: form.querySelector('[name="venvios"]')?.checked || false,
-      entregas: form.querySelector('[name="ventregas"]')?.checked || false
+      entregas: getFormValue(form, "ventregasDetalle") ||
+        (form.querySelector('[name="ventregas"]')?.checked ? "Sí" : "No"),
+      observaciones: getFormValue(form, "vobservaciones")
     };
 
     if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto) {
@@ -408,12 +437,30 @@ function initFormVendedor() {
       return;
     }
 
-    DB.addVendedor(vendedor);
-    toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
-    form.reset();
-    vendLineasSeleccionadas.clear();
-    renderLineasVendedor();
-    showPage("page-vendedor-ok");
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton?.innerHTML;
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando solicitud...";
+    }
+
+    try {
+      await enviarSolicitudVendedor(vendedor);
+      DB.addVendedor(vendedor);
+      toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
+      form.reset();
+      vendLineasSeleccionadas.clear();
+      renderLineasVendedor();
+      showPage("page-vendedor-ok");
+    } catch (error) {
+      console.error("Error enviando solicitud de vendedor", error);
+      toast("No se pudo enviar la solicitud. Intenta de nuevo.", "error");
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+      }
+    }
   });
 }
 
@@ -904,4 +951,3 @@ document.addEventListener("DOMContentLoaded", () => {
   manejarHash();
   window.addEventListener("hashchange", manejarHash);
 });
-
