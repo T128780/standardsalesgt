@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=26">
+  <link rel="stylesheet" href="styles.css?v=28">
 </head>
 <body>
 
@@ -630,24 +630,16 @@
   <div class="confirm-page">
     <div class="confirm-card login-card">
       <div class="login-logo">
-        <svg width="56" height="56" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="alg-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#E8CE8C"/><stop offset="100%" stop-color="#8C6D2B"/>
-            </linearGradient>
-          </defs>
-          <polygon points="50,4 93,28 93,72 50,96 7,72 7,28" fill="#12151C" stroke="url(#alg-gold)" stroke-width="3"/>
-          <text x="50" y="68" font-size="40" text-anchor="middle">🔒</text>
-        </svg>
+        <span class="login-logo-icon"><i data-lucide="shield-check" aria-hidden="true"></i></span>
       </div>
       <h2>Panel Administrativo</h2>
       <p class="login-sub">Acceso restringido. Ingresa tu contraseña.</p>
       <div class="login-fields">
         <label>Contraseña</label>
-        <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkAdminLogin()">
+        <input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkAdminLogin()">
         <div id="admin-error" class="login-error">Contraseña incorrecta.</div>
       </div>
-      <button class="btn-submit" onclick="checkAdminLogin()">Ingresar →</button>
+      <button class="btn-submit" id="admin-login-button" onclick="checkAdminLogin()">Ingresar</button>
       <button class="btn-ghost-dark" onclick="showPage('page-landing')">← Volver al inicio</button>
     </div>
   </div>
@@ -657,79 +649,35 @@
 <div id="page-admin" class="page panel-page">
   <div class="panel-header">
     <div>
-      <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
+      <button class="back-btn" onclick="cerrarSesionAdmin()">← Volver</button>
       <h2>Panel administrativo</h2>
       <p>Standard Repuestos GT — Gestión interna</p>
     </div>
     <div class="panel-header-actions">
-      <button class="btn-ghost" id="btn-demo-data-admin">Cargar demo</button>
-      <button class="btn-ghost" id="btn-export-sol-admin">⬇ Solicitudes</button>
-      <button class="btn-ghost" id="btn-export-vend">⬇ Vendedores</button>
+      <button class="btn-ghost" id="btn-refresh-admin" type="button">
+        <i data-lucide="refresh-cw" aria-hidden="true"></i><span>Actualizar</span>
+      </button>
+      <button class="btn-ghost" id="btn-logout-admin" type="button">
+        <i data-lucide="log-out" aria-hidden="true"></i><span>Cerrar sesión</span>
+      </button>
     </div>
   </div>
   <div class="panel-body">
     <div class="stat-grid">
-      <div class="stat-card"><div class="num gold" id="admin-total-sol">0</div><div class="lbl">Solicitudes</div></div>
-      <div class="stat-card"><div class="num" id="admin-total-vend">0</div><div class="lbl">Vendedores</div></div>
+      <div class="stat-card"><div class="num gold" id="admin-total-sol">0</div><div class="lbl">Solicitudes pendientes</div></div>
+      <div class="stat-card"><div class="num">Sheets</div><div class="lbl">Fuente de datos</div></div>
       <div class="stat-card"><div class="num red" id="admin-pend-vend">0</div><div class="lbl">Pendientes</div></div>
       <div class="stat-card"><div class="num">GT</div><div class="lbl">País</div></div>
     </div>
-    <div class="panel-tabs">
-      <button class="panel-tab active" onclick="switchTab('tab-solicitudes',this)">📋 Solicitudes</button>
-      <button class="panel-tab" onclick="switchTab('tab-vendedores',this)">🏪 Vendedores</button>
-      <button class="panel-tab" onclick="switchTab('tab-accesos',this)">🔑 Accesos</button>
-      <button class="panel-tab" onclick="switchTab('tab-metricas',this)">📊 Métricas</button>
+    <div class="panel-section-head">
+      <div>
+        <p class="admin-request-kicker">Revisión manual</p>
+        <h3>Solicitudes de vendedores</h3>
+        <p>Aprueba únicamente después de validar la información del negocio.</p>
+      </div>
     </div>
-    <div id="tab-solicitudes" class="tab-content"><div id="admin-solicitudes"><div class="empty-state"><div class="empty-icon">📋</div><p>Carga datos de demo para ver la vista.</p></div></div></div>
-    <div id="tab-vendedores" class="tab-content" style="display:none"><div id="admin-vendedores"><div class="empty-state"><div class="empty-icon">🏪</div><p>Sin vendedores registrados.</p></div></div></div>
-    <div id="tab-metricas" class="tab-content" style="display:none"><div class="metrics-grid"><div class="metric-card"><h4>Top marcas</h4><div id="metricas-marcas"><p class="muted">Sin datos</p></div></div><div class="metric-card"><h4>Top categorías</h4><div id="metricas-cat"><p class="muted">Sin datos</p></div></div></div></div>
-
-    <!-- TAB ACCESOS -->
-    <div id="tab-accesos" class="tab-content" style="display:none">
-      <div class="acceso-form-box">
-        <div class="acceso-box-title">➕ Agregar nuevo vendedor</div>
-        <div class="acceso-grid">
-          <div>
-            <label class="mini-label">Nombre del negocio</label>
-            <input type="text" id="new-nombre" placeholder="Ej: Repuestos García">
-          </div>
-          <div>
-            <label class="mini-label">Plan</label>
-            <select id="new-plan">
-              <option value="Gratis">Gratis</option>
-              <option value="Básico">Básico — Q99/mes</option>
-              <option value="Pro" selected>Pro — Q199/mes</option>
-              <option value="Premium">Premium — Q399/mes</option>
-            </select>
-          </div>
-          <div>
-            <label class="mini-label">Usuario</label>
-            <input type="text" id="new-user" placeholder="Ej: garcia2025">
-          </div>
-          <div>
-            <label class="mini-label">Contraseña</label>
-            <input type="text" id="new-pass" placeholder="Crea una contraseña">
-          </div>
-        </div>
-        <button class="btn-submit small" onclick="agregarVendedorAcceso()">➕ Agregar vendedor</button>
-        <div id="acceso-msg" style="font-size:13px;margin-top:10px;display:none"></div>
-      </div>
-
-      <div class="acceso-lista-box">
-        <div class="acceso-lista-head">🔑 Vendedores con acceso activo</div>
-        <div id="lista-accesos"></div>
-      </div>
-
-      <div class="acceso-instrucciones">
-        <div class="acceso-inst-title">Instrucciones para dar acceso a un vendedor</div>
-        <div class="acceso-inst-body">
-          1. Llena el formulario arriba y haz clic en "Agregar vendedor"<br>
-          2. Envíale al vendedor por WhatsApp:<br>
-          &nbsp;&nbsp;&nbsp;• Enlace: <strong>standardsalesgt.com/#panel</strong><br>
-          &nbsp;&nbsp;&nbsp;• Su usuario y contraseña<br>
-          3. Para desactivar un vendedor, haz clic en "Desactivar" en la lista
-        </div>
-      </div>
+    <div id="admin-solicitudes">
+      <div class="admin-loading"><span class="spinner"></span>Cargando solicitudes...</div>
     </div>
   </div>
 </div>
@@ -737,7 +685,7 @@
 <div id="toasts"></div>
 
 <script src="catalogos.js?v=20"></script>
-<script src="app.js?v=22"></script>
+<script src="app.js?v=23"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
