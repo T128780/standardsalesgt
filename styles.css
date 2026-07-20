@@ -924,6 +924,32 @@ input:focus, select:focus, textarea:focus {
   text-transform: uppercase; letter-spacing: .14em;
   margin: 14px 0 7px;
 }
+.password-input-wrap { position: relative; }
+.password-input-wrap input { padding-right: 48px; }
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease;
+}
+.password-toggle:hover,
+.password-toggle:focus-visible {
+  background: rgba(217, 193, 139, .08);
+  color: var(--gold2);
+  outline: none;
+}
+.password-toggle .lucide { width: 18px; height: 18px; }
 .login-error { display: none; font-size: 12.5px; color: var(--red); margin-top: 10px; font-weight: 600; }
 .login-foot {
   margin-top: 22px; padding-top: 18px;
