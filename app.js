@@ -662,6 +662,21 @@ async function checkAdminLogin() {
   }
 }
 
+function toggleAdminPasswordVisibility() {
+  const input = document.getElementById("admin-password");
+  const button = document.getElementById("admin-password-toggle");
+  if (!input || !button) return;
+
+  const willShow = input.type === "password";
+  input.type = willShow ? "text" : "password";
+  button.setAttribute("aria-label", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
+  button.setAttribute("aria-pressed", String(willShow));
+  button.setAttribute("title", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
+  button.innerHTML = `<i data-lucide="${willShow ? "eye-off" : "eye"}" aria-hidden="true"></i>`;
+  window.lucide?.createIcons();
+  input.focus();
+}
+
 function checkVendorLogin() {
   const userInput = document.getElementById("vendor-user");
   const passInput = document.getElementById("vendor-pass");
