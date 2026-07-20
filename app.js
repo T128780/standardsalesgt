@@ -5,7 +5,6 @@
 
 const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
-const ADMIN_PASSWORD = "StandardGT2025!";
 
 function catalogos() {
   try {
@@ -577,10 +576,34 @@ function handleComprobanteDrop(event) {
 
 let adminIntentosFallidos = 0;
 let adminBloqueadoHasta = 0;
+let adminSessionPassword = "";
+let adminPendingRequests = [];
 
-function checkAdminLogin() {
+/* ══════════════════════════════════════════════════════════════
+   LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
+   ══════════════════════════════════════════════════════════════ */
+
+async function adminRequest(action, data = {}) {
+  const params = new URLSearchParams();
+  params.append("accion", action);
+  params.append("adminPassword", adminSessionPassword);
+  Object.entries(data).forEach(([key, value]) => params.append(key, String(value)));
+
+  const response = await fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    body: params
+  });
+
+  if (!response.ok) throw new Error("No se pudo conectar con el panel administrativo.");
+  const result = await response.json();
+  if (!result.ok) throw new Error(result.error || "La operación no pudo completarse.");
+  return result;
+}
+
+async function checkAdminLogin() {
   const input = document.getElementById("admin-password");
   const errorEl = document.getElementById("admin-error");
+  const button = document.getElementById("admin-login-button");
   if (!input) return;
 
   const ahora = Date.now();
@@ -593,32 +616,51 @@ function checkAdminLogin() {
     return;
   }
 
-  if (input.value === ADMIN_PASSWORD) {
+  const password = input.value;
+  if (!password) {
+    if (errorEl) {
+      errorEl.textContent = "Ingresa la contraseña administrativa.";
+      errorEl.style.display = "block";
+    }
+    return;
+  }
+
+  const originalText = button?.textContent || "Ingresar";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Verificando...";
+  }
+
+  adminSessionPassword = password;
+
+  try {
+    const result = await adminRequest("admin_listar_solicitudes_vendedores");
     adminIntentosFallidos = 0;
+    adminPendingRequests = Array.isArray(result.solicitudes) ? result.solicitudes : [];
     input.value = "";
     if (errorEl) errorEl.style.display = "none";
     showPage("page-admin");
     renderPanelAdmin();
-    renderListaAccesos();
-  } else {
+  } catch (error) {
+    adminSessionPassword = "";
     adminIntentosFallidos += 1;
+
     if (adminIntentosFallidos >= 3) {
       adminBloqueadoHasta = ahora + 30000;
       adminIntentosFallidos = 0;
-      if (errorEl) {
-        errorEl.textContent = "Demasiados intentos. Espera 30 segundos.";
-        errorEl.style.display = "block";
-      }
+      if (errorEl) errorEl.textContent = "Demasiados intentos. Espera 30 segundos.";
     } else if (errorEl) {
-      errorEl.textContent = "Contraseña incorrecta.";
-      errorEl.style.display = "block";
+      errorEl.textContent = error.message || "Contraseña incorrecta.";
+    }
+
+    if (errorEl) errorEl.style.display = "block";
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
     }
   }
 }
-
-/* ══════════════════════════════════════════════════════════════
-   LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
-   ══════════════════════════════════════════════════════════════ */
 
 function checkVendorLogin() {
   const userInput = document.getElementById("vendor-user");
@@ -754,10 +796,144 @@ function renderPanelVendedor() {
   `).join("");
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatAdminDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? escapeHtml(value || "Sin fecha")
+    : date.toLocaleString("es-GT", { dateStyle: "medium", timeStyle: "short" });
+}
+
 function renderPanelAdmin() {
-  renderAdminSolicitudes();
-  renderAdminVendedores();
-  renderAdminMetricas();
+  if (!adminSessionPassword) {
+    showPage("page-admin-login");
+    return;
+  }
+
+  const total = adminPendingRequests.length;
+  const totalEl = document.getElementById("admin-total-sol");
+  const pendingEl = document.getElementById("admin-pend-vend");
+  if (totalEl) totalEl.textContent = total;
+  if (pendingEl) pendingEl.textContent = total;
+  renderAdminSolicitudesVendedores();
+}
+
+function renderAdminSolicitudesVendedores() {
+  const container = document.getElementById("admin-solicitudes");
+  if (!container) return;
+
+  if (adminPendingRequests.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state admin-empty-state">
+        <i data-lucide="inbox"></i>
+        <p>No hay solicitudes pendientes.</p>
+      </div>`;
+    window.lucide?.createIcons();
+    return;
+  }
+
+  container.innerHTML = `<div class="admin-request-list">${adminPendingRequests.map((request) => {
+    const rowNumber = Number(request.rowNumber);
+    return `
+      <article class="admin-request-card">
+        <header class="admin-request-head">
+          <div>
+            <p class="admin-request-kicker">Solicitud pendiente</p>
+            <h4>${escapeHtml(request.nombreComercial || "Sin nombre comercial")}</h4>
+          </div>
+          <div class="admin-request-summary">
+            <span class="badge">${escapeHtml(request.plan || "Básico")}</span>
+            <time>${formatAdminDate(request.fecha)}</time>
+          </div>
+        </header>
+        <dl class="admin-request-grid">
+          <div><dt>Contacto</dt><dd>${escapeHtml(request.nombreContacto || "—")}</dd></div>
+          <div><dt>WhatsApp</dt><dd>${escapeHtml(request.whatsapp || "—")}</dd></div>
+          <div><dt>Departamento</dt><dd>${escapeHtml(request.departamento || "—")}</dd></div>
+          <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" · ") || "—")}</dd></div>
+          <div><dt>Marcas</dt><dd>${escapeHtml(request.marcas || "Todas")}</dd></div>
+          <div><dt>Categorías</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
+          <div><dt>Condición</dt><dd>${escapeHtml(request.condicion || "Todas")}</dd></div>
+          <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
+        </dl>
+        ${request.observaciones ? `<p class="admin-request-notes"><strong>Observaciones:</strong> ${escapeHtml(request.observaciones)}</p>` : ""}
+        <footer class="admin-request-actions">
+          <button class="btn-admin-approve" type="button" onclick="aprobarSolicitudAdmin(${rowNumber})">
+            <i data-lucide="check"></i><span>Aprobar vendedor</span>
+          </button>
+          <button class="btn-admin-reject" type="button" onclick="rechazarSolicitudAdmin(${rowNumber})">
+            <i data-lucide="x"></i><span>Rechazar</span>
+          </button>
+        </footer>
+      </article>`;
+  }).join("")}</div>`;
+
+  window.lucide?.createIcons();
+}
+
+async function cargarSolicitudesAdmin() {
+  if (!adminSessionPassword) {
+    showPage("page-admin-login");
+    return;
+  }
+
+  const container = document.getElementById("admin-solicitudes");
+  const button = document.getElementById("btn-refresh-admin");
+  if (container) container.innerHTML = '<div class="admin-loading"><span class="spinner"></span>Actualizando solicitudes...</div>';
+  if (button) button.disabled = true;
+
+  try {
+    const result = await adminRequest("admin_listar_solicitudes_vendedores");
+    adminPendingRequests = Array.isArray(result.solicitudes) ? result.solicitudes : [];
+    renderPanelAdmin();
+  } catch (error) {
+    if (container) container.innerHTML = `<div class="empty-state"><p>${escapeHtml(error.message)}</p></div>`;
+    toast(error.message || "No se pudieron actualizar las solicitudes.", "error");
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+async function aprobarSolicitudAdmin(rowNumber) {
+  if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
+  if (!window.confirm("¿Aprobar este vendedor y activarlo para recibir leads?")) return;
+
+  try {
+    await adminRequest("admin_aprobar_vendedor", { rowNumber });
+    toast("Vendedor aprobado y activado.");
+    await cargarSolicitudesAdmin();
+  } catch (error) {
+    toast(error.message || "No se pudo aprobar al vendedor.", "error");
+  }
+}
+
+async function rechazarSolicitudAdmin(rowNumber) {
+  if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
+  if (!window.confirm("¿Marcar esta solicitud como rechazada? La fila se conservará en Sheets.")) return;
+
+  try {
+    await adminRequest("admin_rechazar_vendedor", { rowNumber });
+    toast("Solicitud marcada como rechazada.");
+    await cargarSolicitudesAdmin();
+  } catch (error) {
+    toast(error.message || "No se pudo rechazar la solicitud.", "error");
+  }
+}
+
+function cerrarSesionAdmin() {
+  adminSessionPassword = "";
+  adminPendingRequests = [];
+  const input = document.getElementById("admin-password");
+  if (input) input.value = "";
+  showPage("page-admin-login");
 }
 
 function renderAdminSolicitudes() {
@@ -942,10 +1118,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-export-sol")?.addEventListener("click", exportarSolicitudes);
   document.getElementById("btn-demo-data")?.addEventListener("click", cargarDemoData);
 
-  // Panel admin (ids propios para no duplicar)
-  document.getElementById("btn-export-sol-admin")?.addEventListener("click", exportarSolicitudes);
-  document.getElementById("btn-demo-data-admin")?.addEventListener("click", cargarDemoData);
-  document.getElementById("btn-export-vend")?.addEventListener("click", exportarVendedores);
+  // Panel admin conectado a Google Sheets
+  document.getElementById("btn-refresh-admin")?.addEventListener("click", cargarSolicitudesAdmin);
+  document.getElementById("btn-logout-admin")?.addEventListener("click", cerrarSesionAdmin);
 
   showPage("page-landing");
   manejarHash();
