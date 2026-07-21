@@ -266,8 +266,6 @@ function initFormComprador() {
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
-    var __cbC = document.getElementById('consent-comprador');
-    if (__cbC && !__cbC.checked) { alert('Debes aceptar los Términos y el Aviso de Privacidad para enviar tu solicitud.'); __cbC.focus(); return; }
     event.stopPropagation();
 
     const notas = [getFormValue(form, "detalles"), getFormValue(form, "comentarios")]
@@ -388,8 +386,6 @@ function initFormVendedor() {
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
-    var __cbV = document.getElementById('consent-vendedor');
-    if (__cbV && !__cbV.checked) { alert('Debes aceptar los Términos y el Aviso de Privacidad para enviar tu solicitud.'); __cbV.focus(); return; }
     const vendedor = {
       id: genId(),
       fecha: new Date().toISOString(),
@@ -531,196 +527,7 @@ function mostrarComprobante(input) {
     reader.onload = (e) => {
       preview.innerHTML = `
         <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
-          <img src="${e.target.result}" alt="Comprobante" style="width:54px;height:54px;object-fit:cover;border-radius:3px">
-          <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
-        </div>`;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    preview.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
-        <span style="font-size:26px">🧾</span>
-        <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
-      </div>`;
-  }
-}
-
-function handleComprobanteDrop(event) {
-  event.preventDefault();
-  document.getElementById("comprobante-drop")?.classList.remove("over");
-  const fileInput = document.getElementById("comprobante-file");
-  if (fileInput && event.dataTransfer.files.length > 0) {
-    fileInput.files = event.dataTransfer.files;
-    mostrarComprobante(fileInput);
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   LOGIN ADMIN (con bloqueo tras 3 intentos, según guía)
-   ══════════════════════════════════════════════════════════════ */
-
-let adminIntentosFallidos = 0;
-let adminBloqueadoHasta = 0;
-let adminSessionPassword = "";
-let adminPendingRequests = [];
-
-/* ══════════════════════════════════════════════════════════════
-   LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
-   ══════════════════════════════════════════════════════════════ */
-
-async function adminRequest(action, data = {}) {
-  const params = new URLSearchParams();
-  params.append("accion", action);
-  params.append("adminPassword", adminSessionPassword);
-  Object.entries(data).forEach(([key, value]) => params.append(key, String(value)));
-
-  const response = await fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    body: params
-  });
-
-  if (!response.ok) throw new Error("No se pudo conectar con el panel administrativo.");
-  const result = await response.json();
-  if (!result.ok) throw new Error(result.error || "La operación no pudo completarse.");
-  return result;
-}
-
-async function checkAdminLogin() {
-  const input = document.getElementById("admin-password");
-  const errorEl = document.getElementById("admin-error");
-  const button = document.getElementById("admin-login-button");
-  if (!input) return;
-
-  const ahora = Date.now();
-  if (ahora < adminBloqueadoHasta) {
-    const segundos = Math.ceil((adminBloqueadoHasta - ahora) / 1000);
-    if (errorEl) {
-      errorEl.textContent = `Demasiados intentos. Espera ${segundos} segundos.`;
-      errorEl.style.display = "block";
-    }
-    return;
-  }
-
-  const password = input.value;
-  if (!password) {
-    if (errorEl) {
-      errorEl.textContent = "Ingresa la contraseña administrativa.";
-      errorEl.style.display = "block";
-    }
-    return;
-  }
-
-  const originalText = button?.textContent || "Ingresar";
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Verificando...";
-  }
-
-  adminSessionPassword = password;
-
-  try {
-    const result = await adminRequest("admin_listar_solicitudes_vendedores");
-    adminIntentosFallidos = 0;
-    adminPendingRequests = Array.isArray(result.solicitudes) ? result.solicitudes : [];
-    input.value = "";
-    if (errorEl) errorEl.style.display = "none";
-    showPage("page-admin");
-    renderPanelAdmin();
-  } catch (error) {
-    adminSessionPassword = "";
-    adminIntentosFallidos += 1;
-
-    if (adminIntentosFallidos >= 3) {
-      adminBloqueadoHasta = ahora + 30000;
-      adminIntentosFallidos = 0;
-      if (errorEl) errorEl.textContent = "Demasiados intentos. Espera 30 segundos.";
-    } else if (errorEl) {
-      errorEl.textContent = error.message || "Contraseña incorrecta.";
-    }
-
-    if (errorEl) errorEl.style.display = "block";
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent = originalText;
-    }
-  }
-}
-
-function toggleAdminPasswordVisibility() {
-  const input = document.getElementById("admin-password");
-  const button = document.getElementById("admin-password-toggle");
-  if (!input || !button) return;
-
-  const willShow = input.type === "password";
-  input.type = willShow ? "text" : "password";
-  button.setAttribute("aria-label", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
-  button.setAttribute("aria-pressed", String(willShow));
-  button.setAttribute("title", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
-  button.innerHTML = `<i data-lucide="${willShow ? "eye-off" : "eye"}" aria-hidden="true"></i>`;
-  window.lucide?.createIcons();
-  input.focus();
-}
-
-function checkVendorLogin() {
-  const userInput = document.getElementById("vendor-user");
-  const passInput = document.getElementById("vendor-pass");
-  const errorEl = document.getElementById("vendor-error");
-  if (!userInput || !passInput) return;
-
-  const user = userInput.value.trim();
-  const pass = passInput.value;
-  const acceso = DB.getAccesos().find((a) => a.user === user && a.pass === pass && a.activo);
-
-  if (acceso) {
-    if (errorEl) errorEl.style.display = "none";
-    userInput.value = "";
-    passInput.value = "";
-    showPage("page-panel-vendedor");
-    renderPanelVendedor();
-    toast(`Bienvenido, ${acceso.nombre}`);
-  } else if (errorEl) {
-    errorEl.style.display = "block";
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   GESTIÓN DE ACCESOS (pestaña Accesos del panel admin)
-   ══════════════════════════════════════════════════════════════ */
-
-function mostrarMsgAcceso(texto, esError) {
-  const msg = document.getElementById("acceso-msg");
-  if (!msg) return;
-  msg.textContent = texto;
-  msg.style.display = "block";
-  msg.style.color = esError ? "#E0655A" : "#7FB069";
-  msg.style.fontWeight = "700";
-}
-
-function agregarVendedorAcceso() {
-  const nombre = (document.getElementById("new-nombre")?.value || "").trim();
-  const plan = document.getElementById("new-plan")?.value || "Pro";
-  const user = (document.getElementById("new-user")?.value || "").trim();
-  const pass = (document.getElementById("new-pass")?.value || "").trim();
-
-  if (!nombre || !user || !pass) {
-    mostrarMsgAcceso("Completa: nombre del negocio, usuario y contraseña.", true);
-    return;
-  }
-  if (/\s/.test(user)) {
-    mostrarMsgAcceso("El usuario no debe llevar espacios.", true);
-    return;
-  }
-
-  const accesos = DB.getAccesos();
-  if (accesos.some((a) => a.user === user)) {
-    mostrarMsgAcceso(`El usuario "${user}" ya existe. Elige otro.`, true);
-    return;
-  }
-
-  accesos.unshift({ id: genId(), nombre, plan, user, pass, activo: true, fecha: new Date().toISOString() });
-  DB.saveAccesos(accesos);
-  mostrarMsgAcceso(`Vendedor agregado. Usuario: ${user}`, false);
+          <img src="${e.target.resul…1904 tokens truncated…rio: ${user}`, false);
 
   ["new-nombre", "new-user", "new-pass"].forEach((id) => {
     const el = document.getElementById(id);
@@ -818,12 +625,89 @@ function renderPanelAdmin() {
     return;
   }
 
-  const total = adminPendingRequests.length;
-  const totalEl = document.getElementById("admin-total-sol");
-  const pendingEl = document.getElementById("admin-pend-vend");
-  if (totalEl) totalEl.textContent = total;
-  if (pendingEl) pendingEl.textContent = total;
+  const data = adminDashboardData || {};
+  const vendors = Array.isArray(data.vendedores) ? data.vendedores : [];
+  const memberships = data.resumenMembresias || {};
+  const buyers = data.metricasCompradores || {};
+  const sends = data.metricasEnvios || {};
+  setAdminText("admin-total-sol", adminPendingRequests.length);
+  setAdminText("admin-total-vendedores", vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length);
+  setAdminText("admin-membresias-vencer", memberships.porVencer || 0);
+  setAdminText("admin-solicitudes-7d", buyers.solicitudesUltimos7Dias || 0);
+  setAdminText("admin-envios-ok", sends.enviadosGupshup || 0);
+  setAdminText("admin-envios-error", sends.errores || 0);
+  setAdminText("admin-dashboard-status", `Actualizado ${new Date().toLocaleTimeString("es-GT", { hour: "2-digit", minute: "2-digit" })}`);
   renderAdminSolicitudesVendedores();
+  renderAdminVendedoresDashboard(vendors);
+  renderAdminMembresias(vendors, memberships);
+  renderAdminTop("admin-top-marcas", buyers.topMarcas);
+  renderAdminTop("admin-top-partes", buyers.topPartes);
+  renderAdminTop("admin-top-anios", buyers.topAnios);
+  renderAdminEnvios(sends);
+  window.lucide?.createIcons();
+}
+
+function setAdminText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = String(value ?? 0);
+}
+
+function normalizeAdminValue(value) {
+  return String(value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function adminEmpty(message) {
+  return `<div class="admin-inline-empty">${escapeHtml(message)}</div>`;
+}
+
+function renderAdminVendedoresDashboard(vendors) {
+  const container = document.getElementById("admin-vendedores-dashboard");
+  if (!container) return;
+  const active = vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length;
+  setAdminText("admin-vendedores-resumen", `${active} activos · ${vendors.length - active} inactivos/retirados`);
+  if (!vendors.length) {
+    container.innerHTML = adminEmpty("Sin vendedores registrados");
+    return;
+  }
+  container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Departamento</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.departamento || "—")}</td></tr>`).join("")}</tbody>
+  </table></div>`;
+}
+
+function renderAdminMembresias(vendors, summary) {
+  const container = document.getElementById("admin-membresias-dashboard");
+  if (!container) return;
+  if (!vendors.length) {
+    container.innerHTML = adminEmpty("Sin membresías registradas");
+    return;
+  }
+  const formatDate = value => value ? new Date(value).toLocaleDateString("es-GT") : "—";
+  container.innerHTML = `<div class="admin-membership-summary">
+      <span>Vigentes <strong>${summary.vigentes || 0}</strong></span><span>Por vencer <strong>${summary.porVencer || 0}</strong></span><span>Vencidas <strong>${summary.vencidas || 0}</strong></span><span>Sin configurar <strong>${summary.sinConfigurar || 0}</strong></span>
+    </div><div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
+      <thead><tr><th>Vendedor</th><th>Plan</th><th>Inicio</th><th>Vencimiento</th><th>Estado</th><th>Días</th></tr></thead>
+      <tbody>${vendors.map(v => `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${normalizeAdminValue(v.estadoMembresia).replaceAll(" ", "-")}">${escapeHtml(v.estadoMembresia || "Sin configurar")}</span></td><td>${v.diasRestantes ?? "—"}</td></tr>`).join("")}</tbody>
+    </table></div>`;
+}
+
+function renderAdminTop(id, entries) {
+  const container = document.getElementById(id);
+  if (!container) return;
+  if (!Array.isArray(entries) || !entries.length) {
+    container.innerHTML = adminEmpty("Aún no hay suficientes solicitudes para métricas");
+    return;
+  }
+  const max = Math.max(...entries.map(item => Number(item.count) || 0), 1);
+  container.innerHTML = `<div class="admin-ranking">${entries.map(item => `<div class="admin-rank-row"><div><span>${escapeHtml(item.name)}</span><strong>${Number(item.count) || 0}</strong></div><div class="admin-rank-track"><span style="width:${Math.round((Number(item.count) || 0) / max * 100)}%"></span></div></div>`).join("")}</div>`;
+}
+
+function renderAdminEnvios(sends) {
+  const container = document.getElementById("admin-envios-resumen");
+  if (!container) return;
+  const errors = Array.isArray(sends.ultimosErrores) ? sends.ultimosErrores : [];
+  container.innerHTML = `<dl class="admin-send-grid"><div><dt>Pendientes manuales</dt><dd>${Number(sends.pendientesManuales) || 0}</dd></div><div><dt>Total envíos</dt><dd>${Number(sends.total) || 0}</dd></div><div><dt>Mayor asignación</dt><dd>${escapeHtml(sends.vendedorConMasLeads?.name || "—")}</dd></div></dl>
+    ${errors.length ? `<div class="admin-error-list">${errors.map(error => `<p><strong>${escapeHtml(error.vendedor || "Sin vendedor")}</strong><span>${escapeHtml(error.observaciones || error.estado || "Error sin detalle")}</span></p>`).join("")}</div>` : adminEmpty("Sin errores recientes")}`;
 }
 
 function renderAdminSolicitudesVendedores() {
@@ -879,28 +763,30 @@ function renderAdminSolicitudesVendedores() {
   window.lucide?.createIcons();
 }
 
-async function cargarSolicitudesAdmin() {
+async function cargarDashboardAdmin() {
   if (!adminSessionPassword) {
     showPage("page-admin-login");
     return;
   }
 
-  const container = document.getElementById("admin-solicitudes");
   const button = document.getElementById("btn-refresh-admin");
-  if (container) container.innerHTML = '<div class="admin-loading"><span class="spinner"></span>Actualizando solicitudes...</div>';
+  setAdminText("admin-dashboard-status", "Actualizando...");
   if (button) button.disabled = true;
 
   try {
-    const result = await adminRequest("admin_listar_solicitudes_vendedores");
-    adminPendingRequests = Array.isArray(result.solicitudes) ? result.solicitudes : [];
+    const result = await adminRequest("admin_dashboard_resumen");
+    adminDashboardData = result;
+    adminPendingRequests = Array.isArray(result.pendientesVendedores) ? result.pendientesVendedores : [];
     renderPanelAdmin();
   } catch (error) {
-    if (container) container.innerHTML = `<div class="empty-state"><p>${escapeHtml(error.message)}</p></div>`;
+    setAdminText("admin-dashboard-status", "No se pudo actualizar");
     toast(error.message || "No se pudieron actualizar las solicitudes.", "error");
   } finally {
     if (button) button.disabled = false;
   }
 }
+
+const cargarSolicitudesAdmin = cargarDashboardAdmin;
 
 async function aprobarSolicitudAdmin(rowNumber) {
   if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
@@ -931,6 +817,7 @@ async function rechazarSolicitudAdmin(rowNumber) {
 function cerrarSesionAdmin() {
   adminSessionPassword = "";
   adminPendingRequests = [];
+  adminDashboardData = null;
   const input = document.getElementById("admin-password");
   if (input) input.value = "";
   showPage("page-admin-login");
@@ -1101,3 +988,4 @@ document.addEventListener("DOMContentLoaded", () => {
   manejarHash();
   window.addEventListener("hashchange", manejarHash);
 });
+
