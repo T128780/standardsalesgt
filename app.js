@@ -266,6 +266,8 @@ function initFormComprador() {
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
+    var __cbC = document.getElementById('consent-comprador');
+    if (__cbC && !__cbC.checked) { alert('Debes aceptar los Términos y el Aviso de Privacidad para enviar tu solicitud.'); __cbC.focus(); return; }
     event.stopPropagation();
 
     const notas = [getFormValue(form, "detalles"), getFormValue(form, "comentarios")]
@@ -386,6 +388,8 @@ function initFormVendedor() {
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
+    var __cbV = document.getElementById('consent-vendedor');
+    if (__cbV && !__cbV.checked) { alert('Debes aceptar los Términos y el Aviso de Privacidad para enviar tu solicitud.'); __cbV.focus(); return; }
     const vendedor = {
       id: genId(),
       fecha: new Date().toISOString(),
