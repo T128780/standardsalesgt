@@ -527,7 +527,198 @@ function mostrarComprobante(input) {
     reader.onload = (e) => {
       preview.innerHTML = `
         <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
-          <img src="${e.target.resul…1904 tokens truncated…rio: ${user}`, false);
+          <img src="${e.target.result}" alt="Comprobante" style="width:54px;height:54px;object-fit:cover;border-radius:3px">
+          <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
+        </div>`;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    preview.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
+        <span style="font-size:26px">🧾</span>
+        <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
+      </div>`;
+  }
+}
+
+function handleComprobanteDrop(event) {
+  event.preventDefault();
+  document.getElementById("comprobante-drop")?.classList.remove("over");
+  const fileInput = document.getElementById("comprobante-file");
+  if (fileInput && event.dataTransfer.files.length > 0) {
+    fileInput.files = event.dataTransfer.files;
+    mostrarComprobante(fileInput);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LOGIN ADMIN (con bloqueo tras 3 intentos, según guía)
+   ══════════════════════════════════════════════════════════════ */
+
+let adminIntentosFallidos = 0;
+let adminBloqueadoHasta = 0;
+let adminSessionPassword = "";
+let adminPendingRequests = [];
+let adminDashboardData = null;
+
+/* ══════════════════════════════════════════════════════════════
+   LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
+   ══════════════════════════════════════════════════════════════ */
+
+async function adminRequest(action, data = {}) {
+  const params = new URLSearchParams();
+  params.append("accion", action);
+  params.append("adminPassword", adminSessionPassword);
+  Object.entries(data).forEach(([key, value]) => params.append(key, String(value)));
+
+  const response = await fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    body: params
+  });
+
+  if (!response.ok) throw new Error("No se pudo conectar con el panel administrativo.");
+  const result = await response.json();
+  if (!result.ok) throw new Error(result.error || "La operación no pudo completarse.");
+  return result;
+}
+
+async function checkAdminLogin() {
+  const input = document.getElementById("admin-password");
+  const errorEl = document.getElementById("admin-error");
+  const button = document.getElementById("admin-login-button");
+  if (!input) return;
+
+  const ahora = Date.now();
+  if (ahora < adminBloqueadoHasta) {
+    const segundos = Math.ceil((adminBloqueadoHasta - ahora) / 1000);
+    if (errorEl) {
+      errorEl.textContent = `Demasiados intentos. Espera ${segundos} segundos.`;
+      errorEl.style.display = "block";
+    }
+    return;
+  }
+
+  const password = input.value;
+  if (!password) {
+    if (errorEl) {
+      errorEl.textContent = "Ingresa la contraseña administrativa.";
+      errorEl.style.display = "block";
+    }
+    return;
+  }
+
+  const originalText = button?.textContent || "Ingresar";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Verificando...";
+  }
+
+  adminSessionPassword = password;
+
+  try {
+    const result = await adminRequest("admin_dashboard_resumen");
+    adminIntentosFallidos = 0;
+    adminDashboardData = result;
+    adminPendingRequests = Array.isArray(result.pendientesVendedores) ? result.pendientesVendedores : [];
+    input.value = "";
+    if (errorEl) errorEl.style.display = "none";
+    showPage("page-admin");
+    renderPanelAdmin();
+  } catch (error) {
+    adminSessionPassword = "";
+    adminIntentosFallidos += 1;
+
+    if (adminIntentosFallidos >= 3) {
+      adminBloqueadoHasta = ahora + 30000;
+      adminIntentosFallidos = 0;
+      if (errorEl) errorEl.textContent = "Demasiados intentos. Espera 30 segundos.";
+    } else if (errorEl) {
+      errorEl.textContent = error.message || "Contraseña incorrecta.";
+    }
+
+    if (errorEl) errorEl.style.display = "block";
+  } finally {
+    if (button) {
+      button.disabled = false;
+      button.textContent = originalText;
+    }
+  }
+}
+
+function toggleAdminPasswordVisibility() {
+  const input = document.getElementById("admin-password");
+  const button = document.getElementById("admin-password-toggle");
+  if (!input || !button) return;
+
+  const willShow = input.type === "password";
+  input.type = willShow ? "text" : "password";
+  button.setAttribute("aria-label", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
+  button.setAttribute("aria-pressed", String(willShow));
+  button.setAttribute("title", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
+  button.innerHTML = `<i data-lucide="${willShow ? "eye-off" : "eye"}" aria-hidden="true"></i>`;
+  window.lucide?.createIcons();
+  input.focus();
+}
+
+function checkVendorLogin() {
+  const userInput = document.getElementById("vendor-user");
+  const passInput = document.getElementById("vendor-pass");
+  const errorEl = document.getElementById("vendor-error");
+  if (!userInput || !passInput) return;
+
+  const user = userInput.value.trim();
+  const pass = passInput.value;
+  const acceso = DB.getAccesos().find((a) => a.user === user && a.pass === pass && a.activo);
+
+  if (acceso) {
+    if (errorEl) errorEl.style.display = "none";
+    userInput.value = "";
+    passInput.value = "";
+    showPage("page-panel-vendedor");
+    renderPanelVendedor();
+    toast(`Bienvenido, ${acceso.nombre}`);
+  } else if (errorEl) {
+    errorEl.style.display = "block";
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GESTIÓN DE ACCESOS (pestaña Accesos del panel admin)
+   ══════════════════════════════════════════════════════════════ */
+
+function mostrarMsgAcceso(texto, esError) {
+  const msg = document.getElementById("acceso-msg");
+  if (!msg) return;
+  msg.textContent = texto;
+  msg.style.display = "block";
+  msg.style.color = esError ? "#E0655A" : "#7FB069";
+  msg.style.fontWeight = "700";
+}
+
+function agregarVendedorAcceso() {
+  const nombre = (document.getElementById("new-nombre")?.value || "").trim();
+  const plan = document.getElementById("new-plan")?.value || "Pro";
+  const user = (document.getElementById("new-user")?.value || "").trim();
+  const pass = (document.getElementById("new-pass")?.value || "").trim();
+
+  if (!nombre || !user || !pass) {
+    mostrarMsgAcceso("Completa: nombre del negocio, usuario y contraseña.", true);
+    return;
+  }
+  if (/\s/.test(user)) {
+    mostrarMsgAcceso("El usuario no debe llevar espacios.", true);
+    return;
+  }
+
+  const accesos = DB.getAccesos();
+  if (accesos.some((a) => a.user === user)) {
+    mostrarMsgAcceso(`El usuario "${user}" ya existe. Elige otro.`, true);
+    return;
+  }
+
+  accesos.unshift({ id: genId(), nombre, plan, user, pass, activo: true, fecha: new Date().toISOString() });
+  DB.saveAccesos(accesos);
+  mostrarMsgAcceso(`Vendedor agregado. Usuario: ${user}`, false);
 
   ["new-nombre", "new-user", "new-pass"].forEach((id) => {
     const el = document.getElementById(id);
@@ -988,4 +1179,3 @@ document.addEventListener("DOMContentLoaded", () => {
   manejarHash();
   window.addEventListener("hashchange", manejarHash);
 });
-
