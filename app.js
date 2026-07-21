@@ -170,25 +170,6 @@ function appendAliases(params, canonical, value, aliases = []) {
   aliases.forEach((alias) => params.append(alias, cleanValue));
 }
 
-function buildWAMessage(s) {
-  return `🔧 NUEVA SOLICITUD — STANDARD REPUESTOS GT\n\n` +
-    `Repuesto: ${s.parte || s.categoria}\n` +
-    `Categoría: ${s.categoria}\n` +
-    `Condición: ${s.condicion || "No especificada"}\n` +
-    `Vehículo: ${s.marca} ${s.linea} ${s.anio}\n` +
-    `Ubicación: ${s.muni || ""}, ${s.depto || ""}\n` +
-    `Comprador: ${s.nombre}\n` +
-    `WhatsApp: ${s.waComprador}\n` +
-    `Urgencia: ${s.urgencia}\n` +
-    `${s.detalles ? `Detalles: ${s.detalles}\n` : ""}` +
-    `${s.comentarios ? `Comentarios: ${s.comentarios}\n` : ""}`;
-}
-
-function abrirWhatsApp(telefono, mensaje) {
-  const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, "_blank");
-}
-
 async function enviarSolicitudAGoogleSheets(sheetPayload) {
   const params = new URLSearchParams();
 
@@ -1060,30 +1041,6 @@ function exportarVendedores() {
   URL.revokeObjectURL(link.href);
 }
 
-function cargarDemoData() {
-  DB.saveSolicitudes([
-    {
-      id: genId(),
-      fecha: new Date().toISOString(),
-      estado: "nueva",
-      marca: "Toyota",
-      linea: "Corolla",
-      anio: "2010",
-      categoria: "Motor",
-      parte: "Alternador",
-      condicion: "Usada",
-      depto: "Guatemala",
-      muni: "Guatemala",
-      nombre: "Cliente Demo",
-      waComprador: "50255551234",
-      urgencia: "Alta"
-    }
-  ]);
-  toast("Datos de demo cargados");
-  renderPanelVendedor();
-  renderPanelAdmin();
-}
-
 function setupUrgenciaButtons() {
   document.querySelectorAll(".urgencia-btn").forEach((button) => {
     button.addEventListener("click", function () {
@@ -1131,7 +1088,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Panel vendedor
   document.getElementById("btn-export-sol")?.addEventListener("click", exportarSolicitudes);
-  document.getElementById("btn-demo-data")?.addEventListener("click", cargarDemoData);
 
   // Panel admin conectado a Google Sheets
   document.getElementById("btn-refresh-admin")?.addEventListener("click", cargarSolicitudesAdmin);
