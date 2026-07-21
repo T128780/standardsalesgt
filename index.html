@@ -109,7 +109,7 @@
         </div>
         <div class="stat-item">
           <span class="stat-num">Guatemala</span>
-          <span class="stat-label">Cobertura nacional</span>
+          <span class="stat-label">Cobertura Guatemala</span>
         </div>
         <div class="stat-item">
           <span class="stat-num">Q0</span>
@@ -420,7 +420,7 @@
     <div class="confirm-card">
       <div class="confirm-icon ok"><i data-lucide="badge-check" aria-hidden="true"></i></div>
       <h2>¡Solicitud enviada!</h2>
-      <p>Tu solicitud fue registrada. Los vendedores compatibles que puedan atenderla podrán contactarte por WhatsApp.</p>
+      <p>Tu solicitud fue registrada correctamente. Los vendedores compatibles podrán contactarte por WhatsApp.</p>
       <button class="btn-submit" onclick="showPage('page-solicitud')">Nueva solicitud</button>
       <button class="btn-ghost-dark" onclick="showPage('page-landing')">Volver al inicio</button>
     </div>
@@ -562,7 +562,6 @@
       <div class="confirm-icon ok">✓</div>
       <h2>¡Solicitud recibida!</h2>
       <p>Revisaremos tu perfil y te contactaremos pronto para activar tu cuenta.</p>
-      <button class="btn-submit" onclick="showPage('page-panel-vendedor');renderPanelVendedor()">Ver panel de demo →</button>
       <button class="btn-ghost-dark" onclick="showPage('page-landing')">Volver al inicio</button>
     </div>
   </div>
@@ -610,7 +609,6 @@
       <p>Solicitudes recibidas</p>
     </div>
     <div class="panel-header-actions">
-      <button class="btn-ghost" id="btn-demo-data">Cargar demo</button>
       <button class="btn-submit small" id="btn-export-sol">⬇ Exportar</button>
     </div>
   </div>
@@ -621,7 +619,7 @@
       <div class="stat-card"><div class="num">Pro</div><div class="lbl">Plan activo</div></div>
       <div class="stat-card"><div class="num gold">✓</div><div class="lbl">Verificado</div></div>
     </div>
-    <div id="panel-solicitudes"><div class="empty-state"><div class="empty-icon">📋</div><p>Presiona "Cargar demo" para ver cómo funciona.</p></div></div>
+    <div id="panel-solicitudes"><div class="empty-state"><div class="empty-icon">📋</div><p>Aún no hay solicitudes disponibles.</p></div></div>
   </div>
 </div>
 
@@ -690,7 +688,7 @@
 <div id="toasts"></div>
 
 <script src="catalogos.js?v=20"></script>
-<script src="app.js?v=24"></script>
+<script src="app.js?v=25"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
