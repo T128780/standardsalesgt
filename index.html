@@ -280,7 +280,7 @@
       </div>
       <div>
         <p class="footer-legal">Standard Repuestos GT es una plataforma operada por Importadora Luisa.</p>
-        <p class="footer-legal">© 2026 Standard Sales GT · <a href="terminos.html" style="color:inherit;text-decoration:underline;">Términos</a> · <a href="privacidad.html" style="color:inherit;text-decoration:underline;">Privacidad</a> · <a href="mailto:Admin1@standardsalesgt.com" style="color:inherit;text-decoration:underline;">Contacto</a></p>
+        <p class="footer-legal">© 2026 Standard Sales GT · Términos · Privacidad · Contacto</p>
       </div>
     </div>
   </footer>
@@ -372,17 +372,7 @@
         <div class="form-group">
           <label>Condición deseada</label>
           <div class="option-pills">
-            <label class="option-pill"><input type="radio" name="condicion" value="Me es indiferente"><span>Indiferente</span></label>
-            <label class="option-pill"><input type="radio" name="condicion" value="Nueva"><span>Nueva</span></label>
-            <label class="option-pill"><input type="radio" name="condicion" value="Usada"><span>Usada</span></label>
-            <label class="option-pill"><input type="radio" name="condicion" value="Reconstruida"><span>Reconstruida</span></label>
-          </div>
-        </div>
-        <div class="form-group"><label>Detalles adicionales</label><textarea name="detalles" placeholder="Color, lado derecho/izquierdo, versión, etc."></textarea></div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title"><span class="fs-num">4</span><i data-lucide="map-pin" class="form-section-icon" aria-hidden="true"></i><span>¿Dónde necesitas el repuesto?</span></div>
+            <label class="option-pill"><input type="radio" name="condi…210 tokens truncated…cesitas el repuesto?</span></div>
         <div class="form-row">
           <div class="form-group"><label>Departamento</label><select name="depto"><option value="">Departamento</option></select></div>
           <div class="form-group"><label>Municipio</label><select name="muni"><option value="">Municipio</option></select></div>
@@ -407,8 +397,6 @@
         </div>
         <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" placeholder="Cualquier detalle extra..."></textarea></div>
       </div>
-
-      <div class="form-group form-consent"><label style="display:flex;gap:8px;align-items:flex-start;font-size:.92rem;line-height:1.4;"><input type="checkbox" id="consent-comprador" name="consentimiento" style="margin-top:3px;flex:none;"> <span>Acepto los <a href="terminos.html" target="_blank" style="text-decoration:underline;">Términos</a> y el <a href="privacidad.html" target="_blank" style="text-decoration:underline;">Aviso de Privacidad</a> y autorizo que Standard Repuestos GT comparta mi nombre y número de WhatsApp con los vendedores compatibles para que me contacten sobre mi solicitud.</span></label></div>
 
       <button type="submit" class="btn-submit">Enviar solicitud gratis <i data-lucide="send" class="btn-arrow-icon" aria-hidden="true"></i></button>
       <p class="form-footnote">Registraremos tu solicitud y los vendedores compatibles podrán contactarte por WhatsApp.</p>
@@ -551,8 +539,6 @@
         </div>
       </div>
 
-      <div class="form-group form-consent"><label style="display:flex;gap:8px;align-items:flex-start;font-size:.92rem;line-height:1.4;"><input type="checkbox" id="consent-vendedor" name="consentimiento" style="margin-top:3px;flex:none;"> <span>Acepto los <a href="terminos.html" target="_blank" style="text-decoration:underline;">Términos</a> y el <a href="privacidad.html" target="_blank" style="text-decoration:underline;">Aviso de Privacidad</a> y autorizo el tratamiento de los datos de mi negocio para recibir solicitudes de compradores.</span></label></div>
-
       <button type="submit" class="btn-submit">Enviar solicitud de adhesión <span class="btn-arrow">→</span></button>
       <p class="form-footnote">Tu solicitud será revisada en máximo 24 horas. Te contactaremos por WhatsApp.</p>
     </form>
@@ -670,11 +656,17 @@
     </div>
   </div>
   <div class="panel-body">
-    <div class="stat-grid">
-      <div class="stat-card"><div class="num gold" id="admin-total-sol">0</div><div class="lbl">Solicitudes pendientes</div></div>
-      <div class="stat-card"><div class="num">Sheets</div><div class="lbl">Fuente de datos</div></div>
-      <div class="stat-card"><div class="num red" id="admin-pend-vend">0</div><div class="lbl">Pendientes</div></div>
-      <div class="stat-card"><div class="num">GT</div><div class="lbl">País</div></div>
+    <div class="admin-dashboard-heading">
+      <div><p class="admin-request-kicker">Datos en tiempo real</p><h3>Dashboard</h3></div>
+      <span id="admin-dashboard-status" class="admin-sync-status">Actualizando...</span>
+    </div>
+    <div class="admin-kpi-grid">
+      <div class="admin-kpi"><i data-lucide="user-round-plus"></i><div><strong id="admin-total-sol">0</strong><span>Solicitudes pendientes</span></div></div>
+      <div class="admin-kpi"><i data-lucide="store"></i><div><strong id="admin-total-vendedores">0</strong><span>Vendedores activos</span></div></div>
+      <div class="admin-kpi warning"><i data-lucide="calendar-clock"></i><div><strong id="admin-membresias-vencer">0</strong><span>Membresías por vencer</span></div></div>
+      <div class="admin-kpi"><i data-lucide="chart-no-axes-combined"></i><div><strong id="admin-solicitudes-7d">0</strong><span>Solicitudes, 7 días</span></div></div>
+      <div class="admin-kpi success"><i data-lucide="message-circle-check"></i><div><strong id="admin-envios-ok">0</strong><span>Envíos Gupshup</span></div></div>
+      <div class="admin-kpi danger"><i data-lucide="triangle-alert"></i><div><strong id="admin-envios-error">0</strong><span>Errores recientes</span></div></div>
     </div>
     <div class="panel-section-head">
       <div>
@@ -685,6 +677,20 @@
     </div>
     <div id="admin-solicitudes">
       <div class="admin-loading"><span class="spinner"></span>Cargando solicitudes...</div>
+    </div>
+    <div class="admin-dashboard-grid">
+      <section class="admin-data-section admin-span-2">
+        <div class="admin-section-title"><div><p class="admin-request-kicker">Red comercial</p><h3>Vendedores registrados</h3></div><span id="admin-vendedores-resumen"></span></div>
+        <div id="admin-vendedores-dashboard" class="admin-loading"><span class="spinner"></span>Cargando vendedores...</div>
+      </section>
+      <section class="admin-data-section admin-span-2">
+        <div class="admin-section-title"><div><p class="admin-request-kicker">Control de planes</p><h3>Membresías y vencimientos</h3></div></div>
+        <div id="admin-membresias-dashboard"></div>
+      </section>
+      <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Demanda</p><h3>Top marcas</h3></div></div><div id="admin-top-marcas"></div></section>
+      <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Demanda</p><h3>Top partes</h3></div></div><div id="admin-top-partes"></div></section>
+      <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Parque vehicular</p><h3>Top años</h3></div></div><div id="admin-top-anios"></div></section>
+      <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Operación</p><h3>Resumen de envíos</h3></div></div><div id="admin-envios-resumen"></div></section>
     </div>
   </div>
 </div>
@@ -724,3 +730,4 @@ function switchTab(id, btn) {
 </script>
 </body>
 </html>
+
