@@ -1,4 +1,7 @@
-// STANDARD REPUESTOS GT — Catálogos completos
+Exit code: 0
+Wall time: 1.8 seconds
+Output:
+// STANDARD REPUESTOS GT â€” CatÃ¡logos completos
 
 const CAT = {
 
@@ -6,7 +9,7 @@ const CAT = {
     "Toyota":["Corolla","Camry","Yaris","Hilux","Land Cruiser","RAV4","Fortuner","Innova","Prado","4Runner","Tacoma","Tundra","HiAce","FJ Cruiser","C-HR","Vios","Avalon","Sequoia"],
     "Honda":["Civic","Accord","CR-V","HR-V","Pilot","Odyssey","Fit","Jazz","City","Stream","Element","Ridgeline"],
     "Mazda":["Mazda2","Mazda3","Mazda6","CX-3","CX-5","CX-7","CX-9","CX-30","BT-50","MX-5","Demio","Tribute"],
-    "Nissan":["Sentra","Altima","Frontier","Pathfinder","Murano","X-Trail","Navara","Kicks","Versa","March","Tiida","NP300","Urvan"],
+    "Nissan":["Sentra","Altima","Frontier","Pathfinder","Murano","X-Trail","Rogue","Navara","Kicks","Versa","March","Tiida","NP300","Urvan"],
     "Hyundai":["Elantra","Accent","Tucson","Santa Fe","Sonata","Creta","Kona","Starex","H-1","Porter"],
     "Kia":["Rio","Sportage","Sorento","Soul","Picanto","Cerato","Carnival","Seltos","Stonic","Mohave"],
     "Mitsubishi":["Lancer","Galant","Eclipse","Outlander","Montero","L200","Pajero","ASX","Mirage","Raider"],
@@ -45,7 +48,7 @@ const CAT = {
     "Lincoln":["Navigator","Aviator","Corsair","Nautilus"],
     "Cadillac":["Escalade","XT4","XT5","XT6","CT4","CT5"],
     "Chrysler":["300","Pacifica","Town & Country","PT Cruiser"],
-    "Citroën":["C3","C4","C5","Berlingo","Jumpy","Jumper"],
+    "CitroÃ«n":["C3","C4","C5","Berlingo","Jumpy","Jumper"],
     "Daihatsu":["Terios","Feroza","Charade","Rocky","Move"],
     "Foton":["Tunland","Sauvana","View C2"],
     "Genesis":["G70","G80","G90","GV70","GV80"],
@@ -59,46 +62,46 @@ const CAT = {
   },
 
   categorias: {
-    "Motor":["Motor completo","Block","Culata","Tapadera de válvulas","Cárter","Pistones","Bielas","Cigüeñal","Eje de levas","Cadena de tiempo","Faja de tiempo","Tensor","Bomba de aceite","Bomba de agua","Termostato","Radiador","Ventilador","Depósito de refrigerante","Mangueras","Múltiple de admisión","Múltiple de escape","Cuerpo de aceleración","Inyectores","Bobinas","Alternador","Sensor MAF","Sensor MAP","Sensor TPS","Sensor de oxígeno","Sensor de cigüeñal","Sensor de eje de levas","Soportes de motor"],
-    "Transmisión":["Caja automática","Caja mecánica","Convertidor de torque","Clutch","Canasta","Disco","Collarín","Volante","Palanca","Cable de cambios","Diferencial","Flechas","Punta de flecha","Homocinética","Soporte de caja","Módulo TCM"],
-    "Suspensión":["Shock delantero","Shock trasero","Strut","Resorte","Base de shock","Muleta superior","Muleta inferior","Buje","Rótula","Terminal","Barra estabilizadora","Bieleta","Eje trasero","Mango de rueda","Cubo","Cojinete"],
-    "Dirección":["Cremallera","Bomba hidráulica","Manguera hidráulica","Columna de dirección","Timón","Caja de dirección","Terminal","Rótula axial","Módulo EPS"],
-    "Frenos":["Bomba central","Hidrovac","Mordaza","Caliper","Disco de freno","Tambor","Pastillas","Zapatas","Cilindro auxiliar","Manguera de freno","Sensor ABS","Módulo ABS","Cable de freno de mano"],
-    "Carrocería":["Bumper delantero","Bumper trasero","Persiana","Capó","Lodera derecha","Lodera izquierda","Puerta delantera derecha","Puerta delantera izquierda","Puerta trasera derecha","Puerta trasera izquierda","Compuerta","Tapa de baúl","Estribo","Guardafango","Frontal","Marco de radiador","Alma de bumper","Base de bumper","Bisagras"],
-    "Luces":["Silvín derecho","Silvín izquierdo","Stop derecho","Stop izquierdo","Neblinera derecha","Neblinera izquierda","Pidevía","Tercera luz de freno","Luz de placa","Balastro","Módulo de luz"],
-    "Eléctrico":["Alternador","Motor de arranque","ECU","Caja de fusibles","Arnés","Relay","Switch de encendido","Módulo BCM","Módulo airbag","Sensor de parqueo","Cámara","Pantalla","Radio","Amplificador","Bocinas","Motor limpia parabrisas","Motor de ventana","Elevador","Switch de ventana"],
-    "A/C y Calefacción":["Compresor","Condensador","Evaporador","Blower","Resistencia blower","Panel A/C","Tubería","Filtro secador","Válvula de expansión","Radiador de calefacción"],
-    "Interior":["Tablero","Consola","Guantera","Asientos","Cinturones","Bolsas de aire","Tapicería","Alfombra","Visera","Retrovisor interior","Manecillas","Panel de instrumentos"],
+    "Motor":["Motor completo","Block","Culata","Tapadera de vÃ¡lvulas","CÃ¡rter","Pistones","Bielas","CigÃ¼eÃ±al","Eje de levas","Cadena de tiempo","Faja de tiempo","Tensor","Bomba de aceite","Bomba de agua","Termostato","Radiador","Ventilador","DepÃ³sito de refrigerante","Mangueras","MÃºltiple de admisiÃ³n","MÃºltiple de escape","Cuerpo de aceleraciÃ³n","Inyectores","Bobinas","Alternador","Sensor MAF","Sensor MAP","Sensor TPS","Sensor de oxÃ­geno","Sensor de cigÃ¼eÃ±al","Sensor de eje de levas","Soportes de motor"],
+    "TransmisiÃ³n":["Caja automÃ¡tica","Caja mecÃ¡nica","Convertidor de torque","Clutch","Canasta","Disco","CollarÃ­n","Volante","Palanca","Cable de cambios","Diferencial","Flechas","Punta de flecha","HomocinÃ©tica","Soporte de caja","MÃ³dulo TCM"],
+    "SuspensiÃ³n":["Shock delantero","Shock trasero","Strut","Resorte","Base de shock","Muleta superior","Muleta inferior","Buje","RÃ³tula","Terminal","Barra estabilizadora","Bieleta","Eje trasero","Mango de rueda","Cubo","Cojinete"],
+    "DirecciÃ³n":["Cremallera","Bomba hidrÃ¡ulica","Manguera hidrÃ¡ulica","Columna de direcciÃ³n","TimÃ³n","Caja de direcciÃ³n","Terminal","RÃ³tula axial","MÃ³dulo EPS"],
+    "Frenos":["Bomba central","Hidrovac","Mordaza","Caliper","Disco de freno","Tambor","Pastillas","Zapatas","Cilindro auxiliar","Manguera de freno","Sensor ABS","MÃ³dulo ABS","Cable de freno de mano"],
+    "CarrocerÃ­a":["Bumper delantero","Bumper trasero","Persiana","CapÃ³","Lodera derecha","Lodera izquierda","Puerta delantera derecha","Puerta delantera izquierda","Puerta trasera derecha","Puerta trasera izquierda","Compuerta","Tapa de baÃºl","Estribo","Guardafango","Frontal","Marco de radiador","Alma de bumper","Base de bumper","Bisagras"],
+    "Luces":["SilvÃ­n derecho","SilvÃ­n izquierdo","Stop derecho","Stop izquierdo","Neblinera derecha","Neblinera izquierda","PidevÃ­a","Tercera luz de freno","Luz de placa","Balastro","MÃ³dulo de luz"],
+    "ElÃ©ctrico":["Alternador","Motor de arranque","ECU","Caja de fusibles","ArnÃ©s","Relay","Switch de encendido","MÃ³dulo BCM","MÃ³dulo airbag","Sensor de parqueo","CÃ¡mara","Pantalla","Radio","Amplificador","Bocinas","Motor limpia parabrisas","Motor de ventana","Elevador","Switch de ventana"],
+    "A/C y CalefacciÃ³n":["Compresor","Condensador","Evaporador","Blower","Resistencia blower","Panel A/C","TuberÃ­a","Filtro secador","VÃ¡lvula de expansiÃ³n","Radiador de calefacciÃ³n"],
+    "Interior":["Tablero","Consola","Guantera","Asientos","Cinturones","Bolsas de aire","TapicerÃ­a","Alfombra","Visera","Retrovisor interior","Manecillas","Panel de instrumentos"],
     "Vidrios y Espejos":["Parabrisas","Vidrios de puertas","Vidrio trasero","Retrovisor derecho","Retrovisor izquierdo","Base de retrovisor","Motor de retrovisor"],
     "Combustible":["Tanque","Bomba de gasolina","Flote","Riel de combustible","Tapa de tanque","Mangueras de combustible","Filtro de combustible","Canister"],
-    "Escape":["Catalizador","Tubo de escape","Silenciador","Resonador","Sensor de oxígeno","Empaque de escape"],
-    "Llantas y Aros":["Aro original","Aro genérico","Llanta","Llanta de repuesto","Centro de aro","Tuercas","Birlos","Sensor TPMS"],
-    "Seguridad":["Bolsa de aire","Cinturón de seguridad","Módulo airbag","Sensor de impacto","Cerradura","Actuador","Alarma","Control remoto","Llave con chip"]
+    "Escape":["Catalizador","Tubo de escape","Silenciador","Resonador","Sensor de oxÃ­geno","Empaque de escape"],
+    "Llantas y Aros":["Aro original","Aro genÃ©rico","Llanta","Llanta de repuesto","Centro de aro","Tuercas","Birlos","Sensor TPMS"],
+    "Seguridad":["Bolsa de aire","CinturÃ³n de seguridad","MÃ³dulo airbag","Sensor de impacto","Cerradura","Actuador","Alarma","Control remoto","Llave con chip"]
   },
 
   departamentos: {
-    "Guatemala":["Guatemala","Mixco","Villa Nueva","San Miguel Petapa","Santa Catarina Pinula","Chinautla","Villa Canales","Amatitlán","San José Pinula","San Juan Sacatepéquez","San Pedro Sacatepéquez","Fraijanes","Palencia","Chuarrancho","San Raymundo","San Pedro Ayampuc"],
-    "Sacatepéquez":["Antigua Guatemala","Jocotenango","Pastores","Sumpango","Santo Domingo Xenacoj","Santiago Sacatepéquez","San Bartolomé Milpas Altas","Santa Lucía Milpas Altas","Magdalena Milpas Altas","Santa María de Jesús","San Lucas Sacatepéquez","Santa Catarina Barahona","San Miguel Dueñas","Alotenango","San Antonio Aguas Calientes","Ciudad Vieja"],
-    "Escuintla":["Escuintla","Santa Lucía Cotzumalguapa","La Democracia","Siquinalá","Masagua","Tiquisate","La Gomera","Guanagazapa","San José","Iztapa","Palín","San Vicente Pacaya","Nueva Concepción"],
-    "Quetzaltenango":["Quetzaltenango","Salcajá","Olintepeque","San Carlos Sija","Sibilia","Cabricán","Cajolá","San Miguel Sigüilá","San Juan Ostuncalco","San Mateo","Concepción Chiquirichapa","San Martín Sacatepéquez","Almolonga","Cantel","Huitán","Zunil","Colomba","San Francisco La Unión","El Palmar","Coatepeque","Génova","Flores Costa Cuca","La Esperanza","Palestina de Los Altos"],
-    "San Marcos":["San Marcos","San Pedro Sacatepéquez","San Antonio Sacatepéquez","Comitancillo","San Miguel Ixtahuacán","Concepción Tutuapa","Tacaná","Sibinal","Tajumulco","Tejutla","San Rafael Pie de la Cuesta","Nuevo Progreso","El Tumbador","El Rodeo","Malacatán","Catarina","Ayutla","Ocós","San Pablo","El Quetzal","La Reforma","Pajapita","Ixchiguán","San José Ojetenám","San Cristóbal Cucho","Sipacapa","Esquipulas Palo Gordo","Río Blanco","San Lorenzo"],
-    "Huehuetenango":["Huehuetenango","Chiantla","Malacatancito","Cuilco","Nentón","San Pedro Necta","Jacaltenango","San Pedro Soloma","San Idelfonso Ixtahuacán","Santa Bárbara","La Libertad","La Democracia","San Miguel Acatán","San Rafael La Independencia","Todos Santos Cuchumatán","San Juan Atitán","Santa Eulalia","San Mateo Ixtatán","Colotenango","San Sebastián Huehuetenango","Tectitán","Concepción Huista","San Juan Ixcoy","San Antonio Huista","San Sebastián Coatán","Barillas","Aguacatán","San Rafael Petzal","San Gaspar Ixchil","Santiago Chimaltenango","Santa Ana Huista"],
-    "Alta Verapaz":["Cobán","Santa Cruz Verapaz","San Cristóbal Verapaz","Tactic","Tamahú","Tucurú","Panzós","Senahú","San Pedro Carchá","San Juan Chamelco","Lanquín","Cahabón","Chisec","Chahal","Fray Bartolomé de las Casas","Santa Catalina La Tinta","Raxruhá"],
-    "Baja Verapaz":["Salamá","San Miguel Chicaj","Rabinal","Cubulco","Granados","Santa Cruz El Chol","San Jerónimo","Purulhá"],
-    "Chiquimula":["Chiquimula","San José La Arada","San Juan Ermita","Jocotán","Camotán","Olopa","Esquipulas","Concepción Las Minas","Quezaltepeque","San Jacinto","Ipala"],
-    "Jalapa":["Jalapa","San Pedro Pinula","San Luis Jilotepeque","San Manuel Chaparrón","San Carlos Alzatate","Monjas","Mataquescuintla"],
-    "Jutiapa":["Jutiapa","El Progreso","Santa Catarina Mita","Agua Blanca","Asunción Mita","Yupiltepeque","Atescatempa","Jerez","El Adelanto","Zapotitlán","Comapa","Jalpatagua","Conguaco","Moyuta","Pasaco","San José Acatempa","Quesada"],
-    "Zacapa":["Zacapa","Estanzuela","Río Hondo","Gualán","Teculután","Usumatlán","Cabañas","San Diego","La Unión","Huité"],
-    "El Progreso":["Guastatoya","Morazán","San Agustín Acasaguastlán","San Cristóbal Acasaguastlán","El Jícaro","Sansare","Sanarate","San Antonio La Paz"],
+    "Guatemala":["Guatemala","Mixco","Villa Nueva","San Miguel Petapa","Santa Catarina Pinula","Chinautla","Villa Canales","AmatitlÃ¡n","San JosÃ© Pinula","San Juan SacatepÃ©quez","San Pedro SacatepÃ©quez","Fraijanes","Palencia","Chuarrancho","San Raymundo","San Pedro Ayampuc"],
+    "SacatepÃ©quez":["Antigua Guatemala","Jocotenango","Pastores","Sumpango","Santo Domingo Xenacoj","Santiago SacatepÃ©quez","San BartolomÃ© Milpas Altas","Santa LucÃ­a Milpas Altas","Magdalena Milpas Altas","Santa MarÃ­a de JesÃºs","San Lucas SacatepÃ©quez","Santa Catarina Barahona","San Miguel DueÃ±as","Alotenango","San Antonio Aguas Calientes","Ciudad Vieja"],
+    "Escuintla":["Escuintla","Santa LucÃ­a Cotzumalguapa","La Democracia","SiquinalÃ¡","Masagua","Tiquisate","La Gomera","Guanagazapa","San JosÃ©","Iztapa","PalÃ­n","San Vicente Pacaya","Nueva ConcepciÃ³n"],
+    "Quetzaltenango":["Quetzaltenango","SalcajÃ¡","Olintepeque","San Carlos Sija","Sibilia","CabricÃ¡n","CajolÃ¡","San Miguel SigÃ¼ilÃ¡","San Juan Ostuncalco","San Mateo","ConcepciÃ³n Chiquirichapa","San MartÃ­n SacatepÃ©quez","Almolonga","Cantel","HuitÃ¡n","Zunil","Colomba","San Francisco La UniÃ³n","El Palmar","Coatepeque","GÃ©nova","Flores Costa Cuca","La Esperanza","Palestina de Los Altos"],
+    "San Marcos":["San Marcos","San Pedro SacatepÃ©quez","San Antonio SacatepÃ©quez","Comitancillo","San Miguel IxtahuacÃ¡n","ConcepciÃ³n Tutuapa","TacanÃ¡","Sibinal","Tajumulco","Tejutla","San Rafael Pie de la Cuesta","Nuevo Progreso","El Tumbador","El Rodeo","MalacatÃ¡n","Catarina","Ayutla","OcÃ³s","San Pablo","El Quetzal","La Reforma","Pajapita","IxchiguÃ¡n","San JosÃ© OjetenÃ¡m","San CristÃ³bal Cucho","Sipacapa","Esquipulas Palo Gordo","RÃ­o Blanco","San Lorenzo"],
+    "Huehuetenango":["Huehuetenango","Chiantla","Malacatancito","Cuilco","NentÃ³n","San Pedro Necta","Jacaltenango","San Pedro Soloma","San Idelfonso IxtahuacÃ¡n","Santa BÃ¡rbara","La Libertad","La Democracia","San Miguel AcatÃ¡n","San Rafael La Independencia","Todos Santos CuchumatÃ¡n","San Juan AtitÃ¡n","Santa Eulalia","San Mateo IxtatÃ¡n","Colotenango","San SebastiÃ¡n Huehuetenango","TectitÃ¡n","ConcepciÃ³n Huista","San Juan Ixcoy","San Antonio Huista","San SebastiÃ¡n CoatÃ¡n","Barillas","AguacatÃ¡n","San Rafael Petzal","San Gaspar Ixchil","Santiago Chimaltenango","Santa Ana Huista"],
+    "Alta Verapaz":["CobÃ¡n","Santa Cruz Verapaz","San CristÃ³bal Verapaz","Tactic","TamahÃº","TucurÃº","PanzÃ³s","SenahÃº","San Pedro CarchÃ¡","San Juan Chamelco","LanquÃ­n","CahabÃ³n","Chisec","Chahal","Fray BartolomÃ© de las Casas","Santa Catalina La Tinta","RaxruhÃ¡"],
+    "Baja Verapaz":["SalamÃ¡","San Miguel Chicaj","Rabinal","Cubulco","Granados","Santa Cruz El Chol","San JerÃ³nimo","PurulhÃ¡"],
+    "Chiquimula":["Chiquimula","San JosÃ© La Arada","San Juan Ermita","JocotÃ¡n","CamotÃ¡n","Olopa","Esquipulas","ConcepciÃ³n Las Minas","Quezaltepeque","San Jacinto","Ipala"],
+    "Jalapa":["Jalapa","San Pedro Pinula","San Luis Jilotepeque","San Manuel ChaparrÃ³n","San Carlos Alzatate","Monjas","Mataquescuintla"],
+    "Jutiapa":["Jutiapa","El Progreso","Santa Catarina Mita","Agua Blanca","AsunciÃ³n Mita","Yupiltepeque","Atescatempa","Jerez","El Adelanto","ZapotitlÃ¡n","Comapa","Jalpatagua","Conguaco","Moyuta","Pasaco","San JosÃ© Acatempa","Quesada"],
+    "Zacapa":["Zacapa","Estanzuela","RÃ­o Hondo","GualÃ¡n","TeculutÃ¡n","UsumatlÃ¡n","CabaÃ±as","San Diego","La UniÃ³n","HuitÃ©"],
+    "El Progreso":["Guastatoya","MorazÃ¡n","San AgustÃ­n AcasaguastlÃ¡n","San CristÃ³bal AcasaguastlÃ¡n","El JÃ­caro","Sansare","Sanarate","San Antonio La Paz"],
     "Izabal":["Puerto Barrios","Livingston","El Estor","Morales","Los Amates"],
-    "Petén":["Flores","San José","San Benito","San Andrés","La Libertad","San Francisco","Santa Ana","Dolores","San Luis","Sayaxché","Melchor de Mencos","Poptún","Las Cruces","El Chal"],
-    "Retalhuleu":["Retalhuleu","San Sebastián","Santa Cruz Muluá","San Martín Zapotitlán","San Felipe","San Andrés Villa Seca","Champerico","Nuevo San Carlos","El Asintal"],
-    "Suchitepéquez":["Mazatenango","Cuyotenango","San Francisco Zapotitlán","San Bernardino","San José El Ídolo","Santo Domingo Suchitepéquez","San Lorenzo","Samayac","San Pablo Jocopilas","San Antonio Suchitepéquez","San Miguel Panán","San Gabriel","Chicacao","Patulul","Santa Bárbara","San Juan Bautista","Santo Tomás La Unión","Zunilito","Pueblo Nuevo","Río Bravo"],
-    "Totonicapán":["Totonicapán","San Cristóbal Totonicapán","San Francisco El Alto","San Andrés Xecul","Momostenango","Santa María Chiquimula","Santa Lucía La Reforma","San Bartolo"],
-    "Sololá":["Sololá","San José Chacayá","Santa María Visitación","Santa Lucía Utatlán","Nahualá","Santa Catarina Ixtahuacán","Santa Clara La Laguna","Concepción","San Andrés Semetabaj","Panajachel","Santa Catarina Palopó","San Antonio Palopó","San Lucas Tolimán","Santa Cruz La Laguna","San Pablo La Laguna","San Marcos La Laguna","San Juan La Laguna","San Pedro La Laguna","Santiago Atitlán"],
-    "Chimaltenango":["Chimaltenango","San José Poaquil","San Martín Jilotepeque","Comalapa","Santa Apolonia","Tecpán Guatemala","Patzún","Pochuta","Patzicía","Santa Cruz Balanyá","Acatenango","Yepocapa","San Andrés Itzapa","Parramos","Zaragoza","El Tejar"],
-    "El Quiché":["Santa Cruz del Quiché","Chiché","Chinique","Zacualpa","Chajul","Chichicastenango","Pichilín","Joyabaj","Nebaj","San Pedro Jocopilas","Cunén","San Juan Cotzal","Sacapulas","San Bartolomé Jocotenango","Canillá","Chicamán","Ixcán","Pachalum"],
-    "Quiché":["Santa Cruz del Quiché","Chiché","Chinique","Zacualpa","Chajul","Chichicastenango","Pichilín","Joyabaj","Nebaj","San Pedro Jocopilas"]
+    "PetÃ©n":["Flores","San JosÃ©","San Benito","San AndrÃ©s","La Libertad","San Francisco","Santa Ana","Dolores","San Luis","SayaxchÃ©","Melchor de Mencos","PoptÃºn","Las Cruces","El Chal"],
+    "Retalhuleu":["Retalhuleu","San SebastiÃ¡n","Santa Cruz MuluÃ¡","San MartÃ­n ZapotitlÃ¡n","San Felipe","San AndrÃ©s Villa Seca","Champerico","Nuevo San Carlos","El Asintal"],
+    "SuchitepÃ©quez":["Mazatenango","Cuyotenango","San Francisco ZapotitlÃ¡n","San Bernardino","San JosÃ© El Ãdolo","Santo Domingo SuchitepÃ©quez","San Lorenzo","Samayac","San Pablo Jocopilas","San Antonio SuchitepÃ©quez","San Miguel PanÃ¡n","San Gabriel","Chicacao","Patulul","Santa BÃ¡rbara","San Juan Bautista","Santo TomÃ¡s La UniÃ³n","Zunilito","Pueblo Nuevo","RÃ­o Bravo"],
+    "TotonicapÃ¡n":["TotonicapÃ¡n","San CristÃ³bal TotonicapÃ¡n","San Francisco El Alto","San AndrÃ©s Xecul","Momostenango","Santa MarÃ­a Chiquimula","Santa LucÃ­a La Reforma","San Bartolo"],
+    "SololÃ¡":["SololÃ¡","San JosÃ© ChacayÃ¡","Santa MarÃ­a VisitaciÃ³n","Santa LucÃ­a UtatlÃ¡n","NahualÃ¡","Santa Catarina IxtahuacÃ¡n","Santa Clara La Laguna","ConcepciÃ³n","San AndrÃ©s Semetabaj","Panajachel","Santa Catarina PalopÃ³","San Antonio PalopÃ³","San Lucas TolimÃ¡n","Santa Cruz La Laguna","San Pablo La Laguna","San Marcos La Laguna","San Juan La Laguna","San Pedro La Laguna","Santiago AtitlÃ¡n"],
+    "Chimaltenango":["Chimaltenango","San JosÃ© Poaquil","San MartÃ­n Jilotepeque","Comalapa","Santa Apolonia","TecpÃ¡n Guatemala","PatzÃºn","Pochuta","PatzicÃ­a","Santa Cruz BalanyÃ¡","Acatenango","Yepocapa","San AndrÃ©s Itzapa","Parramos","Zaragoza","El Tejar"],
+    "El QuichÃ©":["Santa Cruz del QuichÃ©","ChichÃ©","Chinique","Zacualpa","Chajul","Chichicastenango","PichilÃ­n","Joyabaj","Nebaj","San Pedro Jocopilas","CunÃ©n","San Juan Cotzal","Sacapulas","San BartolomÃ© Jocotenango","CanillÃ¡","ChicamÃ¡n","IxcÃ¡n","Pachalum"],
+    "QuichÃ©":["Santa Cruz del QuichÃ©","ChichÃ©","Chinique","Zacualpa","Chajul","Chichicastenango","PichilÃ­n","Joyabaj","Nebaj","San Pedro Jocopilas"]
   },
 
   cilindraje: {
@@ -126,3 +129,4 @@ const CAT = {
   }
 
 };
+
