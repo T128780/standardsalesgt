@@ -296,6 +296,13 @@
   </div>
   <div class="form-body">
     <form id="form-comprador" novalidate>
+      <div class="form-section buyer-contact-first">
+        <div class="form-section-title"><i data-lucide="user-round" class="form-section-icon" aria-hidden="true"></i><span>Datos del comprador</span></div>
+        <div class="form-row">
+          <div class="form-group"><label>Nombre completo <span class="req">*</span></label><input type="text" name="nombre" placeholder="Nombre de quien solicita el repuesto"></div>
+          <div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" name="waComprador" placeholder="502XXXXXXXX"></div>
+        </div>
+      </div>
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">1</span><i data-lucide="car-front" class="form-section-icon" aria-hidden="true"></i><span>Datos del vehículo</span></div>
         <div class="form-row">
@@ -372,8 +379,7 @@
         <div class="form-group">
           <label>Condición deseada</label>
           <div class="option-pills">
-            <label class="option-pill"><input type="radio" name="condi…427 tokens truncated…to"></div>
-          <div class="form-group"><label>Tu WhatsApp <span class="req">*</span></label><input type="tel" name="waComprador" placeholder="502XXXXXXXX"></div>
+            <label class="option-pill"><input type="radio" name="condi
         </div>
         <div class="form-group">
           <label>Urgencia</label>
@@ -701,7 +707,7 @@
 <div id="toasts"></div>
 
 <script src="catalogos.js?v=21"></script>
-<script src="app.js?v=34"></script>
+<script src="app.js?v=36"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
@@ -739,4 +745,3 @@ function switchTab(id, btn) {
 </script>
 </body>
 </html>
-
