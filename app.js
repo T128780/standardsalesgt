@@ -18,8 +18,8 @@ const SELLER_BRAND_GROUPS = {
   "JDM": ["Nissan Skyline", "Nissan Silvia", "Toyota Supra", "Toyota Chaser", "Toyota Mark II", "Mitsubishi Lancer Evolution", "Subaru Impreza WRX/STI", "Honda Integra", "Honda Civic Type R", "Mazda RX-7", "Mazda RX-8", "Otros JDM"],
   "Americano": ["Ford", "Chevrolet", "GMC", "Dodge", "Jeep", "Chrysler", "Cadillac", "Lincoln", "Ram", "Tesla", "Otros americanos"],
   "Europeo": ["Volkswagen", "Audi", "BMW", "Mercedes-Benz", "Porsche", "Peugeot", "Renault", "Citroën", "Volvo", "Fiat", "Mini", "Land Rover", "Jaguar", "Opel", "Seat", "Skoda", "Otros europeos"],
-  "Chino": ["Changan", "BYD", "Geely", "Great Wall", "Haval", "JAC", "MG", "Chery", "BAIC", "Dongfeng", "Foton", "Otros chinos"],
   "Coreano": ["Hyundai", "Kia", "Genesis", "SsangYong/KGM", "Daewoo", "Otros coreanos"],
+  "Chino": ["Changan", "BYD", "Geely", "Great Wall", "Haval", "JAC", "MG", "Chery", "BAIC", "Dongfeng", "Foton", "Otros chinos"],
   "Otros": ["Tata", "Mahindra", "Maruti Suzuki", "Proton", "Perodua", "Otras marcas"]
 };
 
