@@ -1882,3 +1882,15 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
   .btn-admin-approve,
   .btn-admin-reject { transition: none; }
 }
+
+/* Seller origin and brand hierarchy */
+.seller-field-label { margin-bottom: 8px; color: var(--cream); font-weight: 700; }
+.seller-brand-groups { display: grid; gap: 14px; margin-top: 18px; }
+.seller-brand-group { padding: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.018); border-radius: 8px; }
+.seller-brand-group h4 { margin: 0 0 11px; color: var(--cream); font-size: 13px; font-weight: 700; }
+.seller-brand-group .check-pills { max-height: none; padding: 0; }
+@media (max-width: 600px) {
+  .seller-brand-group { padding: 13px; }
+  .seller-brand-group .check-pills { gap: 7px; }
+  .seller-brand-group .check-pill span { padding: 8px 12px; }
+}
