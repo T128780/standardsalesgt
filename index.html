@@ -379,8 +379,26 @@
         <div class="form-group">
           <label>Condición deseada</label>
           <div class="option-pills">
-            <label class="option-pill"><input type="radio" name="condi
+            <label class="option-pill"><input type="radio" name="condicion" value="Me es indiferente"><span>Indiferente</span></label>
+            <label class="option-pill"><input type="radio" name="condicion" value="Nueva"><span>Nueva</span></label>
+            <label class="option-pill"><input type="radio" name="condicion" value="Usada"><span>Usada</span></label>
+            <label class="option-pill"><input type="radio" name="condicion" value="Reconstruida"><span>Reconstruida</span></label>
+          </div>
         </div>
+        <div class="form-group"><label>Detalles adicionales</label><textarea name="detalles" placeholder="Color, lado derecho/izquierdo, versión, etc."></textarea></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title"><span class="fs-num">4</span><i data-lucide="map-pin" class="form-section-icon" aria-hidden="true"></i><span>¿Dónde necesitas el repuesto?</span></div>
+        <div class="form-row">
+          <div class="form-group"><label>Departamento</label><select name="depto"><option value="">Departamento</option></select></div>
+          <div class="form-group"><label>Municipio</label><select name="muni"><option value="">Municipio</option></select></div>
+        </div>
+        <div class="form-group"><label>Zona (opcional)</label><input type="text" name="zona" placeholder="Ej: Zona 10"></div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title"><span class="fs-num">5</span><i data-lucide="message-square-text" class="form-section-icon" aria-hidden="true"></i><span>Urgencia y comentarios</span></div>
         <div class="form-group">
           <label>Urgencia</label>
           <input type="hidden" name="urgencia" value="Media">
