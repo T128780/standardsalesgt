@@ -213,6 +213,17 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   appendAliases(params, "depto", sheetPayload.depto, ["Depto", "Departamento"]);
   appendAliases(params, "urgencia", sheetPayload.urgencia, ["Urgencia"]);
   appendAliases(params, "condicion", sheetPayload.condicion, ["Condicion", "Condición"]);
+  appendAliases(params, "origen", sheetPayload.origen, ["Origen"]);
+  appendAliases(params, "timon", sheetPayload.timon, ["Timon", "Timón"]);
+  appendAliases(params, "combustible", sheetPayload.combustible, ["Combustible"]);
+  appendAliases(params, "traccion", sheetPayload.traccion, ["Traccion", "Tracción"]);
+  appendAliases(params, "transmision", sheetPayload.transmision, ["Transmision", "Transmisión"]);
+  appendAliases(params, "cilindraje", sheetPayload.cilindraje, ["Cilindraje"]);
+  appendAliases(params, "cc", sheetPayload.cc, ["CC"]);
+  appendAliases(params, "muni", sheetPayload.muni, ["Municipio"]);
+  appendAliases(params, "zona", sheetPayload.zona, ["Zona"]);
+  appendAliases(params, "detalles", sheetPayload.detalles, ["Detalles"]);
+  appendAliases(params, "comentarios", sheetPayload.comentarios, ["Comentarios"]);
   appendAliases(params, "notas", sheetPayload.notas, ["Notas", "mensaje", "Mensaje"]);
 
   await fetch(GOOGLE_SCRIPT_URL, {
@@ -323,6 +334,17 @@ function initFormComprador() {
       depto: getFormValue(form, "depto"),
       urgencia: getFormValue(form, "urgencia") || "Media",
       condicion: getFormValue(form, "condicion"),
+      origen: getFormValue(form, "origen"),
+      timon: getFormValue(form, "timon"),
+      combustible: getFormValue(form, "combustible"),
+      traccion: getFormValue(form, "traccion"),
+      transmision: getFormValue(form, "transmision"),
+      cilindraje: getFormValue(form, "cilindraje"),
+      cc: getFormValue(form, "cc"),
+      muni: getFormValue(form, "muni"),
+      zona: getFormValue(form, "zona"),
+      detalles: getFormValue(form, "detalles"),
+      comentarios: getFormValue(form, "comentarios"),
       notas
     };
 
