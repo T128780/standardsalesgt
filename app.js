@@ -507,6 +507,13 @@ function initFormVendedor() {
 }
 
 
+const vendLineasSeleccionadas = new Set();
+
+function syncLineasHidden() {
+  const hidden = document.getElementById("vlineas-selected");
+  if (hidden) hidden.value = [...vendLineasSeleccionadas].join(", ");
+}
+
 function renderLineasVendedor() {
   const wrap = document.getElementById("vend-lineas");
   if (!wrap) return;
