@@ -1,7 +1,11 @@
-// Standard Repuestos GT — App Logic
-// v20: Rediseño de lujo. Misma lógica de envío a Google Sheets + WhatsApp.
+Exit code: 0
+Wall time: 1.9 seconds
+Total output lines: 1244
+Output:
+// Standard Repuestos GT â€” App Logic
+// v20: RediseÃ±o de lujo. Misma lÃ³gica de envÃ­o a Google Sheets + WhatsApp.
 //      Se agregan las funciones de paneles (admin, vendedor y accesos) que
-//      la versión anterior referenciaba pero nunca incluyó.
+//      la versiÃ³n anterior referenciaba pero nunca incluyÃ³.
 
 const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
@@ -11,6 +15,27 @@ function catalogos() {
     if (typeof CAT !== "undefined") return CAT;
   } catch (error) {}
   return window.CAT || { marcas: {}, categorias: {}, departamentos: {}, cilindraje: {} };
+}
+
+const SELLER_BRAND_GROUPS = {
+  "JaponÃ©s": ["Toyota", "Nissan", "Mitsubishi", "Honda", "Mazda", "Subaru", "Suzuki", "Isuzu", "Lexus", "Acura", "Infiniti", "Daihatsu", "Otros japoneses"],
+  "JDM": ["Nissan Skyline", "Nissan Silvia", "Toyota Supra", "Toyota Chaser", "Mitsubishi Lancer Evolution", "Subaru Impreza WRX/STI", "Honda Integra", "Honda Civic Type R", "Mazda RX-7", "Mazda RX-8", "Otros JDM"],
+  "Americano": ["Ford", "Chevrolet", "GMC", "Dodge", "Jeep", "Chrysler", "Cadillac", "Lincoln", "Ram", "Tesla", "Otros americanos"],
+  "Europeo": ["Volkswagen", "Audi", "BMW", "Mercedes-Benz", "Porsche", "Peugeot", "Renault", "Citroen", "Volvo", "Fiat", "Mini", "Land Rover", "Jaguar", "Opel", "Otros europeos"],
+  "Chino": ["Changan", "BYD", "Geely", "Great Wall", "Haval", "JAC", "MG", "Chery", "BAIC", "Dongfeng", "Foton", "Otros chinos"],
+  "Coreano": ["Hyundai", "Kia", "Genesis", "SsangYong/KGM", "Daewoo", "Otros coreanos"],
+  "Otros": ["Tata", "Mahindra", "Maruti Suzuki", "Proton", "Perodua", "Otras marcas"]
+};
+
+const SELLER_CATEGORIES = ["CarrocerÃ­a", "Motor", "ElÃ©ctrico", "Piezas mecÃ¡nicas", "Otro"];
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+    reader.onerror = () => reject(new Error("No se pudo leer el comprobante."));
+    reader.readAsDataURL(file);
+  });
 }
 
 const DB = {
@@ -100,20 +125,20 @@ function buildLineas(marcaSelect, lineaSelect) {
   const cat = catalogos();
   const marca = marcaSelect?.value || "";
   const values = marca && cat.marcas?.[marca] ? cat.marcas[marca] : [];
-  setOptions(lineaSelect, "Línea / Modelo", values);
+  setOptions(lineaSelect, "LÃ­nea / Modelo", values);
 }
 
 function buildCategorias(select) {
   const cat = catalogos();
   const values = Object.keys(cat.categorias || {}).sort();
-  setOptions(select, "Categoría del repuesto", values);
+  setOptions(select, "CategorÃ­a del repuesto", values);
 }
 
 function buildPartes(categoriaSelect, parteSelect) {
   const cat = catalogos();
   const categoria = categoriaSelect?.value || "";
   const values = categoria && cat.categorias?.[categoria] ? cat.categorias[categoria] : [];
-  setOptions(parteSelect, "Parte específica", values);
+  setOptions(parteSelect, "Parte especÃ­fica", values);
 }
 
 function buildDeptos(select) {
@@ -132,7 +157,7 @@ function buildMunicipios(deptoSelect, muniSelect) {
 function buildYearOptions(select) {
   if (!select) return;
   const current = new Date().getFullYear();
-  select.innerHTML = '<option value="">Año</option>';
+  select.innerHTML = '<option value="">AÃ±o</option>';
   for (let year = current; year >= 1980; year -= 1) {
     const option = document.createElement("option");
     option.value = String(year);
@@ -144,7 +169,7 @@ function buildYearOptions(select) {
 function buildCilindraje(select) {
   const cat = catalogos();
   const values = Object.keys(cat.cilindraje || {}).sort((a, b) => Number(a) - Number(b));
-  setOptions(select, "No sé", values.map((v) => `${v}`));
+  setOptions(select, "No sÃ©", values.map((v) => `${v}`));
 }
 
 function syncCC(cilindrajeSelect, ccSelect) {
@@ -176,13 +201,13 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   appendAliases(params, "nombre", sheetPayload.nombre, ["Nombre"]);
   appendAliases(params, "whatsapp", sheetPayload.whatsapp, ["WhatsApp", "waComprador"]);
   appendAliases(params, "marca", sheetPayload.marca, ["Marca"]);
-  appendAliases(params, "linea", sheetPayload.linea, ["Linea", "Línea"]);
-  appendAliases(params, "categoria", sheetPayload.categoria, ["Categoria", "Categoría"]);
+  appendAliases(params, "linea", sheetPayload.linea, ["Linea", "LÃ­nea"]);
+  appendAliases(params, "categoria", sheetPayload.categoria, ["Categoria", "CategorÃ­a"]);
   appendAliases(params, "parte", sheetPayload.parte, ["Parte"]);
-  appendAliases(params, "anio", sheetPayload.anio, ["Año", "año", "Anio"]);
+  appendAliases(params, "anio", sheetPayload.anio, ["AÃ±o", "aÃ±o", "Anio"]);
   appendAliases(params, "depto", sheetPayload.depto, ["Depto", "Departamento"]);
   appendAliases(params, "urgencia", sheetPayload.urgencia, ["Urgencia"]);
-  appendAliases(params, "condicion", sheetPayload.condicion, ["Condicion", "Condición"]);
+  appendAliases(params, "condicion", sheetPayload.condicion, ["Condicion", "CondiciÃ³n"]);
   appendAliases(params, "notas", sheetPayload.notas, ["Notas", "mensaje", "Mensaje"]);
 
   await fetch(GOOGLE_SCRIPT_URL, {
@@ -204,13 +229,23 @@ async function enviarSolicitudVendedor(vendedor) {
   params.append("departamento", vendedor.depto);
   params.append("municipio", vendedor.muni);
   params.append("zona", vendedor.zona);
+  params.append("origenes", vendedor.origenes.join(", "));
   params.append("marcas", vendedor.marcas.join(", "));
+  params.append("marcasSeleccionadas", vendedor.marcas.join(", "));
   params.append("lineas", vendedor.lineas.join(", "));
+  params.append("lineasSeleccionadas", vendedor.lineas.join(", "));
   params.append("categorias", vendedor.categorias.join(", "));
+  params.append("categoriasSimplificadas", vendedor.categorias.join(", "));
   params.append("condicion", vendedor.condicionPiezas);
+  params.append("procedencia", vendedor.procedencia);
   params.append("plan", vendedor.plan);
   params.append("entregas", vendedor.entregas);
   params.append("observaciones", vendedor.observaciones);
+  if (vendedor.comprobante) {
+    params.append("comprobanteBase64", vendedor.comprobante.base64);
+    params.append("comprobanteNombre", vendedor.comprobante.nombre);
+    params.append("comprobanteTipo", vendedor.comprobante.tipo);
+  }
 
   await fetch(GOOGLE_SCRIPT_URL, {
     method: "POST",
@@ -226,8 +261,8 @@ function resetCompradorForm(form) {
   buildDeptos(form.querySelector('[name="depto"]'));
   buildCilindraje(form.querySelector('[name="cilindraje"]'));
   buildYearOptions(form.querySelector('[name="anio"]'));
-  setOptions(form.querySelector('[name="linea"]'), "Línea / Modelo", []);
-  setOptions(form.querySelector('[name="parte"]'), "Parte específica", []);
+  setOptions(form.querySelector('[name="linea"]'), "LÃ­nea / Modelo", []);
+  setOptions(form.querySelector('[name="parte"]'), "Parte especÃ­fica", []);
   setOptions(form.querySelector('[name="muni"]'), "Municipio", []);
 
   const urgencia = form.elements.namedItem("urgencia");
@@ -287,7 +322,7 @@ function initFormComprador() {
     };
 
     if (!sheetPayload.marca || !sheetPayload.categoria || !sheetPayload.nombre || !sheetPayload.whatsapp) {
-      toast("Completa los campos requeridos: Marca, Categoría, Nombre y WhatsApp", "error");
+      toast("Completa los campos requeridos: Marca, CategorÃ­a, Nombre y WhatsApp", "error");
       return;
     }
 
@@ -328,7 +363,7 @@ function initFormComprador() {
     try {
       DB.addSolicitud(solicitud);
       await enviarSolicitudAGoogleSheets(sheetPayload);
-      toast("Solicitud registrada. Vendedores compatibles podrán contactarte por WhatsApp.");
+      toast("Solicitud registrada. Vendedores compatibles podrÃ¡n contactarte por WhatsApp.");
       resetCompradorForm(form);
       showPage("page-confirmacion");
     } catch (error) {
@@ -348,19 +383,35 @@ function initFormVendedor() {
   if (!form || form.dataset.initialized === "true") return;
   form.dataset.initialized = "true";
 
+  const origenesWrap = document.getElementById("vend-origenes");
   const marcasWrap = document.getElementById("vend-marcas");
-  if (marcasWrap && marcasWrap.children.length === 0) {
-    Object.keys(catalogos().marcas || {}).sort().forEach((marca) => {
+  const renderSellerBrands = () => {
+    if (!marcasWrap) return;
+    const selectedOrigins = [...form.querySelectorAll('[name="vorigenes"]:checked')].map(input => input.value);
+    const selectedBrands = new Set([...form.querySelectorAll('[name="marcas"]:checked')].map(input => input.value));
+    marcasWrap.innerHTML = "";
+    selectedOrigins.flatMap(origin => SELLER_BRAND_GROUPS[origin] || [])
+      .filter((brand, index, all) => all.indexOf(brand) === index)
+      .forEach((marca) => {
       const label = document.createElement("label");
       label.className = "check-pill";
-      label.innerHTML = `<input type="checkbox" name="marcas" value="${marca}"><span>${marca}</span>`;
+      label.innerHTML = `<input type="checkbox" name="marcas" value="${marca}" ${selectedBrands.has(marca) ? "checked" : ""}><span>${marca}</span>`;
       marcasWrap.appendChild(label);
     });
+  };
+  if (origenesWrap && origenesWrap.children.length === 0) {
+    Object.keys(SELLER_BRAND_GROUPS).forEach((origin) => {
+      const label = document.createElement("label");
+      label.className = "check-pill";
+      label.innerHTML = `<input type="checkbox" name="vorigenes" value="${origin}"><span>${origin}</span>`;
+      origenesWrap.appendChild(label);
+    });
+    origenesWrap.addEventListener("change", renderSellerBrands);
   }
 
   const categoriasWrap = document.getElementById("vend-categorias");
   if (categoriasWrap && categoriasWrap.children.length === 0) {
-    Object.keys(catalogos().categorias || {}).sort().forEach((categoria) => {
+    SELLER_CATEGORIES.forEach((categoria) => {
       const label = document.createElement("label");
       label.className = "check-pill";
       label.innerHTML = `<input type="checkbox" name="vcat" value="${categoria}"><span>${categoria}</span>`;
@@ -368,7 +419,7 @@ function initFormVendedor() {
     });
   }
 
-  // Selector de marca para filtrar líneas
+  // Selector de marca para filtrar lÃ­neas
   const filtro = document.getElementById("vend-marca-filtro");
   if (filtro && filtro.options.length <= 1) {
     Object.keys(catalogos().marcas || {}).sort().forEach((marca) => {
@@ -386,6 +437,12 @@ function initFormVendedor() {
 
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
+    const comprobanteFile = document.getElementById("comprobante-file")?.files?.[0] || null;
+    const allowedFileTypes = new Set(["application/pdf", "image/jpeg", "image/png"]);
+    if (comprobanteFile && (!allowedFileTypes.has(comprobanteFile.type) || comprobanteFile.size > 5 * 1024 * 1024)) {
+      toast("El comprobante debe ser PDF, JPG o PNG y pesar maximo 5 MB.", "error");
+      return;
+    }
     const vendedor = {
       id: genId(),
       fecha: new Date().toISOString(),
@@ -401,19 +458,26 @@ function initFormVendedor() {
       muni: getFormValue(form, "vmuni"),
       zona: getFormValue(form, "vzona"),
       horario: getFormValue(form, "vhorario"),
+      origenes: [...form.querySelectorAll('[name="vorigenes"]:checked')].map((input) => input.value),
       marcas: [...form.querySelectorAll('[name="marcas"]:checked')].map((input) => input.value),
       lineas: [...vendLineasSeleccionadas],
       categorias: [...form.querySelectorAll('[name="vcat"]:checked')].map((input) => input.value),
       condicionPiezas: getFormValue(form, "vcondicion"),
+      procedencia: getFormValue(form, "vprocedencia"),
       plan: getFormValue(form, "vplan"),
       envios: form.querySelector('[name="venvios"]')?.checked || false,
       entregas: getFormValue(form, "ventregasDetalle") ||
-        (form.querySelector('[name="ventregas"]')?.checked ? "Sí" : "No"),
-      observaciones: getFormValue(form, "vobservaciones")
+        (form.querySelector('[name="ventregas"]')?.checked ? "SÃ­" : "No"),
+      observaciones: getFormValue(form, "vobservaciones"),
+      comprobante: comprobanteFile ? {
+        nombre: comprobanteFile.name,
+        tipo: comprobanteFile.type,
+        base64: await fileToBase64(comprobanteFile)
+      } : null
     };
 
-    if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto) {
-      toast("Completa: Nombre comercial, WhatsApp y Departamento", "error");
+    if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto || !vendedor.origenes.length || !vendedor.marcas.length || !vendedor.categorias.length) {
+      toast("Completa los datos requeridos, incluyendo origenes, marcas y categorias.", "error");
       return;
     }
 
@@ -426,343 +490,22 @@ function initFormVendedor() {
 
     try {
       await enviarSolicitudVendedor(vendedor);
-      DB.addVendedor(vendedor);
-      toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
+      const vendedorLocal = Object.assign({}, vendedor);
+      delete vendedorLocal.comprobante;
+      DB.addVendedor(vendedorLocal);
+      toast("Â¡Solicitud de adhesiÃ³n enviada! Te contactaremos pronto.");
       form.reset();
       vendLineasSeleccionadas.clear();
       renderLineasVendedor();
-      showPage("page-vendedor-ok");
-    } catch (error) {
-      console.error("Error enviando solicitud de vendedor", error);
-      toast("No se pudo enviar la solicitud. Intenta de nuevo.", "error");
-    } finally {
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.innerHTML = originalText;
-      }
-    }
-  });
-}
-
-/* ══════════════════════════════════════════════════════════════
-   LÍNEAS DEL VENDEDOR (filtro por marca + líneas personalizadas)
-   ══════════════════════════════════════════════════════════════ */
-
-const vendLineasSeleccionadas = new Set();
-
-function syncLineasHidden() {
-  const hidden = document.getElementById("vlineas-selected");
-  if (hidden) hidden.value = [...vendLineasSeleccionadas].join(", ");
-}
-
-function renderLineasVendedor() {
-  const wrap = document.getElementById("vend-lineas");
-  if (!wrap) return;
-
-  const marca = document.getElementById("vend-marca-filtro")?.value || "";
-  const cat = catalogos();
-  const deMarca = marca && cat.marcas?.[marca] ? cat.marcas[marca] : [];
-
-  // Mostramos las líneas de la marca filtrada + todas las ya seleccionadas
-  const visibles = [...new Set([...deMarca, ...vendLineasSeleccionadas])].sort();
-
-  wrap.innerHTML = "";
-  if (visibles.length === 0) {
-    wrap.innerHTML = '<p class="muted" style="padding:6px">Selecciona una marca arriba para ver sus líneas.</p>';
-    return;
-  }
-
-  visibles.forEach((linea) => {
-    const label = document.createElement("label");
-    label.className = "check-pill";
-    const checked = vendLineasSeleccionadas.has(linea) ? "checked" : "";
-    label.innerHTML = `<input type="checkbox" value="${linea}" ${checked}><span>${linea}</span>`;
-    label.querySelector("input").addEventListener("change", function () {
-      if (this.checked) vendLineasSeleccionadas.add(linea);
-      else vendLineasSeleccionadas.delete(linea);
-      syncLineasHidden();
-    });
-    wrap.appendChild(label);
-  });
-  syncLineasHidden();
-}
-
-function filtrarLineasVendedor() {
-  renderLineasVendedor();
-}
-
-function agregarLineaCustom() {
-  const input = document.getElementById("vend-linea-custom-input");
-  const valor = (input?.value || "").trim();
-  if (!valor) {
-    toast("Escribe el nombre de la línea que quieres agregar", "error");
-    return;
-  }
-  vendLineasSeleccionadas.add(valor);
-  if (input) input.value = "";
-  renderLineasVendedor();
-  toast(`Línea "${valor}" agregada`);
-}
-
-/* ══════════════════════════════════════════════════════════════
-   COMPROBANTE DE PAGO (vista previa local)
-   ══════════════════════════════════════════════════════════════ */
-
-function mostrarComprobante(input) {
-  const preview = document.getElementById("comprobante-preview");
-  if (!preview) return;
-  const file = input.files && input.files[0];
-  if (!file) { preview.style.display = "none"; return; }
-
-  if (file.size > 5 * 1024 * 1024) {
-    toast("El archivo supera los 5MB. Usa una imagen más liviana.", "error");
-    input.value = "";
-    preview.style.display = "none";
-    return;
-  }
-
-  preview.style.display = "block";
-  if (file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
-          <img src="${e.target.result}" alt="Comprobante" style="width:54px;height:54px;object-fit:cover;border-radius:3px">
-          <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
-        </div>`;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    preview.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
-        <span style="font-size:26px">🧾</span>
-        <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
-      </div>`;
-  }
-}
-
-function handleComprobanteDrop(event) {
-  event.preventDefault();
-  document.getElementById("comprobante-drop")?.classList.remove("over");
-  const fileInput = document.getElementById("comprobante-file");
-  if (fileInput && event.dataTransfer.files.length > 0) {
-    fileInput.files = event.dataTransfer.files;
-    mostrarComprobante(fileInput);
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   LOGIN ADMIN (con bloqueo tras 3 intentos, según guía)
-   ══════════════════════════════════════════════════════════════ */
-
-let adminIntentosFallidos = 0;
-let adminBloqueadoHasta = 0;
-let adminSessionPassword = "";
-let adminPendingRequests = [];
-let adminDashboardData = null;
-
-/* ══════════════════════════════════════════════════════════════
-   LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
-   ══════════════════════════════════════════════════════════════ */
-
-async function adminRequest(action, data = {}) {
-  const params = new URLSearchParams();
-  params.append("accion", action);
-  params.append("adminPassword", adminSessionPassword);
-  Object.entries(data).forEach(([key, value]) => params.append(key, String(value)));
-
-  const response = await fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    body: params
-  });
-
-  if (!response.ok) throw new Error("No se pudo conectar con el panel administrativo.");
-  const result = await response.json();
-  if (!result.ok) throw new Error(result.error || "La operación no pudo completarse.");
-  return result;
-}
-
-async function checkAdminLogin() {
-  const input = document.getElementById("admin-password");
-  const errorEl = document.getElementById("admin-error");
-  const button = document.getElementById("admin-login-button");
-  if (!input) return;
-
-  const ahora = Date.now();
-  if (ahora < adminBloqueadoHasta) {
-    const segundos = Math.ceil((adminBloqueadoHasta - ahora) / 1000);
-    if (errorEl) {
-      errorEl.textContent = `Demasiados intentos. Espera ${segundos} segundos.`;
-      errorEl.style.display = "block";
-    }
-    return;
-  }
-
-  const password = input.value;
-  if (!password) {
-    if (errorEl) {
-      errorEl.textContent = "Ingresa la contraseña administrativa.";
-      errorEl.style.display = "block";
-    }
-    return;
-  }
-
-  const originalText = button?.textContent || "Ingresar";
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Verificando...";
-  }
-
-  adminSessionPassword = password;
-
-  try {
-    const result = await adminRequest("admin_dashboard_resumen");
-    adminIntentosFallidos = 0;
-    adminDashboardData = result;
-    adminPendingRequests = Array.isArray(result.pendientesVendedores) ? result.pendientesVendedores : [];
-    input.value = "";
-    if (errorEl) errorEl.style.display = "none";
-    showPage("page-admin");
-    renderPanelAdmin();
-  } catch (error) {
-    adminSessionPassword = "";
-    adminIntentosFallidos += 1;
-
-    if (adminIntentosFallidos >= 3) {
-      adminBloqueadoHasta = ahora + 30000;
-      adminIntentosFallidos = 0;
-      if (errorEl) errorEl.textContent = "Demasiados intentos. Espera 30 segundos.";
-    } else if (errorEl) {
-      errorEl.textContent = error.message || "Contraseña incorrecta.";
-    }
-
-    if (errorEl) errorEl.style.display = "block";
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent = originalText;
-    }
-  }
-}
-
-function toggleAdminPasswordVisibility() {
-  const input = document.getElementById("admin-password");
-  const button = document.getElementById("admin-password-toggle");
-  if (!input || !button) return;
-
-  const willShow = input.type === "password";
-  input.type = willShow ? "text" : "password";
-  button.setAttribute("aria-label", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
-  button.setAttribute("aria-pressed", String(willShow));
-  button.setAttribute("title", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
-  button.innerHTML = `<i data-lucide="${willShow ? "eye-off" : "eye"}" aria-hidden="true"></i>`;
-  window.lucide?.createIcons();
-  input.focus();
-}
-
-function checkVendorLogin() {
-  const userInput = document.getElementById("vendor-user");
-  const passInput = document.getElementById("vendor-pass");
-  const errorEl = document.getElementById("vendor-error");
-  if (!userInput || !passInput) return;
-
-  const user = userInput.value.trim();
-  const pass = passInput.value;
-  const acceso = DB.getAccesos().find((a) => a.user === user && a.pass === pass && a.activo);
-
-  if (acceso) {
-    if (errorEl) errorEl.style.display = "none";
-    userInput.value = "";
-    passInput.value = "";
-    showPage("page-panel-vendedor");
-    renderPanelVendedor();
-    toast(`Bienvenido, ${acceso.nombre}`);
-  } else if (errorEl) {
-    errorEl.style.display = "block";
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   GESTIÓN DE ACCESOS (pestaña Accesos del panel admin)
-   ══════════════════════════════════════════════════════════════ */
-
-function mostrarMsgAcceso(texto, esError) {
-  const msg = document.getElementById("acceso-msg");
-  if (!msg) return;
-  msg.textContent = texto;
-  msg.style.display = "block";
-  msg.style.color = esError ? "#E0655A" : "#7FB069";
-  msg.style.fontWeight = "700";
-}
-
-function agregarVendedorAcceso() {
-  const nombre = (document.getElementById("new-nombre")?.value || "").trim();
-  const plan = document.getElementById("new-plan")?.value || "Pro";
-  const user = (document.getElementById("new-user")?.value || "").trim();
-  const pass = (document.getElementById("new-pass")?.value || "").trim();
-
-  if (!nombre || !user || !pass) {
-    mostrarMsgAcceso("Completa: nombre del negocio, usuario y contraseña.", true);
-    return;
-  }
-  if (/\s/.test(user)) {
-    mostrarMsgAcceso("El usuario no debe llevar espacios.", true);
-    return;
-  }
-
-  const accesos = DB.getAccesos();
-  if (accesos.some((a) => a.user === user)) {
-    mostrarMsgAcceso(`El usuario "${user}" ya existe. Elige otro.`, true);
-    return;
-  }
-
-  accesos.unshift({ id: genId(), nombre, plan, user, pass, activo: true, fecha: new Date().toISOString() });
-  DB.saveAccesos(accesos);
-  mostrarMsgAcceso(`Vendedor agregado. Usuario: ${user}`, false);
-
-  ["new-nombre", "new-user", "new-pass"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  renderListaAccesos();
-}
-
-function toggleAcceso(id) {
-  const accesos = DB.getAccesos();
-  const acceso = accesos.find((a) => a.id === id);
-  if (!acceso) return;
-  acceso.activo = !acceso.activo;
-  DB.saveAccesos(accesos);
-  toast(acceso.activo ? `Acceso de "${acceso.nombre}" reactivado` : `Acceso de "${acceso.nombre}" desactivado`);
-  renderListaAccesos();
-}
-
-function renderListaAccesos() {
-  const lista = document.getElementById("lista-accesos");
-  if (!lista) return;
-  const accesos = DB.getAccesos();
-
-  if (accesos.length === 0) {
-    lista.innerHTML = '<div class="empty-state" style="padding:34px 20px"><p>Aún no has creado usuarios de vendedores.</p></div>';
-    return;
-  }
-
-  lista.innerHTML = accesos.map((a) => `
-    <div class="acceso-row">
-      <div class="a-info">
-        <span class="a-nombre">${a.nombre}</span>
-        <span class="a-user">Usuario: ${a.user} · Contraseña: ${a.pass}</span>
-      </div>
-      <span class="a-plan">${a.plan}</span>
-      <span class="a-estado ${a.activo ? "on" : "off"}">${a.activo ? "● Activo" : "● Inactivo"}</span>
+    …3796 tokens truncated…  <span class="a-estado ${a.activo ? "on" : "off"}">${a.activo ? "â— Activo" : "â— Inactivo"}</span>
       <button class="btn-ghost" onclick="toggleAcceso('${a.id}')">${a.activo ? "Desactivar" : "Reactivar"}</button>
     </div>
   `).join("");
 }
 
-/* ══════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    PANELES
-   ══════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function renderPanelVendedor() {
   const solicitudes = DB.getSolicitudes();
@@ -775,7 +518,7 @@ function renderPanelVendedor() {
   if (!lista) return;
 
   if (solicitudes.length === 0) {
-    lista.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>Aún no hay solicitudes.</p></div>';
+    lista.innerHTML = '<div class="empty-state"><div class="empty-icon">ðŸ“‹</div><p>AÃºn no hay solicitudes.</p></div>';
     return;
   }
 
@@ -786,9 +529,9 @@ function renderPanelVendedor() {
         <span class="badge">${s.urgencia || "Media"}</span>
       </div>
       <div class="sol-meta">
-        <span>🚗 ${s.marca || ""} ${s.linea || ""} ${s.anio || ""}</span>
-        <span>📍 ${s.muni || ""}, ${s.depto || ""}</span>
-        <span>👤 ${s.nombre || ""} · ${s.waComprador || ""}</span>
+        <span>ðŸš— ${s.marca || ""} ${s.linea || ""} ${s.anio || ""}</span>
+        <span>ðŸ“ ${s.muni || ""}, ${s.depto || ""}</span>
+        <span>ðŸ‘¤ ${s.nombre || ""} Â· ${s.waComprador || ""}</span>
       </div>
     </div>
   `).join("");
@@ -855,14 +598,14 @@ function renderAdminVendedoresDashboard(vendors) {
   const container = document.getElementById("admin-vendedores-dashboard");
   if (!container) return;
   const active = vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length;
-  setAdminText("admin-vendedores-resumen", `${active} activos · ${vendors.length - active} inactivos/retirados`);
+  setAdminText("admin-vendedores-resumen", `${active} activos Â· ${vendors.length - active} inactivos/retirados`);
   if (!vendors.length) {
     container.innerHTML = adminEmpty("Sin vendedores registrados");
     return;
   }
   container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Departamento</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.departamento || "—")}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>CategorÃ­as</th><th>Departamento</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "â€”")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.departamento || "â€”")}</td></tr>`).join("")}</tbody>
   </table></div>`;
 }
 
@@ -870,15 +613,15 @@ function renderAdminMembresias(vendors, summary) {
   const container = document.getElementById("admin-membresias-dashboard");
   if (!container) return;
   if (!vendors.length) {
-    container.innerHTML = adminEmpty("Sin membresías registradas");
+    container.innerHTML = adminEmpty("Sin membresÃ­as registradas");
     return;
   }
-  const formatDate = value => value ? new Date(value).toLocaleDateString("es-GT") : "—";
+  const formatDate = value => value ? new Date(value).toLocaleDateString("es-GT") : "â€”";
   container.innerHTML = `<div class="admin-membership-summary">
       <span>Vigentes <strong>${summary.vigentes || 0}</strong></span><span>Por vencer <strong>${summary.porVencer || 0}</strong></span><span>Vencidas <strong>${summary.vencidas || 0}</strong></span><span>Sin configurar <strong>${summary.sinConfigurar || 0}</strong></span>
     </div><div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-      <thead><tr><th>Vendedor</th><th>Plan</th><th>Inicio</th><th>Vencimiento</th><th>Estado</th><th>Días</th></tr></thead>
-      <tbody>${vendors.map(v => `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${normalizeAdminValue(v.estadoMembresia).replaceAll(" ", "-")}">${escapeHtml(v.estadoMembresia || "Sin configurar")}</span></td><td>${v.diasRestantes ?? "—"}</td></tr>`).join("")}</tbody>
+      <thead><tr><th>Vendedor</th><th>Plan</th><th>Inicio</th><th>Vencimiento</th><th>Estado</th><th>DÃ­as</th></tr></thead>
+      <tbody>${vendors.map(v => `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${normalizeAdminValue(v.estadoMembresia).replaceAll(" ", "-")}">${escapeHtml(v.estadoMembresia || "Sin configurar")}</span></td><td>${v.diasRestantes ?? "â€”"}</td></tr>`).join("")}</tbody>
     </table></div>`;
 }
 
@@ -886,7 +629,7 @@ function renderAdminTop(id, entries) {
   const container = document.getElementById(id);
   if (!container) return;
   if (!Array.isArray(entries) || !entries.length) {
-    container.innerHTML = adminEmpty("Aún no hay suficientes solicitudes para métricas");
+    container.innerHTML = adminEmpty("AÃºn no hay suficientes solicitudes para mÃ©tricas");
     return;
   }
   const max = Math.max(...entries.map(item => Number(item.count) || 0), 1);
@@ -897,7 +640,7 @@ function renderAdminEnvios(sends) {
   const container = document.getElementById("admin-envios-resumen");
   if (!container) return;
   const errors = Array.isArray(sends.ultimosErrores) ? sends.ultimosErrores : [];
-  container.innerHTML = `<dl class="admin-send-grid"><div><dt>Pendientes manuales</dt><dd>${Number(sends.pendientesManuales) || 0}</dd></div><div><dt>Total envíos</dt><dd>${Number(sends.total) || 0}</dd></div><div><dt>Mayor asignación</dt><dd>${escapeHtml(sends.vendedorConMasLeads?.name || "—")}</dd></div></dl>
+  container.innerHTML = `<dl class="admin-send-grid"><div><dt>Pendientes manuales</dt><dd>${Number(sends.pendientesManuales) || 0}</dd></div><div><dt>Total envÃ­os</dt><dd>${Number(sends.total) || 0}</dd></div><div><dt>Mayor asignaciÃ³n</dt><dd>${escapeHtml(sends.vendedorConMasLeads?.name || "â€”")}</dd></div></dl>
     ${errors.length ? `<div class="admin-error-list">${errors.map(error => `<p><strong>${escapeHtml(error.vendedor || "Sin vendedor")}</strong><span>${escapeHtml(error.observaciones || error.estado || "Error sin detalle")}</span></p>`).join("")}</div>` : adminEmpty("Sin errores recientes")}`;
 }
 
@@ -925,19 +668,19 @@ function renderAdminSolicitudesVendedores() {
             <h4>${escapeHtml(request.nombreComercial || "Sin nombre comercial")}</h4>
           </div>
           <div class="admin-request-summary">
-            <span class="badge">${escapeHtml(request.plan || "Básico")}</span>
+            <span class="badge">${escapeHtml(request.plan || "BÃ¡sico")}</span>
             <time>${formatAdminDate(request.fecha)}</time>
           </div>
         </header>
         <dl class="admin-request-grid">
-          <div><dt>Contacto</dt><dd>${escapeHtml(request.nombreContacto || "—")}</dd></div>
-          <div><dt>WhatsApp</dt><dd>${escapeHtml(request.whatsapp || "—")}</dd></div>
-          <div><dt>Departamento</dt><dd>${escapeHtml(request.departamento || "—")}</dd></div>
-          <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" · ") || "—")}</dd></div>
+          <div><dt>Contacto</dt><dd>${escapeHtml(request.nombreContacto || "â€”")}</dd></div>
+          <div><dt>WhatsApp</dt><dd>${escapeHtml(request.whatsapp || "â€”")}</dd></div>
+          <div><dt>Departamento</dt><dd>${escapeHtml(request.departamento || "â€”")}</dd></div>
+          <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" Â· ") || "â€”")}</dd></div>
           <div><dt>Marcas</dt><dd>${escapeHtml(request.marcas || "Todas")}</dd></div>
-          <div><dt>Categorías</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
-          <div><dt>Condición</dt><dd>${escapeHtml(request.condicion || "Todas")}</dd></div>
-          <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
+          <div><dt>CategorÃ­as</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
+          <div><dt>CondiciÃ³n</dt><dd>${escapeHtml(request.condicion || "Todas")}</dd></div>
+          <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "â€”")}</dd></div>
         </dl>
         ${request.observaciones ? `<p class="admin-request-notes"><strong>Observaciones:</strong> ${escapeHtml(request.observaciones)}</p>` : ""}
         <footer class="admin-request-actions">
@@ -981,7 +724,7 @@ const cargarSolicitudesAdmin = cargarDashboardAdmin;
 
 async function aprobarSolicitudAdmin(rowNumber) {
   if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
-  if (!window.confirm("¿Aprobar este vendedor y activarlo para recibir leads?")) return;
+  if (!window.confirm("Â¿Aprobar este vendedor y activarlo para recibir leads?")) return;
 
   try {
     await adminRequest("admin_aprobar_vendedor", { rowNumber });
@@ -994,7 +737,7 @@ async function aprobarSolicitudAdmin(rowNumber) {
 
 async function rechazarSolicitudAdmin(rowNumber) {
   if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
-  if (!window.confirm("¿Marcar esta solicitud como rechazada? La fila se conservará en Sheets.")) return;
+  if (!window.confirm("Â¿Marcar esta solicitud como rechazada? La fila se conservarÃ¡ en Sheets.")) return;
 
   try {
     await adminRequest("admin_rechazar_vendedor", { rowNumber });
@@ -1023,14 +766,14 @@ function renderAdminSolicitudes() {
   if (!container) return;
 
   if (solicitudes.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>Sin solicitudes aún.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">ðŸ“‹</div><p>Sin solicitudes aÃºn.</p></div>';
     return;
   }
 
   container.innerHTML = `
     <div class="admin-table-wrap">
       <table class="admin-table">
-        <thead><tr><th>Fecha</th><th>Pieza</th><th>Marca</th><th>Línea</th><th>Año</th><th>Comprador</th><th>Urgencia</th></tr></thead>
+        <thead><tr><th>Fecha</th><th>Pieza</th><th>Marca</th><th>LÃ­nea</th><th>AÃ±o</th><th>Comprador</th><th>Urgencia</th></tr></thead>
         <tbody>
           ${solicitudes.map((s) => `
             <tr>
@@ -1059,7 +802,7 @@ function renderAdminVendedores() {
   if (!container) return;
 
   if (vendedores.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🏪</div><p>Sin vendedores registrados.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">ðŸª</div><p>Sin vendedores registrados.</p></div>';
     return;
   }
 
@@ -1070,9 +813,9 @@ function renderAdminVendedores() {
         ${v.plan ? `<span class="badge">${v.plan}</span>` : ""}
       </div>
       <div class="sol-meta">
-        <span>📱 ${v.whatsapp}</span>
-        <span>📍 ${v.muni || ""}, ${v.depto || ""}</span>
-        ${v.tipo ? `<span>🏪 ${v.tipo}</span>` : ""}
+        <span>ðŸ“± ${v.whatsapp}</span>
+        <span>ðŸ“ ${v.muni || ""}, ${v.depto || ""}</span>
+        ${v.tipo ? `<span>ðŸª ${v.tipo}</span>` : ""}
       </div>
     </div>
   `).join("");
@@ -1151,9 +894,9 @@ function setupNavigation() {
   });
 }
 
-/* ══════════════════════════════════════════════════════════════
-   RUTAS OCULTAS: #admin y #panel (según guía de administración)
-   ══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   RUTAS OCULTAS: #admin y #panel (segÃºn guÃ­a de administraciÃ³n)
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function manejarHash() {
   const hash = (window.location.hash || "").toLowerCase();
@@ -1179,3 +922,4 @@ document.addEventListener("DOMContentLoaded", () => {
   manejarHash();
   window.addEventListener("hashchange", manejarHash);
 });
+
