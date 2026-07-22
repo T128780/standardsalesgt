@@ -15,15 +15,24 @@ function catalogos() {
 
 const SELLER_BRAND_GROUPS = {
   "Japonés": ["Toyota", "Nissan", "Mitsubishi", "Honda", "Mazda", "Subaru", "Suzuki", "Isuzu", "Lexus", "Acura", "Infiniti", "Daihatsu", "Otros japoneses"],
-  "JDM": ["Nissan Skyline", "Nissan Silvia", "Toyota Supra", "Toyota Chaser", "Mitsubishi Lancer Evolution", "Subaru Impreza WRX/STI", "Honda Integra", "Honda Civic Type R", "Mazda RX-7", "Mazda RX-8", "Otros JDM"],
+  "JDM": ["Nissan Skyline", "Nissan Silvia", "Toyota Supra", "Toyota Chaser", "Toyota Mark II", "Mitsubishi Lancer Evolution", "Subaru Impreza WRX/STI", "Honda Integra", "Honda Civic Type R", "Mazda RX-7", "Mazda RX-8", "Otros JDM"],
   "Americano": ["Ford", "Chevrolet", "GMC", "Dodge", "Jeep", "Chrysler", "Cadillac", "Lincoln", "Ram", "Tesla", "Otros americanos"],
-  "Europeo": ["Volkswagen", "Audi", "BMW", "Mercedes-Benz", "Porsche", "Peugeot", "Renault", "Citroen", "Volvo", "Fiat", "Mini", "Land Rover", "Jaguar", "Opel", "Otros europeos"],
+  "Europeo": ["Volkswagen", "Audi", "BMW", "Mercedes-Benz", "Porsche", "Peugeot", "Renault", "Citroën", "Volvo", "Fiat", "Mini", "Land Rover", "Jaguar", "Opel", "Seat", "Skoda", "Otros europeos"],
   "Chino": ["Changan", "BYD", "Geely", "Great Wall", "Haval", "JAC", "MG", "Chery", "BAIC", "Dongfeng", "Foton", "Otros chinos"],
   "Coreano": ["Hyundai", "Kia", "Genesis", "SsangYong/KGM", "Daewoo", "Otros coreanos"],
   "Otros": ["Tata", "Mahindra", "Maruti Suzuki", "Proton", "Perodua", "Otras marcas"]
 };
 
 const SELLER_CATEGORIES = ["Carrocería", "Motor", "Eléctrico", "Piezas mecánicas", "Otro"];
+const SELLER_ORIGIN_TITLES = {
+  "Japonés": "Marcas japonesas que trabajas",
+  "JDM": "Marcas JDM que trabajas",
+  "Americano": "Marcas americanas que trabajas",
+  "Europeo": "Marcas europeas que trabajas",
+  "Coreano": "Marcas coreanas que trabajas",
+  "Chino": "Marcas chinas que trabajas",
+  "Otros": "Otras marcas que trabajas"
+};
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -386,13 +395,18 @@ function initFormVendedor() {
     const selectedOrigins = [...form.querySelectorAll('[name="vorigenes"]:checked')].map(input => input.value);
     const selectedBrands = new Set([...form.querySelectorAll('[name="marcas"]:checked')].map(input => input.value));
     marcasWrap.innerHTML = "";
-    selectedOrigins.flatMap(origin => SELLER_BRAND_GROUPS[origin] || [])
-      .filter((brand, index, all) => all.indexOf(brand) === index)
-      .forEach((marca) => {
-      const label = document.createElement("label");
-      label.className = "check-pill";
-      label.innerHTML = `<input type="checkbox" name="marcas" value="${marca}" ${selectedBrands.has(marca) ? "checked" : ""}><span>${marca}</span>`;
-      marcasWrap.appendChild(label);
+    selectedOrigins.forEach((origin) => {
+      const group = document.createElement("section");
+      group.className = "seller-brand-group";
+      group.innerHTML = `<h4>${SELLER_ORIGIN_TITLES[origin] || origin}</h4><div class="check-pills"></div>`;
+      const pills = group.querySelector(".check-pills");
+      (SELLER_BRAND_GROUPS[origin] || []).forEach((marca) => {
+        const label = document.createElement("label");
+        label.className = "check-pill";
+        label.innerHTML = `<input type="checkbox" name="marcas" value="${marca}" ${selectedBrands.has(marca) ? "checked" : ""}><span>${marca}</span>`;
+        pills.appendChild(label);
+      });
+      marcasWrap.appendChild(group);
     });
   };
   if (origenesWrap && origenesWrap.children.length === 0) {
