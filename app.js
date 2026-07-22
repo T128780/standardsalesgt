@@ -1,11 +1,11 @@
 Exit code: 0
-Wall time: 1.9 seconds
+Wall time: 1.7 seconds
 Total output lines: 1244
 Output:
-// Standard Repuestos GT â€” App Logic
-// v20: RediseÃ±o de lujo. Misma lÃ³gica de envÃ­o a Google Sheets + WhatsApp.
+// Standard Repuestos GT — App Logic
+// v20: Rediseño de lujo. Misma lógica de envío a Google Sheets + WhatsApp.
 //      Se agregan las funciones de paneles (admin, vendedor y accesos) que
-//      la versiÃ³n anterior referenciaba pero nunca incluyÃ³.
+//      la versión anterior referenciaba pero nunca incluyó.
 
 const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
@@ -18,7 +18,7 @@ function catalogos() {
 }
 
 const SELLER_BRAND_GROUPS = {
-  "JaponÃ©s": ["Toyota", "Nissan", "Mitsubishi", "Honda", "Mazda", "Subaru", "Suzuki", "Isuzu", "Lexus", "Acura", "Infiniti", "Daihatsu", "Otros japoneses"],
+  "Japonés": ["Toyota", "Nissan", "Mitsubishi", "Honda", "Mazda", "Subaru", "Suzuki", "Isuzu", "Lexus", "Acura", "Infiniti", "Daihatsu", "Otros japoneses"],
   "JDM": ["Nissan Skyline", "Nissan Silvia", "Toyota Supra", "Toyota Chaser", "Mitsubishi Lancer Evolution", "Subaru Impreza WRX/STI", "Honda Integra", "Honda Civic Type R", "Mazda RX-7", "Mazda RX-8", "Otros JDM"],
   "Americano": ["Ford", "Chevrolet", "GMC", "Dodge", "Jeep", "Chrysler", "Cadillac", "Lincoln", "Ram", "Tesla", "Otros americanos"],
   "Europeo": ["Volkswagen", "Audi", "BMW", "Mercedes-Benz", "Porsche", "Peugeot", "Renault", "Citroen", "Volvo", "Fiat", "Mini", "Land Rover", "Jaguar", "Opel", "Otros europeos"],
@@ -27,7 +27,7 @@ const SELLER_BRAND_GROUPS = {
   "Otros": ["Tata", "Mahindra", "Maruti Suzuki", "Proton", "Perodua", "Otras marcas"]
 };
 
-const SELLER_CATEGORIES = ["CarrocerÃ­a", "Motor", "ElÃ©ctrico", "Piezas mecÃ¡nicas", "Otro"];
+const SELLER_CATEGORIES = ["Carrocería", "Motor", "Eléctrico", "Piezas mecánicas", "Otro"];
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -125,20 +125,20 @@ function buildLineas(marcaSelect, lineaSelect) {
   const cat = catalogos();
   const marca = marcaSelect?.value || "";
   const values = marca && cat.marcas?.[marca] ? cat.marcas[marca] : [];
-  setOptions(lineaSelect, "LÃ­nea / Modelo", values);
+  setOptions(lineaSelect, "Línea / Modelo", values);
 }
 
 function buildCategorias(select) {
   const cat = catalogos();
   const values = Object.keys(cat.categorias || {}).sort();
-  setOptions(select, "CategorÃ­a del repuesto", values);
+  setOptions(select, "Categoría del repuesto", values);
 }
 
 function buildPartes(categoriaSelect, parteSelect) {
   const cat = catalogos();
   const categoria = categoriaSelect?.value || "";
   const values = categoria && cat.categorias?.[categoria] ? cat.categorias[categoria] : [];
-  setOptions(parteSelect, "Parte especÃ­fica", values);
+  setOptions(parteSelect, "Parte específica", values);
 }
 
 function buildDeptos(select) {
@@ -157,7 +157,7 @@ function buildMunicipios(deptoSelect, muniSelect) {
 function buildYearOptions(select) {
   if (!select) return;
   const current = new Date().getFullYear();
-  select.innerHTML = '<option value="">AÃ±o</option>';
+  select.innerHTML = '<option value="">Año</option>';
   for (let year = current; year >= 1980; year -= 1) {
     const option = document.createElement("option");
     option.value = String(year);
@@ -169,7 +169,7 @@ function buildYearOptions(select) {
 function buildCilindraje(select) {
   const cat = catalogos();
   const values = Object.keys(cat.cilindraje || {}).sort((a, b) => Number(a) - Number(b));
-  setOptions(select, "No sÃ©", values.map((v) => `${v}`));
+  setOptions(select, "No sé", values.map((v) => `${v}`));
 }
 
 function syncCC(cilindrajeSelect, ccSelect) {
@@ -201,13 +201,13 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   appendAliases(params, "nombre", sheetPayload.nombre, ["Nombre"]);
   appendAliases(params, "whatsapp", sheetPayload.whatsapp, ["WhatsApp", "waComprador"]);
   appendAliases(params, "marca", sheetPayload.marca, ["Marca"]);
-  appendAliases(params, "linea", sheetPayload.linea, ["Linea", "LÃ­nea"]);
-  appendAliases(params, "categoria", sheetPayload.categoria, ["Categoria", "CategorÃ­a"]);
+  appendAliases(params, "linea", sheetPayload.linea, ["Linea", "Línea"]);
+  appendAliases(params, "categoria", sheetPayload.categoria, ["Categoria", "Categoría"]);
   appendAliases(params, "parte", sheetPayload.parte, ["Parte"]);
-  appendAliases(params, "anio", sheetPayload.anio, ["AÃ±o", "aÃ±o", "Anio"]);
+  appendAliases(params, "anio", sheetPayload.anio, ["Año", "año", "Anio"]);
   appendAliases(params, "depto", sheetPayload.depto, ["Depto", "Departamento"]);
   appendAliases(params, "urgencia", sheetPayload.urgencia, ["Urgencia"]);
-  appendAliases(params, "condicion", sheetPayload.condicion, ["Condicion", "CondiciÃ³n"]);
+  appendAliases(params, "condicion", sheetPayload.condicion, ["Condicion", "Condición"]);
   appendAliases(params, "notas", sheetPayload.notas, ["Notas", "mensaje", "Mensaje"]);
 
   await fetch(GOOGLE_SCRIPT_URL, {
@@ -261,8 +261,8 @@ function resetCompradorForm(form) {
   buildDeptos(form.querySelector('[name="depto"]'));
   buildCilindraje(form.querySelector('[name="cilindraje"]'));
   buildYearOptions(form.querySelector('[name="anio"]'));
-  setOptions(form.querySelector('[name="linea"]'), "LÃ­nea / Modelo", []);
-  setOptions(form.querySelector('[name="parte"]'), "Parte especÃ­fica", []);
+  setOptions(form.querySelector('[name="linea"]'), "Línea / Modelo", []);
+  setOptions(form.querySelector('[name="parte"]'), "Parte específica", []);
   setOptions(form.querySelector('[name="muni"]'), "Municipio", []);
 
   const urgencia = form.elements.namedItem("urgencia");
@@ -322,7 +322,7 @@ function initFormComprador() {
     };
 
     if (!sheetPayload.marca || !sheetPayload.categoria || !sheetPayload.nombre || !sheetPayload.whatsapp) {
-      toast("Completa los campos requeridos: Marca, CategorÃ­a, Nombre y WhatsApp", "error");
+      toast("Completa los campos requeridos: Marca, Categoría, Nombre y WhatsApp", "error");
       return;
     }
 
@@ -363,7 +363,7 @@ function initFormComprador() {
     try {
       DB.addSolicitud(solicitud);
       await enviarSolicitudAGoogleSheets(sheetPayload);
-      toast("Solicitud registrada. Vendedores compatibles podrÃ¡n contactarte por WhatsApp.");
+      toast("Solicitud registrada. Vendedores compatibles podrán contactarte por WhatsApp.");
       resetCompradorForm(form);
       showPage("page-confirmacion");
     } catch (error) {
@@ -419,7 +419,7 @@ function initFormVendedor() {
     });
   }
 
-  // Selector de marca para filtrar lÃ­neas
+  // Selector de marca para filtrar líneas
   const filtro = document.getElementById("vend-marca-filtro");
   if (filtro && filtro.options.length <= 1) {
     Object.keys(catalogos().marcas || {}).sort().forEach((marca) => {
@@ -467,7 +467,7 @@ function initFormVendedor() {
       plan: getFormValue(form, "vplan"),
       envios: form.querySelector('[name="venvios"]')?.checked || false,
       entregas: getFormValue(form, "ventregasDetalle") ||
-        (form.querySelector('[name="ventregas"]')?.checked ? "SÃ­" : "No"),
+        (form.querySelector('[name="ventregas"]')?.checked ? "Sí" : "No"),
       observaciones: getFormValue(form, "vobservaciones"),
       comprobante: comprobanteFile ? {
         nombre: comprobanteFile.name,
@@ -493,19 +493,57 @@ function initFormVendedor() {
       const vendedorLocal = Object.assign({}, vendedor);
       delete vendedorLocal.comprobante;
       DB.addVendedor(vendedorLocal);
-      toast("Â¡Solicitud de adhesiÃ³n enviada! Te contactaremos pronto.");
+      toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
       form.reset();
       vendLineasSeleccionadas.clear();
       renderLineasVendedor();
-    …3796 tokens truncated…  <span class="a-estado ${a.activo ? "on" : "off"}">${a.activo ? "â— Activo" : "â— Inactivo"}</span>
+      showPage("page-vendedor-ok");
+    } catch (error) {
+     …2861 tokens truncated…rio: ${user}`, false);
+
+  ["new-nombre", "new-user", "new-pass"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  renderListaAccesos();
+}
+
+function toggleAcceso(id) {
+  const accesos = DB.getAccesos();
+  const acceso = accesos.find((a) => a.id === id);
+  if (!acceso) return;
+  acceso.activo = !acceso.activo;
+  DB.saveAccesos(accesos);
+  toast(acceso.activo ? `Acceso de "${acceso.nombre}" reactivado` : `Acceso de "${acceso.nombre}" desactivado`);
+  renderListaAccesos();
+}
+
+function renderListaAccesos() {
+  const lista = document.getElementById("lista-accesos");
+  if (!lista) return;
+  const accesos = DB.getAccesos();
+
+  if (accesos.length === 0) {
+    lista.innerHTML = '<div class="empty-state" style="padding:34px 20px"><p>Aún no has creado usuarios de vendedores.</p></div>';
+    return;
+  }
+
+  lista.innerHTML = accesos.map((a) => `
+    <div class="acceso-row">
+      <div class="a-info">
+        <span class="a-nombre">${a.nombre}</span>
+        <span class="a-user">Usuario: ${a.user} · Contraseña: ${a.pass}</span>
+      </div>
+      <span class="a-plan">${a.plan}</span>
+      <span class="a-estado ${a.activo ? "on" : "off"}">${a.activo ? "● Activo" : "● Inactivo"}</span>
       <button class="btn-ghost" onclick="toggleAcceso('${a.id}')">${a.activo ? "Desactivar" : "Reactivar"}</button>
     </div>
   `).join("");
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ══════════════════════════════════════════════════════════════
    PANELES
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ══════════════════════════════════════════════════════════════ */
 
 function renderPanelVendedor() {
   const solicitudes = DB.getSolicitudes();
@@ -518,7 +556,7 @@ function renderPanelVendedor() {
   if (!lista) return;
 
   if (solicitudes.length === 0) {
-    lista.innerHTML = '<div class="empty-state"><div class="empty-icon">ðŸ“‹</div><p>AÃºn no hay solicitudes.</p></div>';
+    lista.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>Aún no hay solicitudes.</p></div>';
     return;
   }
 
@@ -529,9 +567,9 @@ function renderPanelVendedor() {
         <span class="badge">${s.urgencia || "Media"}</span>
       </div>
       <div class="sol-meta">
-        <span>ðŸš— ${s.marca || ""} ${s.linea || ""} ${s.anio || ""}</span>
-        <span>ðŸ“ ${s.muni || ""}, ${s.depto || ""}</span>
-        <span>ðŸ‘¤ ${s.nombre || ""} Â· ${s.waComprador || ""}</span>
+        <span>🚗 ${s.marca || ""} ${s.linea || ""} ${s.anio || ""}</span>
+        <span>📍 ${s.muni || ""}, ${s.depto || ""}</span>
+        <span>👤 ${s.nombre || ""} · ${s.waComprador || ""}</span>
       </div>
     </div>
   `).join("");
@@ -598,14 +636,14 @@ function renderAdminVendedoresDashboard(vendors) {
   const container = document.getElementById("admin-vendedores-dashboard");
   if (!container) return;
   const active = vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length;
-  setAdminText("admin-vendedores-resumen", `${active} activos Â· ${vendors.length - active} inactivos/retirados`);
+  setAdminText("admin-vendedores-resumen", `${active} activos · ${vendors.length - active} inactivos/retirados`);
   if (!vendors.length) {
     container.innerHTML = adminEmpty("Sin vendedores registrados");
     return;
   }
   container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>CategorÃ­as</th><th>Departamento</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "â€”")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.departamento || "â€”")}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Departamento</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.departamento || "—")}</td></tr>`).join("")}</tbody>
   </table></div>`;
 }
 
@@ -613,15 +651,15 @@ function renderAdminMembresias(vendors, summary) {
   const container = document.getElementById("admin-membresias-dashboard");
   if (!container) return;
   if (!vendors.length) {
-    container.innerHTML = adminEmpty("Sin membresÃ­as registradas");
+    container.innerHTML = adminEmpty("Sin membresías registradas");
     return;
   }
-  const formatDate = value => value ? new Date(value).toLocaleDateString("es-GT") : "â€”";
+  const formatDate = value => value ? new Date(value).toLocaleDateString("es-GT") : "—";
   container.innerHTML = `<div class="admin-membership-summary">
       <span>Vigentes <strong>${summary.vigentes || 0}</strong></span><span>Por vencer <strong>${summary.porVencer || 0}</strong></span><span>Vencidas <strong>${summary.vencidas || 0}</strong></span><span>Sin configurar <strong>${summary.sinConfigurar || 0}</strong></span>
     </div><div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-      <thead><tr><th>Vendedor</th><th>Plan</th><th>Inicio</th><th>Vencimiento</th><th>Estado</th><th>DÃ­as</th></tr></thead>
-      <tbody>${vendors.map(v => `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${normalizeAdminValue(v.estadoMembresia).replaceAll(" ", "-")}">${escapeHtml(v.estadoMembresia || "Sin configurar")}</span></td><td>${v.diasRestantes ?? "â€”"}</td></tr>`).join("")}</tbody>
+      <thead><tr><th>Vendedor</th><th>Plan</th><th>Inicio</th><th>Vencimiento</th><th>Estado</th><th>Días</th></tr></thead>
+      <tbody>${vendors.map(v => `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${normalizeAdminValue(v.estadoMembresia).replaceAll(" ", "-")}">${escapeHtml(v.estadoMembresia || "Sin configurar")}</span></td><td>${v.diasRestantes ?? "—"}</td></tr>`).join("")}</tbody>
     </table></div>`;
 }
 
@@ -629,7 +667,7 @@ function renderAdminTop(id, entries) {
   const container = document.getElementById(id);
   if (!container) return;
   if (!Array.isArray(entries) || !entries.length) {
-    container.innerHTML = adminEmpty("AÃºn no hay suficientes solicitudes para mÃ©tricas");
+    container.innerHTML = adminEmpty("Aún no hay suficientes solicitudes para métricas");
     return;
   }
   const max = Math.max(...entries.map(item => Number(item.count) || 0), 1);
@@ -640,7 +678,7 @@ function renderAdminEnvios(sends) {
   const container = document.getElementById("admin-envios-resumen");
   if (!container) return;
   const errors = Array.isArray(sends.ultimosErrores) ? sends.ultimosErrores : [];
-  container.innerHTML = `<dl class="admin-send-grid"><div><dt>Pendientes manuales</dt><dd>${Number(sends.pendientesManuales) || 0}</dd></div><div><dt>Total envÃ­os</dt><dd>${Number(sends.total) || 0}</dd></div><div><dt>Mayor asignaciÃ³n</dt><dd>${escapeHtml(sends.vendedorConMasLeads?.name || "â€”")}</dd></div></dl>
+  container.innerHTML = `<dl class="admin-send-grid"><div><dt>Pendientes manuales</dt><dd>${Number(sends.pendientesManuales) || 0}</dd></div><div><dt>Total envíos</dt><dd>${Number(sends.total) || 0}</dd></div><div><dt>Mayor asignación</dt><dd>${escapeHtml(sends.vendedorConMasLeads?.name || "—")}</dd></div></dl>
     ${errors.length ? `<div class="admin-error-list">${errors.map(error => `<p><strong>${escapeHtml(error.vendedor || "Sin vendedor")}</strong><span>${escapeHtml(error.observaciones || error.estado || "Error sin detalle")}</span></p>`).join("")}</div>` : adminEmpty("Sin errores recientes")}`;
 }
 
@@ -668,19 +706,19 @@ function renderAdminSolicitudesVendedores() {
             <h4>${escapeHtml(request.nombreComercial || "Sin nombre comercial")}</h4>
           </div>
           <div class="admin-request-summary">
-            <span class="badge">${escapeHtml(request.plan || "BÃ¡sico")}</span>
+            <span class="badge">${escapeHtml(request.plan || "Básico")}</span>
             <time>${formatAdminDate(request.fecha)}</time>
           </div>
         </header>
         <dl class="admin-request-grid">
-          <div><dt>Contacto</dt><dd>${escapeHtml(request.nombreContacto || "â€”")}</dd></div>
-          <div><dt>WhatsApp</dt><dd>${escapeHtml(request.whatsapp || "â€”")}</dd></div>
-          <div><dt>Departamento</dt><dd>${escapeHtml(request.departamento || "â€”")}</dd></div>
-          <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" Â· ") || "â€”")}</dd></div>
+          <div><dt>Contacto</dt><dd>${escapeHtml(request.nombreContacto || "—")}</dd></div>
+          <div><dt>WhatsApp</dt><dd>${escapeHtml(request.whatsapp || "—")}</dd></div>
+          <div><dt>Departamento</dt><dd>${escapeHtml(request.departamento || "—")}</dd></div>
+          <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" · ") || "—")}</dd></div>
           <div><dt>Marcas</dt><dd>${escapeHtml(request.marcas || "Todas")}</dd></div>
-          <div><dt>CategorÃ­as</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
-          <div><dt>CondiciÃ³n</dt><dd>${escapeHtml(request.condicion || "Todas")}</dd></div>
-          <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "â€”")}</dd></div>
+          <div><dt>Categorías</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
+          <div><dt>Condición</dt><dd>${escapeHtml(request.condicion || "Todas")}</dd></div>
+          <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
         </dl>
         ${request.observaciones ? `<p class="admin-request-notes"><strong>Observaciones:</strong> ${escapeHtml(request.observaciones)}</p>` : ""}
         <footer class="admin-request-actions">
@@ -724,7 +762,7 @@ const cargarSolicitudesAdmin = cargarDashboardAdmin;
 
 async function aprobarSolicitudAdmin(rowNumber) {
   if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
-  if (!window.confirm("Â¿Aprobar este vendedor y activarlo para recibir leads?")) return;
+  if (!window.confirm("¿Aprobar este vendedor y activarlo para recibir leads?")) return;
 
   try {
     await adminRequest("admin_aprobar_vendedor", { rowNumber });
@@ -737,7 +775,7 @@ async function aprobarSolicitudAdmin(rowNumber) {
 
 async function rechazarSolicitudAdmin(rowNumber) {
   if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
-  if (!window.confirm("Â¿Marcar esta solicitud como rechazada? La fila se conservarÃ¡ en Sheets.")) return;
+  if (!window.confirm("¿Marcar esta solicitud como rechazada? La fila se conservará en Sheets.")) return;
 
   try {
     await adminRequest("admin_rechazar_vendedor", { rowNumber });
@@ -766,14 +804,14 @@ function renderAdminSolicitudes() {
   if (!container) return;
 
   if (solicitudes.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">ðŸ“‹</div><p>Sin solicitudes aÃºn.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>Sin solicitudes aún.</p></div>';
     return;
   }
 
   container.innerHTML = `
     <div class="admin-table-wrap">
       <table class="admin-table">
-        <thead><tr><th>Fecha</th><th>Pieza</th><th>Marca</th><th>LÃ­nea</th><th>AÃ±o</th><th>Comprador</th><th>Urgencia</th></tr></thead>
+        <thead><tr><th>Fecha</th><th>Pieza</th><th>Marca</th><th>Línea</th><th>Año</th><th>Comprador</th><th>Urgencia</th></tr></thead>
         <tbody>
           ${solicitudes.map((s) => `
             <tr>
@@ -802,7 +840,7 @@ function renderAdminVendedores() {
   if (!container) return;
 
   if (vendedores.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">ðŸª</div><p>Sin vendedores registrados.</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🏪</div><p>Sin vendedores registrados.</p></div>';
     return;
   }
 
@@ -813,9 +851,9 @@ function renderAdminVendedores() {
         ${v.plan ? `<span class="badge">${v.plan}</span>` : ""}
       </div>
       <div class="sol-meta">
-        <span>ðŸ“± ${v.whatsapp}</span>
-        <span>ðŸ“ ${v.muni || ""}, ${v.depto || ""}</span>
-        ${v.tipo ? `<span>ðŸª ${v.tipo}</span>` : ""}
+        <span>📱 ${v.whatsapp}</span>
+        <span>📍 ${v.muni || ""}, ${v.depto || ""}</span>
+        ${v.tipo ? `<span>🏪 ${v.tipo}</span>` : ""}
       </div>
     </div>
   `).join("");
@@ -894,9 +932,9 @@ function setupNavigation() {
   });
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   RUTAS OCULTAS: #admin y #panel (segÃºn guÃ­a de administraciÃ³n)
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ══════════════════════════════════════════════════════════════
+   RUTAS OCULTAS: #admin y #panel (según guía de administración)
+   ══════════════════════════════════════════════════════════════ */
 
 function manejarHash() {
   const hash = (window.location.hash || "").toLowerCase();
