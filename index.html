@@ -718,8 +718,14 @@ function closeMobile() {
 }
 
 function smoothTo(event, selector) {
-  if (!document.getElementById('page-landing')?.classList.contains('active')) return;
   event.preventDefault();
+  if (!document.getElementById('page-landing')?.classList.contains('active')) {
+    showPage('page-landing');
+    requestAnimationFrame(() => {
+      document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth' });
+    });
+    return;
+  }
   document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth' });
 }
 
