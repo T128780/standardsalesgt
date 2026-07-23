@@ -39,20 +39,15 @@ function registrarVisitaSitio() {
       event: "page_view"
     });
 
-    let queued = false;
-    if (navigator.sendBeacon) {
-      const payload = new Blob([params.toString()], { type: "application/x-www-form-urlencoded;charset=UTF-8" });
-      queued = navigator.sendBeacon(GOOGLE_SCRIPT_URL, payload);
-    }
-    if (!queued) {
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        keepalive: true,
-        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-        body: params.toString()
-      }).catch(() => {});
-    }
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      keepalive: true,
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: params.toString()
+    }).catch(() => {
+      if (navigator.sendBeacon) navigator.sendBeacon(GOOGLE_SCRIPT_URL, params);
+    });
   } catch (error) {}
 }
 
