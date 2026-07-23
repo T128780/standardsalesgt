@@ -1192,6 +1192,8 @@ function renderAdminSolicitudesVendedores() {
 
   container.innerHTML = `<div class="admin-request-list">${adminPendingRequests.map((request) => {
     const rowNumber = Number(request.rowNumber);
+    const comprobanteUrl = String(request.comprobanteUrl || "").trim();
+    const comprobanteArchivo = request.comprobanteArchivo || "Ver comprobante";
     return `
       <article class="admin-request-card">
         <header class="admin-request-head">
@@ -1217,6 +1219,7 @@ function renderAdminSolicitudesVendedores() {
           <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
         </dl>
         ${request.observaciones ? `<p class="admin-request-notes"><strong>Observaciones:</strong> ${escapeHtml(request.observaciones)}</p>` : ""}
+        ${comprobanteUrl ? `<p class="admin-request-notes"><strong>Comprobante:</strong> <a href="${escapeHtml(comprobanteUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(comprobanteArchivo)}</a></p>` : ""}
         <footer class="admin-request-actions">
           <button class="btn-admin-approve" type="button" onclick="aprobarSolicitudAdmin(${rowNumber})">
             <i data-lucide="check"></i><span>Aprobar vendedor</span>
