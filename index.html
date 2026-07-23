@@ -280,6 +280,7 @@
       </div>
       <div>
         <p class="footer-legal">Standard Repuestos GT es una plataforma operada por Importadora Luisa.</p>
+        <p class="footer-legal">Este sitio puede registrar datos técnicos básicos de navegación, como fecha, página visitada, tipo de dispositivo y origen de visita, con fines de operación y mejora del servicio.</p>
         <p class="footer-legal">© 2026 Standard Sales GT · Términos · Privacidad · Contacto</p>
       </div>
     </div>
@@ -715,6 +716,23 @@
       <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Demanda</p><h3>Top partes</h3></div></div><div id="admin-top-partes"></div></section>
       <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Parque vehicular</p><h3>Top años</h3></div></div><div id="admin-top-anios"></div></section>
       <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Operación</p><h3>Resumen de envíos</h3></div></div><div id="admin-envios-resumen"></div></section>
+      <section class="admin-data-section admin-span-2 admin-visits-section">
+        <div class="admin-section-title"><div><p class="admin-request-kicker">Analítica privada</p><h3>Visitas del sitio</h3></div><span>Datos reales</span></div>
+        <div class="admin-visit-kpis">
+          <div><strong id="admin-visitas-total">0</strong><span>Visitas totales</span></div>
+          <div><strong id="admin-visitas-unicos">0</strong><span>Visitantes únicos</span></div>
+          <div><strong id="admin-visitas-hoy">0</strong><span>Visitas hoy</span></div>
+          <div><strong id="admin-visitas-7d">0</strong><span>Últimos 7 días</span></div>
+          <div><strong id="admin-visitas-30d">0</strong><span>Últimos 30 días</span></div>
+        </div>
+        <div class="admin-visit-breakdown">
+          <div><h4>Páginas más visitadas</h4><div id="admin-visitas-paginas"></div></div>
+          <div><h4>Origen de visitas</h4><div id="admin-visitas-referrers"></div></div>
+          <div><h4>Dispositivos</h4><div id="admin-visitas-dispositivos"></div></div>
+        </div>
+        <div class="admin-section-title admin-visits-recent-title"><div><h4>Últimas visitas</h4></div></div>
+        <div id="admin-visitas-recientes"></div>
+      </section>
     </div>
   </div>
 </div>
@@ -722,7 +740,7 @@
 <div id="toasts"></div>
 
 <script src="catalogos.js?v=21"></script>
-  <script src="app.js?v=35"></script>
+  <script src="app.js?v=36"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
