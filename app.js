@@ -1,3 +1,7 @@
+Exit code: 0
+Wall time: 1.4 seconds
+Total output lines: 1465
+Output:
 // Standard Repuestos GT — App Logic
 // v20: Rediseño de lujo. Misma lógica de envío a Google Sheets + WhatsApp.
 //      Se agregan las funciones de paneles (admin, vendedor y accesos) que
@@ -68,7 +72,14 @@ const SELLER_BRAND_GROUPS = {
   "Otros": ["Tata", "Mahindra", "Maruti Suzuki", "Proton", "Perodua", "Otras marcas"]
 };
 
-const SELLER_CATEGORIES = ["Carrocería", "Motor", "Eléctrico", "Piezas mecánicas", "Otro"];
+const SELLER_CATEGORIES = ["Carrocería", "Motor", "Eléctrico", "Suspensión", "Piezas mecánicas", "Otro"];
+const SELLER_SUSPENSION_PARTS = [
+  "Amortiguadores", "Bases de amortiguador", "Espirales / resortes",
+  "Muletas / brazos de control", "Rótulas", "Bujes",
+  "Bieletas / links estabilizadores", "Barra estabilizadora", "Terminales",
+  "Cremallera / dirección relacionada", "Manguetas", "Tijeras",
+  "Ejes / flechas relacionadas", "Kit de suspensión", "Otros repuestos de suspensión"
+];
 const SELLER_ORIGIN_TITLES = {
   "Japonés": "Marcas japonesas que trabajas",
   "JDM": "Marcas JDM que trabajas",
@@ -311,6 +322,8 @@ async function enviarSolicitudVendedor(vendedor) {
   params.append("lineasManual", vendedor.lineasManuales.join(", "));
   params.append("categorias", vendedor.categorias.join(", "));
   params.append("categoriasSimplificadas", vendedor.categorias.join(", "));
+  params.append("piezasSuspension", vendedor.piezasSuspension.join(", "));
+  params.append("otraPiezaSuspension", vendedor.otraPiezaSuspension);
   params.append("condicion", vendedor.condicionPiezas);
   params.append("procedencia", vendedor.procedencia);
   params.append("plan", vendedor.plan);
@@ -338,6 +351,8 @@ function resetCompradorForm(form) {
   buildYearOptions(form.querySelector('[name="anio"]'));
   setOptions(form.querySelector('[name="linea"]'), "Línea / Modelo", []);
   setOptions(form.querySelector('[name="parte"]'), "Parte específica", []);
+  const otherPartWrap = document.getElementById("buyer-other-part-wrap");
+  if (otherPartWrap) otherPartWrap.hidden = true;
   setOptions(form.querySelector('[name="muni"]'), "Municipio", []);
 
   const urgencia = form.elements.namedItem("urgencia");
@@ -364,6 +379,18 @@ function initFormComprador() {
 
   form.querySelector('[name="categoria"]')?.addEventListener("change", function () {
     buildPartes(this, form.querySelector('[name="parte"]'));
+    const otherPartWrap = document.getElementById("buyer-other-part-wrap");
+    const otherPartInput = form.querySelector('[name="parteOtra"]');
+    if (otherPartWrap) otherPartWrap.hidden = true;
+    if (otherPartInput) otherPartInput.value = "";
+  });
+
+  form.querySelector('[name="parte"]')?.addEventListener("change", function () {
+    const otherPartWrap = document.getElementById("buyer-other-part-wrap");
+    const otherPartInput = form.querySelector('[name="parteOtra"]');
+    const showOther = this.value === "Otro";
+    if (otherPartWrap) otherPartWrap.hidden = !showOther;
+    if (!showOther && otherPartInput) otherPartInput.value = "";
   });
 
   form.querySelector('[name="depto"]')?.addEventListener("change", function () {
@@ -388,7 +415,7 @@ function initFormComprador() {
       marca: getFormValue(form, "marca"),
       linea: getFormValue(form, "linea"),
       categoria: getFormValue(form, "categoria"),
-      parte: getFormValue(form, "parte"),
+      parte: getFormValue(form, "parteOtra") || getFormValue(form, "parte"),
       anio: getFormValue(form, "anio"),
       depto: getFormValue(form, "depto"),
       urgencia: getFormValue(form, "urgencia") || "Media",
@@ -454,524 +481,7 @@ function initFormComprador() {
       showPage("page-confirmacion");
     } catch (error) {
       console.error("Error enviando a Google Sheets", error);
-      toast("No se pudo enviar la solicitud. Intenta de nuevo.", "error");
-    } finally {
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.innerHTML = originalText;
-      }
-    }
-  });
-}
-
-function initFormVendedor() {
-  const form = document.getElementById("form-vendedor");
-  if (!form || form.dataset.initialized === "true") return;
-  form.dataset.initialized = "true";
-
-  const origenesWrap = document.getElementById("vend-origenes");
-  const marcasWrap = document.getElementById("vend-marcas");
-  const marcasLabel = document.getElementById("vend-marcas-label");
-  const renderSellerBrands = () => {
-    if (!marcasWrap) return;
-    const selectedOrigins = [...form.querySelectorAll('[name="vorigenes"]:checked')].map(input => input.value);
-    const selectedBrands = new Set([...form.querySelectorAll('[name="marcas"]:checked')].map(input => input.value));
-    const allowedBrands = new Set(selectedOrigins.flatMap(origin => SELLER_BRAND_GROUPS[origin] || []));
-    selectedBrands.forEach((brand) => {
-      if (!allowedBrands.has(brand)) {
-        selectedBrands.delete(brand);
-        removeSellerBrandLines(brand);
-      }
-    });
-    marcasWrap.innerHTML = "";
-    if (marcasLabel) marcasLabel.hidden = selectedOrigins.length === 0;
-    selectedOrigins.forEach((origin) => {
-      const group = document.createElement("section");
-      group.className = "seller-brand-group";
-      group.innerHTML = `<h4>${SELLER_ORIGIN_TITLES[origin] || origin}</h4><div class="check-pills"></div>`;
-      const pills = group.querySelector(".check-pills");
-      (SELLER_BRAND_GROUPS[origin] || []).forEach((marca) => {
-        const label = document.createElement("label");
-        label.className = "check-pill";
-        label.innerHTML = `<input type="checkbox" name="marcas" value="${marca}" ${selectedBrands.has(marca) ? "checked" : ""}><span>${marca}</span>`;
-        pills.appendChild(label);
-      });
-      marcasWrap.appendChild(group);
-    });
-    renderLineasVendedor();
-  };
-  if (origenesWrap && origenesWrap.children.length === 0) {
-    Object.keys(SELLER_BRAND_GROUPS).forEach((origin) => {
-      const label = document.createElement("label");
-      label.className = "check-pill";
-      label.innerHTML = `<input type="checkbox" name="vorigenes" value="${origin}"><span>${origin}</span>`;
-      origenesWrap.appendChild(label);
-    });
-    origenesWrap.addEventListener("change", renderSellerBrands);
-  }
-  marcasWrap?.addEventListener("change", (event) => {
-    const input = event.target.closest('input[name="marcas"]');
-    if (!input) return;
-    if (!input.checked) removeSellerBrandLines(input.value);
-    renderLineasVendedor();
-  });
-
-  const categoriasWrap = document.getElementById("vend-categorias");
-  if (categoriasWrap && categoriasWrap.children.length === 0) {
-    SELLER_CATEGORIES.forEach((categoria) => {
-      const label = document.createElement("label");
-      label.className = "check-pill";
-      label.innerHTML = `<input type="checkbox" name="vcat" value="${categoria}"><span>${categoria}</span>`;
-      categoriasWrap.appendChild(label);
-    });
-  }
-
-  buildDeptos(form.querySelector('[name="vdepto"]'));
-  form.querySelector('[name="vdepto"]')?.addEventListener("change", function () {
-    buildMunicipios(this, form.querySelector('[name="vmuni"]'));
-  });
-
-  form.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    const comprobanteFile = document.getElementById("comprobante-file")?.files?.[0] || null;
-    const allowedFileTypes = new Set(["application/pdf", "image/jpeg", "image/png"]);
-    if (comprobanteFile && (!allowedFileTypes.has(comprobanteFile.type) || comprobanteFile.size > 5 * 1024 * 1024)) {
-      toast("El comprobante debe ser PDF, JPG o PNG y pesar maximo 5 MB.", "error");
-      return;
-    }
-    const vendedor = {
-      id: genId(),
-      fecha: new Date().toISOString(),
-      estado: "pendiente",
-      nombre: getFormValue(form, "vnombre"),
-      tipo: getFormValue(form, "vtipo"),
-      encargado: getFormValue(form, "vencargado"),
-      whatsapp: getFormValue(form, "vwhatsapp"),
-      email: getFormValue(form, "vemail"),
-      nit: getFormValue(form, "vnit"),
-      direccion: getFormValue(form, "vdireccion"),
-      depto: getFormValue(form, "vdepto"),
-      muni: getFormValue(form, "vmuni"),
-      zona: getFormValue(form, "vzona"),
-      horario: getFormValue(form, "vhorario"),
-      origenes: [...form.querySelectorAll('[name="vorigenes"]:checked')].map((input) => input.value),
-      marcas: [...form.querySelectorAll('[name="marcas"]:checked')].map((input) => input.value),
-      lineas: [...vendLineasSeleccionadas],
-      lineasManuales: [...vendLineasManuales],
-      categorias: [...form.querySelectorAll('[name="vcat"]:checked')].map((input) => input.value),
-      condicionPiezas: getFormValue(form, "vcondicion"),
-      procedencia: getFormValue(form, "vprocedencia"),
-      plan: getFormValue(form, "vplan"),
-      envios: form.querySelector('[name="venvios"]')?.checked || false,
-      entregas: getFormValue(form, "ventregasDetalle") ||
-        (form.querySelector('[name="ventregas"]')?.checked ? "Sí" : "No"),
-      observaciones: getFormValue(form, "vobservaciones"),
-      comprobante: comprobanteFile ? {
-        nombre: comprobanteFile.name,
-        tipo: comprobanteFile.type,
-        base64: await fileToBase64(comprobanteFile)
-      } : null
-    };
-
-    if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto || !vendedor.origenes.length || !vendedor.marcas.length || (!vendedor.lineas.length && !vendedor.lineasManuales.length) || !vendedor.categorias.length) {
-      toast("Completa los datos requeridos, incluyendo orígenes, marcas, líneas y categorías.", "error");
-      return;
-    }
-
-    const submitButton = form.querySelector('button[type="submit"]');
-    const originalText = submitButton?.innerHTML;
-    if (submitButton) {
-      submitButton.disabled = true;
-      submitButton.textContent = "Enviando solicitud...";
-    }
-
-    try {
-      await enviarSolicitudVendedor(vendedor);
-      const vendedorLocal = Object.assign({}, vendedor);
-      delete vendedorLocal.comprobante;
-      DB.addVendedor(vendedorLocal);
-      toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
-      form.reset();
-      vendLineasSeleccionadas.clear();
-      vendLineasManuales.clear();
-      renderSellerBrands();
-      renderLineasVendedor();
-      showPage("page-vendedor-ok");
-    } catch (error) {
-      console.error("Error enviando solicitud de vendedor", error);
-      toast("No se pudo enviar la solicitud. Intenta de nuevo.", "error");
-    } finally {
-      if (submitButton) {
-        submitButton.disabled = false;
-        submitButton.innerHTML = originalText;
-      }
-    }
-  });
-}
-
-/* ══════════════════════════════════════════════════════════════
-   LÍNEAS DEL VENDEDOR (filtro por marca + líneas personalizadas)
-   ══════════════════════════════════════════════════════════════ */
-
-const vendLineasSeleccionadas = new Set();
-const vendLineasManuales = new Set();
-
-function getSellerBrandLines(marca) {
-  return SELLER_LINES_BY_BRAND[marca] || catalogos().marcas?.[marca] || [];
-}
-
-function removeSellerBrandLines(marca) {
-  getSellerBrandLines(marca).forEach((linea) => vendLineasSeleccionadas.delete(linea));
-  syncLineasHidden();
-}
-
-function syncLineasHidden() {
-  const hidden = document.getElementById("vlineas-selected");
-  if (hidden) hidden.value = [...vendLineasSeleccionadas].join(", ");
-  const manualHidden = document.getElementById("vlineas-manuales");
-  if (manualHidden) manualHidden.value = [...vendLineasManuales].join(", ");
-  const manualList = document.getElementById("vend-lineas-manuales-list");
-  if (manualList) {
-    manualList.innerHTML = "";
-    vendLineasManuales.forEach((linea) => {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "manual-line-chip";
-      chip.dataset.linea = linea;
-      chip.append(document.createTextNode(linea));
-      const close = document.createElement("span");
-      close.setAttribute("aria-hidden", "true");
-      close.textContent = "×";
-      chip.appendChild(close);
-      manualList.appendChild(chip);
-    });
-  }
-}
-
-function renderLineasVendedor() {
-  const wrap = document.getElementById("vend-lineas");
-  if (!wrap) return;
-  wrap.innerHTML = "";
-  const selectedBrands = [...document.querySelectorAll('#form-vendedor [name="marcas"]:checked')]
-    .map((input) => input.value);
-
-  selectedBrands.forEach((marca) => {
-    const group = document.createElement("section");
-    group.className = "seller-brand-group seller-line-group";
-    group.innerHTML = `<h4>Líneas ${marca}</h4><div class="check-pills"></div>`;
-    const pills = group.querySelector(".check-pills");
-    getSellerBrandLines(marca).forEach((linea) => {
-      const label = document.createElement("label");
-      label.className = "check-pill";
-      const checked = vendLineasSeleccionadas.has(linea) ? "checked" : "";
-      label.innerHTML = `<input type="checkbox" name="vlineaCatalogo" value="${linea}" data-marca="${marca}" ${checked}><span>${linea}</span>`;
-      label.querySelector("input").addEventListener("change", function () {
-        if (this.checked) vendLineasSeleccionadas.add(linea);
-        else vendLineasSeleccionadas.delete(linea);
-        syncLineasHidden();
-      });
-      pills.appendChild(label);
-    });
-    wrap.appendChild(group);
-  });
-  syncLineasHidden();
-}
-
-function filtrarLineasVendedor() {
-  renderLineasVendedor();
-}
-
-function agregarLineaCustom() {
-  const input = document.getElementById("vend-linea-custom-input");
-  const valor = (input?.value || "").trim();
-  if (!valor) {
-    toast("Escribe el nombre de la línea que quieres agregar", "error");
-    return;
-  }
-  vendLineasManuales.add(valor);
-  if (input) input.value = "";
-  syncLineasHidden();
-  toast(`Línea "${valor}" agregada`);
-}
-
-document.addEventListener("click", (event) => {
-  const chip = event.target.closest(".manual-line-chip");
-  if (!chip) return;
-  vendLineasManuales.delete(chip.dataset.linea || "");
-  syncLineasHidden();
-});
-
-/* ══════════════════════════════════════════════════════════════
-   COMPROBANTE DE PAGO (vista previa local)
-   ══════════════════════════════════════════════════════════════ */
-
-function mostrarComprobante(input) {
-  const preview = document.getElementById("comprobante-preview");
-  if (!preview) return;
-  const file = input.files && input.files[0];
-  if (!file) { preview.style.display = "none"; return; }
-
-  if (file.size > 5 * 1024 * 1024) {
-    toast("El archivo supera los 5MB. Usa una imagen más liviana.", "error");
-    input.value = "";
-    preview.style.display = "none";
-    return;
-  }
-
-  preview.style.display = "block";
-  if (file.type.startsWith("image/")) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      preview.innerHTML = `
-        <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
-          <img src="${e.target.result}" alt="Comprobante" style="width:54px;height:54px;object-fit:cover;border-radius:3px">
-          <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
-        </div>`;
-    };
-    reader.readAsDataURL(file);
-  } else {
-    preview.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;background:rgba(201,162,75,.07);border:1px solid rgba(232,206,140,.25);border-radius:4px;padding:10px 12px">
-        <span style="font-size:26px">🧾</span>
-        <div style="font-size:13px;color:#EAE5D9;font-weight:600">${file.name}<br><small style="color:#A89F8C;font-weight:500">Listo para enviar ✓</small></div>
-      </div>`;
-  }
-}
-
-function handleComprobanteDrop(event) {
-  event.preventDefault();
-  document.getElementById("comprobante-drop")?.classList.remove("over");
-  const fileInput = document.getElementById("comprobante-file");
-  if (fileInput && event.dataTransfer.files.length > 0) {
-    fileInput.files = event.dataTransfer.files;
-    mostrarComprobante(fileInput);
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   LOGIN ADMIN (con bloqueo tras 3 intentos, según guía)
-   ══════════════════════════════════════════════════════════════ */
-
-let adminIntentosFallidos = 0;
-let adminBloqueadoHasta = 0;
-let adminSessionPassword = "";
-let adminPendingRequests = [];
-let adminDashboardData = null;
-let adminVisitMetrics = null;
-
-/* ══════════════════════════════════════════════════════════════
-   LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
-   ══════════════════════════════════════════════════════════════ */
-
-async function adminRequest(action, data = {}) {
-  const params = new URLSearchParams();
-  params.append("accion", action);
-  params.append("adminPassword", adminSessionPassword);
-  Object.entries(data).forEach(([key, value]) => params.append(key, String(value)));
-
-  const response = await fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    body: params
-  });
-
-  if (!response.ok) throw new Error("No se pudo conectar con el panel administrativo.");
-  const result = await response.json();
-  if (!result.ok) throw new Error(result.error || "La operación no pudo completarse.");
-  return result;
-}
-
-async function checkAdminLogin() {
-  const input = document.getElementById("admin-password");
-  const errorEl = document.getElementById("admin-error");
-  const button = document.getElementById("admin-login-button");
-  if (!input) return;
-
-  const ahora = Date.now();
-  if (ahora < adminBloqueadoHasta) {
-    const segundos = Math.ceil((adminBloqueadoHasta - ahora) / 1000);
-    if (errorEl) {
-      errorEl.textContent = `Demasiados intentos. Espera ${segundos} segundos.`;
-      errorEl.style.display = "block";
-    }
-    return;
-  }
-
-  const password = input.value;
-  if (!password) {
-    if (errorEl) {
-      errorEl.textContent = "Ingresa la contraseña administrativa.";
-      errorEl.style.display = "block";
-    }
-    return;
-  }
-
-  const originalText = button?.textContent || "Ingresar";
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Verificando...";
-  }
-
-  adminSessionPassword = password;
-
-  try {
-    const [result, visits] = await Promise.all([
-      adminRequest("admin_dashboard_resumen"),
-      adminRequest("admin_metricas_visitas").catch(() => null)
-    ]);
-    adminIntentosFallidos = 0;
-    adminDashboardData = result;
-    adminVisitMetrics = visits;
-    adminPendingRequests = Array.isArray(result.pendientesVendedores) ? result.pendientesVendedores : [];
-    input.value = "";
-    if (errorEl) errorEl.style.display = "none";
-    showPage("page-admin");
-    renderPanelAdmin();
-  } catch (error) {
-    adminSessionPassword = "";
-    adminIntentosFallidos += 1;
-
-    if (adminIntentosFallidos >= 3) {
-      adminBloqueadoHasta = ahora + 30000;
-      adminIntentosFallidos = 0;
-      if (errorEl) errorEl.textContent = "Demasiados intentos. Espera 30 segundos.";
-    } else if (errorEl) {
-      errorEl.textContent = error.message || "Contraseña incorrecta.";
-    }
-
-    if (errorEl) errorEl.style.display = "block";
-  } finally {
-    if (button) {
-      button.disabled = false;
-      button.textContent = originalText;
-    }
-  }
-}
-
-function toggleAdminPasswordVisibility() {
-  const input = document.getElementById("admin-password");
-  const button = document.getElementById("admin-password-toggle");
-  if (!input || !button) return;
-
-  const willShow = input.type === "password";
-  input.type = willShow ? "text" : "password";
-  button.setAttribute("aria-label", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
-  button.setAttribute("aria-pressed", String(willShow));
-  button.setAttribute("title", willShow ? "Ocultar contraseña" : "Mostrar contraseña");
-  button.innerHTML = `<i data-lucide="${willShow ? "eye-off" : "eye"}" aria-hidden="true"></i>`;
-  window.lucide?.createIcons();
-  input.focus();
-}
-
-function checkVendorLogin() {
-  const userInput = document.getElementById("vendor-user");
-  const passInput = document.getElementById("vendor-pass");
-  const errorEl = document.getElementById("vendor-error");
-  if (!userInput || !passInput) return;
-
-  const user = userInput.value.trim();
-  const pass = passInput.value;
-  const acceso = DB.getAccesos().find((a) => a.user === user && a.pass === pass && a.activo);
-
-  if (acceso) {
-    if (errorEl) errorEl.style.display = "none";
-    userInput.value = "";
-    passInput.value = "";
-    showPage("page-panel-vendedor");
-    renderPanelVendedor();
-    toast(`Bienvenido, ${acceso.nombre}`);
-  } else if (errorEl) {
-    errorEl.style.display = "block";
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   GESTIÓN DE ACCESOS (pestaña Accesos del panel admin)
-   ══════════════════════════════════════════════════════════════ */
-
-function mostrarMsgAcceso(texto, esError) {
-  const msg = document.getElementById("acceso-msg");
-  if (!msg) return;
-  msg.textContent = texto;
-  msg.style.display = "block";
-  msg.style.color = esError ? "#E0655A" : "#7FB069";
-  msg.style.fontWeight = "700";
-}
-
-function agregarVendedorAcceso() {
-  const nombre = (document.getElementById("new-nombre")?.value || "").trim();
-  const plan = document.getElementById("new-plan")?.value || "Pro";
-  const user = (document.getElementById("new-user")?.value || "").trim();
-  const pass = (document.getElementById("new-pass")?.value || "").trim();
-
-  if (!nombre || !user || !pass) {
-    mostrarMsgAcceso("Completa: nombre del negocio, usuario y contraseña.", true);
-    return;
-  }
-  if (/\s/.test(user)) {
-    mostrarMsgAcceso("El usuario no debe llevar espacios.", true);
-    return;
-  }
-
-  const accesos = DB.getAccesos();
-  if (accesos.some((a) => a.user === user)) {
-    mostrarMsgAcceso(`El usuario "${user}" ya existe. Elige otro.`, true);
-    return;
-  }
-
-  accesos.unshift({ id: genId(), nombre, plan, user, pass, activo: true, fecha: new Date().toISOString() });
-  DB.saveAccesos(accesos);
-  mostrarMsgAcceso(`Vendedor agregado. Usuario: ${user}`, false);
-
-  ["new-nombre", "new-user", "new-pass"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  renderListaAccesos();
-}
-
-function toggleAcceso(id) {
-  const accesos = DB.getAccesos();
-  const acceso = accesos.find((a) => a.id === id);
-  if (!acceso) return;
-  acceso.activo = !acceso.activo;
-  DB.saveAccesos(accesos);
-  toast(acceso.activo ? `Acceso de "${acceso.nombre}" reactivado` : `Acceso de "${acceso.nombre}" desactivado`);
-  renderListaAccesos();
-}
-
-function renderListaAccesos() {
-  const lista = document.getElementById("lista-accesos");
-  if (!lista) return;
-  const accesos = DB.getAccesos();
-
-  if (accesos.length === 0) {
-    lista.innerHTML = '<div class="empty-state" style="padding:34px 20px"><p>Aún no has creado usuarios de vendedores.</p></div>';
-    return;
-  }
-
-  lista.innerHTML = accesos.map((a) => `
-    <div class="acceso-row">
-      <div class="a-info">
-        <span class="a-nombre">${a.nombre}</span>
-        <span class="a-user">Usuario: ${a.user} · Contraseña: ${a.pass}</span>
-      </div>
-      <span class="a-plan">${a.plan}</span>
-      <span class="a-estado ${a.activo ? "on" : "off"}">${a.activo ? "● Activo" : "● Inactivo"}</span>
-      <button class="btn-ghost" onclick="toggleAcceso('${a.id}')">${a.activo ? "Desactivar" : "Reactivar"}</button>
-    </div>
-  `).join("");
-}
-
-/* ══════════════════════════════════════════════════════════════
-   PANELES
-   ══════════════════════════════════════════════════════════════ */
-
-function renderPanelVendedor() {
-  const solicitudes = DB.getSolicitudes();
-  const total = document.getElementById("v-total");
-  const altas = document.getElementById("v-alta");
-  if (total) total.textContent = solicitudes.length;
-  if (altas) altas.textContent = solicitudes.filter((s) => s.urgencia === "Alta").length;
+      toast("No se pudo enviar la solicitud. Inten…5658 tokens truncated…as) altas.textContent = solicitudes.filter((s) => s.urgencia === "Alta").length;
 
   const lista = document.getElementById("panel-solicitudes");
   if (!lista) return;
@@ -1064,8 +574,8 @@ function renderAdminVendedoresDashboard(vendors) {
     return;
   }
   container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Departamento</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.departamento || "—")}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td></tr>`).join("")}</tbody>
   </table></div>`;
 }
 
@@ -1163,6 +673,8 @@ function renderAdminSolicitudesVendedores() {
           <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" · ") || "—")}</dd></div>
           <div><dt>Marcas</dt><dd>${escapeHtml(request.marcas || "Todas")}</dd></div>
           <div><dt>Categorías</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
+          <div><dt>Piezas suspensión</dt><dd>${escapeHtml(request.piezasSuspension || "—")}</dd></div>
+          <div><dt>Otra pieza de suspensión</dt><dd>${escapeHtml(request.otraPiezaSuspension || "—")}</dd></div>
           <div><dt>Condición</dt><dd>${escapeHtml(request.condicion || "Todas")}</dd></div>
           <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
         </dl>
@@ -1412,3 +924,4 @@ document.addEventListener("DOMContentLoaded", () => {
   manejarHash();
   window.addEventListener("hashchange", manejarHash);
 });
+
