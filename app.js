@@ -15,7 +15,7 @@ function catalogos() {
 
 const SELLER_BRAND_GROUPS = {
   "Japonés": ["Toyota", "Nissan", "Mitsubishi", "Honda", "Mazda", "Subaru", "Suzuki", "Isuzu", "Lexus", "Acura", "Infiniti", "Daihatsu", "Otros japoneses"],
-  "JDM": ["Nissan Skyline", "Nissan Silvia", "Toyota Supra", "Toyota Chaser", "Toyota Mark II", "Mitsubishi Lancer Evolution", "Subaru Impreza WRX/STI", "Honda Integra", "Honda Civic Type R", "Mazda RX-7", "Mazda RX-8", "Otros JDM"],
+  "JDM": ["Toyota", "Nissan", "Mitsubishi", "Honda", "Mazda", "Subaru", "Suzuki", "Otros JDM"],
   "Americano": ["Ford", "Chevrolet", "GMC", "Dodge", "Jeep", "Chrysler", "Cadillac", "Lincoln", "Ram", "Tesla", "Otros americanos"],
   "Europeo": ["Volkswagen", "Audi", "BMW", "Mercedes-Benz", "Porsche", "Peugeot", "Renault", "Citroën", "Volvo", "Fiat", "Mini", "Land Rover", "Jaguar", "Opel", "Seat", "Skoda", "Otros europeos"],
   "Coreano": ["Hyundai", "Kia", "Genesis", "SsangYong/KGM", "Daewoo", "Otros coreanos"],
@@ -32,6 +32,18 @@ const SELLER_ORIGIN_TITLES = {
   "Coreano": "Marcas coreanas que trabajas",
   "Chino": "Marcas chinas que trabajas",
   "Otros": "Otras marcas que trabajas"
+};
+
+const SELLER_LINES_BY_BRAND = {
+  "Nissan": ["Sentra", "Versa", "Rogue", "X-Trail", "Frontier", "Pathfinder", "Murano", "Navara", "Kicks", "Qashqai", "Altima", "Maxima", "Patrol", "Urvan", "NP300", "Otro Nissan"],
+  "Toyota": ["Corolla", "Yaris", "Hilux", "Tacoma", "RAV4", "Fortuner", "Prado", "Land Cruiser", "4Runner", "Camry", "Tundra", "Hiace", "Otro Toyota"],
+  "Mitsubishi": ["Mirage", "Lancer", "Montero", "Outlander", "ASX", "Eclipse Cross", "L200", "Nativa", "Galant", "Otro Mitsubishi"],
+  "Honda": ["Civic", "Accord", "CR-V", "HR-V", "Pilot", "Fit", "Odyssey", "Otro Honda"],
+  "Mazda": ["Mazda 2", "Mazda 3", "Mazda 5", "Mazda 6", "CX-3", "CX-5", "CX-7", "CX-9", "BT-50", "Otro Mazda"],
+  "Ford": ["Fiesta", "Focus", "Fusion", "Escape", "Explorer", "Expedition", "Ranger", "F-150", "F-250", "Bronco", "Edge", "Mustang", "Otro Ford"],
+  "Chevrolet": ["Spark", "Aveo", "Cruze", "Malibu", "Tahoe", "Suburban", "Silverado", "Colorado", "Tracker", "Captiva", "Otro Chevrolet"],
+  "Hyundai": ["Accent", "Elantra", "Tucson", "Santa Fe", "Creta", "H-1", "Grand i10", "Otro Hyundai"],
+  "Kia": ["Rio", "Picanto", "Cerato", "Sportage", "Sorento", "Soul", "Carnival", "Otro Kia"]
 };
 
 function fileToBase64(file) {
@@ -213,6 +225,7 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   appendAliases(params, "depto", sheetPayload.depto, ["Depto", "Departamento"]);
   appendAliases(params, "urgencia", sheetPayload.urgencia, ["Urgencia"]);
   appendAliases(params, "condicion", sheetPayload.condicion, ["Condicion", "Condición"]);
+  appendAliases(params, "notas", sheetPayload.notas, ["Notas", "mensaje", "Mensaje"]);
   appendAliases(params, "origen", sheetPayload.origen, ["Origen"]);
   appendAliases(params, "timon", sheetPayload.timon, ["Timon", "Timón"]);
   appendAliases(params, "combustible", sheetPayload.combustible, ["Combustible"]);
@@ -224,7 +237,6 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   appendAliases(params, "zona", sheetPayload.zona, ["Zona"]);
   appendAliases(params, "detalles", sheetPayload.detalles, ["Detalles"]);
   appendAliases(params, "comentarios", sheetPayload.comentarios, ["Comentarios"]);
-  appendAliases(params, "notas", sheetPayload.notas, ["Notas", "mensaje", "Mensaje"]);
 
   await fetch(GOOGLE_SCRIPT_URL, {
     method: "POST",
@@ -250,6 +262,8 @@ async function enviarSolicitudVendedor(vendedor) {
   params.append("marcasSeleccionadas", vendedor.marcas.join(", "));
   params.append("lineas", vendedor.lineas.join(", "));
   params.append("lineasSeleccionadas", vendedor.lineas.join(", "));
+  params.append("lineasManuales", vendedor.lineasManuales.join(", "));
+  params.append("lineasManual", vendedor.lineasManuales.join(", "));
   params.append("categorias", vendedor.categorias.join(", "));
   params.append("categoriasSimplificadas", vendedor.categorias.join(", "));
   params.append("condicion", vendedor.condicionPiezas);
@@ -412,11 +426,20 @@ function initFormVendedor() {
 
   const origenesWrap = document.getElementById("vend-origenes");
   const marcasWrap = document.getElementById("vend-marcas");
+  const marcasLabel = document.getElementById("vend-marcas-label");
   const renderSellerBrands = () => {
     if (!marcasWrap) return;
     const selectedOrigins = [...form.querySelectorAll('[name="vorigenes"]:checked')].map(input => input.value);
     const selectedBrands = new Set([...form.querySelectorAll('[name="marcas"]:checked')].map(input => input.value));
+    const allowedBrands = new Set(selectedOrigins.flatMap(origin => SELLER_BRAND_GROUPS[origin] || []));
+    selectedBrands.forEach((brand) => {
+      if (!allowedBrands.has(brand)) {
+        selectedBrands.delete(brand);
+        removeSellerBrandLines(brand);
+      }
+    });
     marcasWrap.innerHTML = "";
+    if (marcasLabel) marcasLabel.hidden = selectedOrigins.length === 0;
     selectedOrigins.forEach((origin) => {
       const group = document.createElement("section");
       group.className = "seller-brand-group";
@@ -430,6 +453,7 @@ function initFormVendedor() {
       });
       marcasWrap.appendChild(group);
     });
+    renderLineasVendedor();
   };
   if (origenesWrap && origenesWrap.children.length === 0) {
     Object.keys(SELLER_BRAND_GROUPS).forEach((origin) => {
@@ -440,6 +464,12 @@ function initFormVendedor() {
     });
     origenesWrap.addEventListener("change", renderSellerBrands);
   }
+  marcasWrap?.addEventListener("change", (event) => {
+    const input = event.target.closest('input[name="marcas"]');
+    if (!input) return;
+    if (!input.checked) removeSellerBrandLines(input.value);
+    renderLineasVendedor();
+  });
 
   const categoriasWrap = document.getElementById("vend-categorias");
   if (categoriasWrap && categoriasWrap.children.length === 0) {
@@ -448,17 +478,6 @@ function initFormVendedor() {
       label.className = "check-pill";
       label.innerHTML = `<input type="checkbox" name="vcat" value="${categoria}"><span>${categoria}</span>`;
       categoriasWrap.appendChild(label);
-    });
-  }
-
-  // Selector de marca para filtrar líneas
-  const filtro = document.getElementById("vend-marca-filtro");
-  if (filtro && filtro.options.length <= 1) {
-    Object.keys(catalogos().marcas || {}).sort().forEach((marca) => {
-      const option = document.createElement("option");
-      option.value = marca;
-      option.textContent = marca;
-      filtro.appendChild(option);
     });
   }
 
@@ -493,6 +512,7 @@ function initFormVendedor() {
       origenes: [...form.querySelectorAll('[name="vorigenes"]:checked')].map((input) => input.value),
       marcas: [...form.querySelectorAll('[name="marcas"]:checked')].map((input) => input.value),
       lineas: [...vendLineasSeleccionadas],
+      lineasManuales: [...vendLineasManuales],
       categorias: [...form.querySelectorAll('[name="vcat"]:checked')].map((input) => input.value),
       condicionPiezas: getFormValue(form, "vcondicion"),
       procedencia: getFormValue(form, "vprocedencia"),
@@ -508,8 +528,8 @@ function initFormVendedor() {
       } : null
     };
 
-    if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto || !vendedor.origenes.length || !vendedor.marcas.length || !vendedor.categorias.length) {
-      toast("Completa los datos requeridos, incluyendo origenes, marcas y categorias.", "error");
+    if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto || !vendedor.origenes.length || !vendedor.marcas.length || (!vendedor.lineas.length && !vendedor.lineasManuales.length) || !vendedor.categorias.length) {
+      toast("Completa los datos requeridos, incluyendo orígenes, marcas, líneas y categorías.", "error");
       return;
     }
 
@@ -528,6 +548,8 @@ function initFormVendedor() {
       toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
       form.reset();
       vendLineasSeleccionadas.clear();
+      vendLineasManuales.clear();
+      renderSellerBrands();
       renderLineasVendedor();
       showPage("page-vendedor-ok");
     } catch (error) {
@@ -542,42 +564,70 @@ function initFormVendedor() {
   });
 }
 
+/* ══════════════════════════════════════════════════════════════
+   LÍNEAS DEL VENDEDOR (filtro por marca + líneas personalizadas)
+   ══════════════════════════════════════════════════════════════ */
 
 const vendLineasSeleccionadas = new Set();
+const vendLineasManuales = new Set();
+
+function getSellerBrandLines(marca) {
+  return SELLER_LINES_BY_BRAND[marca] || catalogos().marcas?.[marca] || [];
+}
+
+function removeSellerBrandLines(marca) {
+  getSellerBrandLines(marca).forEach((linea) => vendLineasSeleccionadas.delete(linea));
+  syncLineasHidden();
+}
 
 function syncLineasHidden() {
   const hidden = document.getElementById("vlineas-selected");
   if (hidden) hidden.value = [...vendLineasSeleccionadas].join(", ");
+  const manualHidden = document.getElementById("vlineas-manuales");
+  if (manualHidden) manualHidden.value = [...vendLineasManuales].join(", ");
+  const manualList = document.getElementById("vend-lineas-manuales-list");
+  if (manualList) {
+    manualList.innerHTML = "";
+    vendLineasManuales.forEach((linea) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "manual-line-chip";
+      chip.dataset.linea = linea;
+      chip.append(document.createTextNode(linea));
+      const close = document.createElement("span");
+      close.setAttribute("aria-hidden", "true");
+      close.textContent = "×";
+      chip.appendChild(close);
+      manualList.appendChild(chip);
+    });
+  }
 }
 
 function renderLineasVendedor() {
   const wrap = document.getElementById("vend-lineas");
   if (!wrap) return;
-
-  const marca = document.getElementById("vend-marca-filtro")?.value || "";
-  const cat = catalogos();
-  const deMarca = marca && cat.marcas?.[marca] ? cat.marcas[marca] : [];
-
-  // Mostramos las líneas de la marca filtrada + todas las ya seleccionadas
-  const visibles = [...new Set([...deMarca, ...vendLineasSeleccionadas])].sort();
-
   wrap.innerHTML = "";
-  if (visibles.length === 0) {
-    wrap.innerHTML = '<p class="muted" style="padding:6px">Selecciona una marca arriba para ver sus líneas.</p>';
-    return;
-  }
+  const selectedBrands = [...document.querySelectorAll('#form-vendedor [name="marcas"]:checked')]
+    .map((input) => input.value);
 
-  visibles.forEach((linea) => {
-    const label = document.createElement("label");
-    label.className = "check-pill";
-    const checked = vendLineasSeleccionadas.has(linea) ? "checked" : "";
-    label.innerHTML = `<input type="checkbox" value="${linea}" ${checked}><span>${linea}</span>`;
-    label.querySelector("input").addEventListener("change", function () {
-      if (this.checked) vendLineasSeleccionadas.add(linea);
-      else vendLineasSeleccionadas.delete(linea);
-      syncLineasHidden();
+  selectedBrands.forEach((marca) => {
+    const group = document.createElement("section");
+    group.className = "seller-brand-group seller-line-group";
+    group.innerHTML = `<h4>Líneas ${marca}</h4><div class="check-pills"></div>`;
+    const pills = group.querySelector(".check-pills");
+    getSellerBrandLines(marca).forEach((linea) => {
+      const label = document.createElement("label");
+      label.className = "check-pill";
+      const checked = vendLineasSeleccionadas.has(linea) ? "checked" : "";
+      label.innerHTML = `<input type="checkbox" name="vlineaCatalogo" value="${linea}" data-marca="${marca}" ${checked}><span>${linea}</span>`;
+      label.querySelector("input").addEventListener("change", function () {
+        if (this.checked) vendLineasSeleccionadas.add(linea);
+        else vendLineasSeleccionadas.delete(linea);
+        syncLineasHidden();
+      });
+      pills.appendChild(label);
     });
-    wrap.appendChild(label);
+    wrap.appendChild(group);
   });
   syncLineasHidden();
 }
@@ -593,11 +643,18 @@ function agregarLineaCustom() {
     toast("Escribe el nombre de la línea que quieres agregar", "error");
     return;
   }
-  vendLineasSeleccionadas.add(valor);
+  vendLineasManuales.add(valor);
   if (input) input.value = "";
-  renderLineasVendedor();
+  syncLineasHidden();
   toast(`Línea "${valor}" agregada`);
 }
+
+document.addEventListener("click", (event) => {
+  const chip = event.target.closest(".manual-line-chip");
+  if (!chip) return;
+  vendLineasManuales.delete(chip.dataset.linea || "");
+  syncLineasHidden();
+});
 
 /* ══════════════════════════════════════════════════════════════
    COMPROBANTE DE PAGO (vista previa local)
