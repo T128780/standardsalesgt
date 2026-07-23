@@ -806,6 +806,7 @@ let adminSessionPassword = "";
 let adminPendingRequests = [];
 let adminDashboardData = null;
 let adminVisitMetrics = null;
+const adminVendorActionsPending = new Set();
 
 /* ══════════════════════════════════════════════════════════════
    LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
@@ -1102,6 +1103,21 @@ function adminEmpty(message) {
   return `<div class="admin-inline-empty">${escapeHtml(message)}</div>`;
 }
 
+function renderAdminVendorActions(vendor) {
+  const rowNumber = Number(vendor.rowNumber);
+  if (!Number.isInteger(rowNumber) || rowNumber < 2 || normalizeAdminValue(vendor.estado) !== "activo") {
+    return "—";
+  }
+  return `<div class="admin-vendor-actions">
+    <button class="btn-admin-suspend" type="button" data-vendor-row="${rowNumber}" onclick="suspenderVendedorAdmin(${rowNumber})" title="Suspender membresía">
+      <i data-lucide="pause-circle"></i><span>Suspender</span>
+    </button>
+    <button class="btn-admin-cancel" type="button" data-vendor-row="${rowNumber}" onclick="cancelarVendedorAdmin(${rowNumber})" title="Cancelar membresía">
+      <i data-lucide="ban"></i><span>Cancelar</span>
+    </button>
+  </div>`;
+}
+
 function renderAdminVendedoresDashboard(vendors) {
   const container = document.getElementById("admin-vendedores-dashboard");
   if (!container) return;
@@ -1112,9 +1128,10 @@ function renderAdminVendedoresDashboard(vendors) {
     return;
   }
   container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th><th>Acciones</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
   </table></div>`;
+  window.lucide?.createIcons();
 }
 
 function renderAdminMembresias(vendors, summary) {
@@ -1126,7 +1143,7 @@ function renderAdminMembresias(vendors, summary) {
   }
   const formatDate = value => value ? new Date(value).toLocaleDateString("es-GT") : "—";
   container.innerHTML = `<div class="admin-membership-summary">
-      <span>Vigentes <strong>${summary.vigentes || 0}</strong></span><span>Por vencer <strong>${summary.porVencer || 0}</strong></span><span>Vencidas <strong>${summary.vencidas || 0}</strong></span><span>Sin configurar <strong>${summary.sinConfigurar || 0}</strong></span>
+      <span>Vigentes <strong>${summary.vigentes || 0}</strong></span><span>Por vencer <strong>${summary.porVencer || 0}</strong></span><span>Vencidas <strong>${summary.vencidas || 0}</strong></span><span>Suspendidas <strong>${summary.suspendidas || 0}</strong></span><span>Canceladas <strong>${summary.canceladas || 0}</strong></span><span>Sin configurar <strong>${summary.sinConfigurar || 0}</strong></span>
     </div><div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
       <thead><tr><th>Vendedor</th><th>Plan</th><th>Inicio</th><th>Vencimiento</th><th>Estado</th><th>Días</th></tr></thead>
       <tbody>${vendors.map(v => `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${normalizeAdminValue(v.estadoMembresia).replaceAll(" ", "-")}">${escapeHtml(v.estadoMembresia || "Sin configurar")}</span></td><td>${v.diasRestantes ?? "—"}</td></tr>`).join("")}</tbody>
@@ -1192,8 +1209,7 @@ function renderAdminSolicitudesVendedores() {
 
   container.innerHTML = `<div class="admin-request-list">${adminPendingRequests.map((request) => {
     const rowNumber = Number(request.rowNumber);
-    const comprobanteUrl = String(request.comprobanteUrl || "").trim();
-    const comprobanteArchivo = request.comprobanteArchivo || "Ver comprobante";
+    const comprobanteUrl = String(request.comprobanteUrl || request.comprobanteURL || request.comprobante_url || request.comprobante || request.comprobanteLink || request.linkComprobante || request["Comprobante URL"] || "").trim();
     return `
       <article class="admin-request-card">
         <header class="admin-request-head">
@@ -1219,7 +1235,7 @@ function renderAdminSolicitudesVendedores() {
           <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
         </dl>
         ${request.observaciones ? `<p class="admin-request-notes"><strong>Observaciones:</strong> ${escapeHtml(request.observaciones)}</p>` : ""}
-        ${comprobanteUrl ? `<p class="admin-request-notes"><strong>Comprobante:</strong> <a href="${escapeHtml(comprobanteUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(comprobanteArchivo)}</a></p>` : ""}
+        <p class="admin-request-notes"><strong>Comprobante:</strong> ${comprobanteUrl ? `<a href="${escapeHtml(comprobanteUrl)}" target="_blank" rel="noopener noreferrer">Ver comprobante</a>` : "Sin comprobante"}</p>
         <footer class="admin-request-actions">
           <button class="btn-admin-approve" type="button" onclick="aprobarSolicitudAdmin(${rowNumber})">
             <i data-lucide="check"></i><span>Aprobar vendedor</span>
@@ -1289,11 +1305,53 @@ async function rechazarSolicitudAdmin(rowNumber) {
   }
 }
 
+async function cambiarEstadoMembresiaAdmin(rowNumber, action, confirmation, successMessage) {
+  if (!Number.isInteger(rowNumber) || rowNumber < 2 || adminVendorActionsPending.has(rowNumber)) return;
+  if (!window.confirm(confirmation)) return;
+
+  adminVendorActionsPending.add(rowNumber);
+  document.querySelectorAll(`[data-vendor-row="${rowNumber}"]`).forEach(button => {
+    button.disabled = true;
+  });
+
+  try {
+    await adminRequest(action, { rowNumber });
+    toast(successMessage);
+    await cargarDashboardAdmin();
+  } catch (error) {
+    toast(error.message || "No se pudo actualizar la membresía.", "error");
+  } finally {
+    adminVendorActionsPending.delete(rowNumber);
+    document.querySelectorAll(`[data-vendor-row="${rowNumber}"]`).forEach(button => {
+      button.disabled = false;
+    });
+  }
+}
+
+function suspenderVendedorAdmin(rowNumber) {
+  return cambiarEstadoMembresiaAdmin(
+    rowNumber,
+    "admin_suspender_vendedor",
+    "¿Seguro que deseas suspender esta membresía?",
+    "Membresía suspendida."
+  );
+}
+
+function cancelarVendedorAdmin(rowNumber) {
+  return cambiarEstadoMembresiaAdmin(
+    rowNumber,
+    "admin_cancelar_vendedor",
+    "¿Seguro que deseas cancelar esta membresía?",
+    "Membresía cancelada."
+  );
+}
+
 function cerrarSesionAdmin() {
   adminSessionPassword = "";
   adminPendingRequests = [];
   adminDashboardData = null;
   adminVisitMetrics = null;
+  adminVendorActionsPending.clear();
   const input = document.getElementById("admin-password");
   if (input) input.value = "";
   showPage("page-admin-login");

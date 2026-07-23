@@ -1864,7 +1864,16 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
 .admin-status { display: inline-flex; padding: 4px 8px; border: 1px solid var(--line2); border-radius: 999px; color: var(--text2); font-size: 11px; white-space: nowrap; }
 .admin-status.activo, .admin-status.vigente { color: #80c996; border-color: rgba(128,201,150,.35); background: rgba(128,201,150,.07); }
 .admin-status.por-vencer { color: #dfb25c; border-color: rgba(223,178,92,.38); background: rgba(223,178,92,.08); }
-.admin-status.vencida, .admin-status.retirado, .admin-status.inactivo { color: #eb8484; border-color: rgba(235,108,108,.34); background: rgba(235,108,108,.07); }
+.admin-status.suspendido, .admin-status.suspendida { color: #dfb25c; border-color: rgba(223,178,92,.38); background: rgba(223,178,92,.08); }
+.admin-status.vencida, .admin-status.retirado, .admin-status.inactivo, .admin-status.cancelado, .admin-status.cancelada { color: #eb8484; border-color: rgba(235,108,108,.34); background: rgba(235,108,108,.07); }
+.admin-vendor-actions { display: flex; align-items: center; gap: 7px; min-width: 205px; }
+.admin-vendor-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 7px 9px; border-radius: 4px; font: 700 11px var(--font-body); cursor: pointer; }
+.admin-vendor-actions .lucide { width: 14px; height: 14px; }
+.admin-vendor-actions button:disabled { cursor: wait; opacity: .55; }
+.btn-admin-suspend { border: 1px solid rgba(223,178,92,.48); background: transparent; color: #E4C47F; }
+.btn-admin-cancel { border: 1px solid rgba(235,108,108,.45); background: transparent; color: #F0A0A0; }
+.btn-admin-suspend:hover:not(:disabled) { background: rgba(223,178,92,.08); border-color: rgba(223,178,92,.75); }
+.btn-admin-cancel:hover:not(:disabled) { background: rgba(235,108,108,.08); border-color: rgba(235,108,108,.7); }
 .admin-membership-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .admin-membership-summary span { padding: 7px 10px; border: 1px solid var(--line2); border-radius: 4px; color: var(--text3); font-size: 11px; }
 .admin-membership-summary strong { margin-left: 5px; color: var(--text); }
