@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=32">
+  <link rel="stylesheet" href="styles.css?v=31">
 </head>
 <body>
 
@@ -477,19 +477,14 @@
         <div class="form-section-title"><span class="fs-num">2</span> Origen y marcas que trabajas <span class="req">*</span></div>
         <p class="form-hint seller-field-label">Origen del vehículo</p>
         <div class="check-pills" id="vend-origenes"></div>
+        <p class="form-hint seller-field-label" id="vend-marcas-label" hidden>Marcas que trabajas</p>
         <div id="vend-marcas" class="seller-brand-groups"></div>
       </div>
 
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">3</span> Líneas / Modelos que trabajas <span class="req">*</span></div>
         <p class="form-hint">Selecciona una marca primero para ver sus líneas. Puedes seleccionar varias.</p>
-        <div class="form-group">
-          <label>Filtrar líneas por marca</label>
-          <select id="vend-marca-filtro" onchange="filtrarLineasVendedor()">
-            <option value="">Selecciona una marca para ver líneas</option>
-          </select>
-        </div>
-        <div class="check-pills" id="vend-lineas" style="max-height:220px"></div>
+        <div id="vend-lineas" class="seller-brand-groups"></div>
         <div id="vend-lineas-custom" style="margin-top:10px">
           <div class="form-group">
             <label>¿No encuentras tu línea? Agrégala manualmente</label>
@@ -497,9 +492,11 @@
               <input type="text" id="vend-linea-custom-input" placeholder="Ej: Tacoma, Prado, FJ...">
               <button type="button" class="btn-ghost" onclick="agregarLineaCustom()">+ Agregar</button>
             </div>
+            <div id="vend-lineas-manuales-list" class="manual-lines-list" aria-live="polite"></div>
           </div>
         </div>
         <input type="hidden" name="vlineas" id="vlineas-selected">
+        <input type="hidden" name="vlineasManuales" id="vlineas-manuales">
       </div>
 
       <div class="form-section">
@@ -725,7 +722,7 @@
 <div id="toasts"></div>
 
 <script src="catalogos.js?v=21"></script>
-<script src="app.js?v=36"></script>
+<script src="app.js?v=34"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
