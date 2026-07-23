@@ -761,6 +761,33 @@ input:focus, select:focus, textarea:focus {
   background: linear-gradient(135deg, rgba(232,206,140,.16), rgba(201,162,75,.1));
   border-color: var(--gold); color: var(--gold2);
 }
+.seller-field-label { margin-bottom: 8px; color: var(--cream); font-weight: 700; }
+.seller-brand-groups { display: grid; gap: 14px; margin-top: 18px; }
+.seller-brand-group {
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.018);
+  border-radius: 8px;
+}
+.seller-brand-group h4 {
+  margin: 0 0 11px;
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 700;
+}
+.seller-brand-group .check-pills { max-height: none; padding: 0; }
+.manual-lines-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.manual-line-chip {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 34px;
+  padding: 7px 11px; border: 1px solid rgba(111, 231, 255, .28);
+  border-radius: 6px; background: rgba(111, 231, 255, .08); color: var(--text);
+}
+.manual-line-chip span { color: var(--muted); font-size: 18px; line-height: 1; }
+@media (max-width: 600px) {
+  .seller-brand-group { padding: 13px; }
+  .seller-brand-group .check-pills { gap: 7px; }
+  .seller-brand-group .check-pill span { padding: 8px 12px; }
+}
 
 .inline-add { display: flex; gap: 8px; }
 .inline-add input { flex: 1; }
@@ -1881,16 +1908,4 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
   .admin-loading .spinner { animation: none; }
   .btn-admin-approve,
   .btn-admin-reject { transition: none; }
-}
-
-/* Seller origin and brand hierarchy */
-.seller-field-label { margin-bottom: 8px; color: var(--cream); font-weight: 700; }
-.seller-brand-groups { display: grid; gap: 14px; margin-top: 18px; }
-.seller-brand-group { padding: 16px; border: 1px solid var(--line); background: rgba(255,255,255,.018); border-radius: 8px; }
-.seller-brand-group h4 { margin: 0 0 11px; color: var(--cream); font-size: 13px; font-weight: 700; }
-.seller-brand-group .check-pills { max-height: none; padding: 0; }
-@media (max-width: 600px) {
-  .seller-brand-group { padding: 13px; }
-  .seller-brand-group .check-pills { gap: 7px; }
-  .seller-brand-group .check-pill span { padding: 8px 12px; }
 }
