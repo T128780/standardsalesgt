@@ -1,3 +1,7 @@
+Exit code: 0
+Wall time: 2.2 seconds
+Total output lines: 793
+Output:
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -16,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=31">
+  <link rel="stylesheet" href="styles.css?v=32">
 </head>
 <body>
 
@@ -367,67 +371,7 @@
         </div>
         <div class="form-row">
           <div class="form-group"><label>Cilindraje (litros)</label><select name="cilindraje"><option value="">No sé</option></select></div>
-          <div class="form-group"><label>CC (aprox.)</label><select name="cc"><option value="">No sé</option><option>800</option><option>1000</option><option>1200</option><option>1300</option><option>1400</option><option>1500</option><option>1600</option><option>1800</option><option>2000</option><option>2200</option><option>2400</option><option>2500</option><option>2700</option><option>3000</option><option>3200</option><option>3500</option><option>4000</option><option>5000</option><option>6000</option></select></div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title"><span class="fs-num">3</span><i data-lucide="wrench" class="form-section-icon" aria-hidden="true"></i><span>Repuesto buscado</span></div>
-        <div class="form-row">
-          <div class="form-group"><label>Categoría <span class="req">*</span></label><select name="categoria"><option value="">Categoría del repuesto</option></select></div>
-          <div class="form-group"><label>Parte específica</label><select name="parte"><option value="">Parte específica</option></select></div>
-        </div>
-        <div class="form-group">
-          <label>Condición deseada</label>
-          <div class="option-pills">
-            <label class="option-pill"><input type="radio" name="condicion" value="Me es indiferente"><span>Indiferente</span></label>
-            <label class="option-pill"><input type="radio" name="condicion" value="Nueva"><span>Nueva</span></label>
-            <label class="option-pill"><input type="radio" name="condicion" value="Usada"><span>Usada</span></label>
-            <label class="option-pill"><input type="radio" name="condicion" value="Reconstruida"><span>Reconstruida</span></label>
-          </div>
-        </div>
-        <div class="form-group"><label>Detalles adicionales</label><textarea name="detalles" placeholder="Color, lado derecho/izquierdo, versión, etc."></textarea></div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title"><span class="fs-num">4</span><i data-lucide="map-pin" class="form-section-icon" aria-hidden="true"></i><span>¿Dónde necesitas el repuesto?</span></div>
-        <div class="form-row">
-          <div class="form-group"><label>Departamento</label><select name="depto"><option value="">Departamento</option></select></div>
-          <div class="form-group"><label>Municipio</label><select name="muni"><option value="">Municipio</option></select></div>
-        </div>
-        <div class="form-group"><label>Zona (opcional)</label><input type="text" name="zona" placeholder="Ej: Zona 10"></div>
-      </div>
-
-      <div class="form-section">
-        <div class="form-section-title"><span class="fs-num">5</span><i data-lucide="message-square-text" class="form-section-icon" aria-hidden="true"></i><span>Urgencia y comentarios</span></div>
-        <div class="form-group">
-          <label>Urgencia</label>
-          <input type="hidden" name="urgencia" value="Media">
-          <div class="urgencia-btns">
-            <button type="button" class="urgencia-btn" data-val="Alta"><span class="u-dot alta"></span>Alta — Hoy</button>
-            <button type="button" class="urgencia-btn active" data-val="Media"><span class="u-dot media"></span>Media — Esta semana</button>
-            <button type="button" class="urgencia-btn" data-val="Baja"><span class="u-dot baja"></span>Baja — Sin prisa</button>
-          </div>
-        </div>
-        <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" placeholder="Cualquier detalle extra..."></textarea></div>
-      </div>
-
-      <button type="submit" class="btn-submit">Enviar solicitud gratis <i data-lucide="send" class="btn-arrow-icon" aria-hidden="true"></i></button>
-      <p class="form-footnote">Registraremos tu solicitud y los vendedores compatibles podrán contactarte por WhatsApp.</p>
-    </form>
-  </div>
-</div>
-
-<!-- CONFIRMACIÓN -->
-<div id="page-confirmacion" class="page">
-  <div class="confirm-page">
-    <div class="confirm-card">
-      <div class="confirm-icon ok"><i data-lucide="badge-check" aria-hidden="true"></i></div>
-      <h2>¡Solicitud enviada!</h2>
-      <p>Tu solicitud fue registrada correctamente. Los vendedores compatibles podrán contactarte por WhatsApp.</p>
-      <button class="btn-submit" onclick="showPage('page-solicitud')">Nueva solicitud</button>
-      <button class="btn-ghost-dark" onclick="showPage('page-landing')">Volver al inicio</button>
-    </div>
+          <div class="form-group"><label>CC (aprox.)</label><select name="cc"><option value="">No sé</option><option>800</option><option>1000</option><option>1200</option><option>1300</option><option>1400</option><option>1500</option><option>1600</option><option>1800</option><option>2000</option><option>2200</option><option>2400</option><option>2500</option><option>2700</option><option>3000</option><option>3200</option><option>3500</option><option>4000</option><option>5000</option><opt…1059 tokens truncated…iv>
   </div>
 </div>
 
@@ -504,6 +448,14 @@
         <div class="form-section-title"><span class="fs-num">4</span> Categorías que atiendes <span class="req">*</span></div>
         <p class="form-hint">Solo recibirás solicitudes de estas categorías de repuestos.</p>
         <div class="check-pills" id="vend-categorias"></div>
+        <div id="vend-suspension-block" class="seller-dependent-block" hidden>
+          <p class="form-hint seller-field-label">Piezas de suspensión que atiendes</p>
+          <div class="check-pills" id="vend-suspension-parts"></div>
+          <div class="form-group seller-other-part">
+            <label>Otra pieza de suspensión</label>
+            <input type="text" name="votraSuspension" placeholder="Escribe otra pieza">
+          </div>
+        </div>
       </div>
 
       <div class="form-section">
@@ -739,8 +691,8 @@
 
 <div id="toasts"></div>
 
-<script src="catalogos.js?v=21"></script>
-  <script src="app.js?v=37"></script>
+<script src="catalogos.js?v=22"></script>
+  <script src="app.js?v=38"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
@@ -778,3 +730,4 @@ function switchTab(id, btn) {
 </script>
 </body>
 </html>
+
