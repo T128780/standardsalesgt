@@ -1,6 +1,3 @@
-Exit code: 0
-Wall time: 1.4 seconds
-Output:
 // STANDARD REPUESTOS GT — Catálogos completos
 
 const CAT = {
