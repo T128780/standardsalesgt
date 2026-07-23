@@ -6,6 +6,56 @@
 const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
 
+function createTrackingId(prefix) {
+  const random = window.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  return `${prefix}_${random}`;
+}
+
+function getOrCreateStorageId(storage, key, prefix) {
+  try {
+    let value = storage.getItem(key);
+    if (!value) {
+      value = createTrackingId(prefix);
+      storage.setItem(key, value);
+    }
+    return value;
+  } catch (error) {
+    return createTrackingId(prefix);
+  }
+}
+
+function registrarVisitaSitio() {
+  try {
+    const params = new URLSearchParams({
+      accion: "registrar_visita",
+      visitorId: getOrCreateStorageId(localStorage, "standard_sales_visitor_id", "visitor"),
+      sessionId: getOrCreateStorageId(sessionStorage, "standard_sales_session_id", "session"),
+      page: window.location.pathname || "/",
+      section: window.location.hash || "",
+      referrer: document.referrer || "",
+      userAgent: navigator.userAgent || "",
+      language: navigator.language || "",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+      event: "page_view"
+    });
+
+    let queued = false;
+    if (navigator.sendBeacon) {
+      const payload = new Blob([params.toString()], { type: "application/x-www-form-urlencoded;charset=UTF-8" });
+      queued = navigator.sendBeacon(GOOGLE_SCRIPT_URL, payload);
+    }
+    if (!queued) {
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        keepalive: true,
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: params.toString()
+      }).catch(() => {});
+    }
+  } catch (error) {}
+}
+
 function catalogos() {
   try {
     if (typeof CAT !== "undefined") return CAT;
@@ -712,6 +762,7 @@ let adminBloqueadoHasta = 0;
 let adminSessionPassword = "";
 let adminPendingRequests = [];
 let adminDashboardData = null;
+let adminVisitMetrics = null;
 
 /* ══════════════════════════════════════════════════════════════
    LOGIN VENDEDOR (usuarios creados en la pestaña Accesos)
@@ -768,9 +819,13 @@ async function checkAdminLogin() {
   adminSessionPassword = password;
 
   try {
-    const result = await adminRequest("admin_dashboard_resumen");
+    const [result, visits] = await Promise.all([
+      adminRequest("admin_dashboard_resumen"),
+      adminRequest("admin_metricas_visitas").catch(() => null)
+    ]);
     adminIntentosFallidos = 0;
     adminDashboardData = result;
+    adminVisitMetrics = visits;
     adminPendingRequests = Array.isArray(result.pendientesVendedores) ? result.pendientesVendedores : [];
     input.value = "";
     if (errorEl) errorEl.style.display = "none";
@@ -987,6 +1042,7 @@ function renderPanelAdmin() {
   renderAdminTop("admin-top-partes", buyers.topPartes);
   renderAdminTop("admin-top-anios", buyers.topAnios);
   renderAdminEnvios(sends);
+  renderAdminVisitas(adminVisitMetrics);
   window.lucide?.createIcons();
 }
 
@@ -1053,6 +1109,30 @@ function renderAdminEnvios(sends) {
     ${errors.length ? `<div class="admin-error-list">${errors.map(error => `<p><strong>${escapeHtml(error.vendedor || "Sin vendedor")}</strong><span>${escapeHtml(error.observaciones || error.estado || "Error sin detalle")}</span></p>`).join("")}</div>` : adminEmpty("Sin errores recientes")}`;
 }
 
+function renderAdminVisitas(metrics) {
+  const data = metrics || {};
+  setAdminText("admin-visitas-total", data.visitasTotales || 0);
+  setAdminText("admin-visitas-unicos", data.visitantesUnicos || 0);
+  setAdminText("admin-visitas-hoy", data.visitasHoy || 0);
+  setAdminText("admin-visitas-7d", data.visitasUltimos7Dias || 0);
+  setAdminText("admin-visitas-30d", data.visitasUltimos30Dias || 0);
+  renderAdminTop("admin-visitas-paginas", data.paginasMasVisitadas);
+  renderAdminTop("admin-visitas-referrers", data.referrersPrincipales);
+  renderAdminTop("admin-visitas-dispositivos", data.dispositivos);
+
+  const recent = document.getElementById("admin-visitas-recientes");
+  if (!recent) return;
+  const visits = Array.isArray(data.ultimasVisitas) ? data.ultimasVisitas : [];
+  if (!visits.length) {
+    recent.innerHTML = adminEmpty(metrics ? "Aún no hay visitas registradas" : "No se pudieron cargar las métricas de visitas");
+    return;
+  }
+  recent.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table admin-visits-table">
+    <thead><tr><th>Fecha</th><th>Página</th><th>Sección</th><th>Dispositivo</th><th>Origen</th></tr></thead>
+    <tbody>${visits.map(visit => `<tr><td>${formatAdminDate(visit.fecha)}</td><td>${escapeHtml(visit.pagina || "/")}</td><td>${escapeHtml(visit.seccion || "—")}</td><td>${escapeHtml(visit.dispositivo || "—")}</td><td>${escapeHtml(visit.referrer || "Directo")}</td></tr>`).join("")}</tbody>
+  </table></div>`;
+}
+
 function renderAdminSolicitudesVendedores() {
   const container = document.getElementById("admin-solicitudes");
   if (!container) return;
@@ -1117,8 +1197,12 @@ async function cargarDashboardAdmin() {
   if (button) button.disabled = true;
 
   try {
-    const result = await adminRequest("admin_dashboard_resumen");
+    const [result, visits] = await Promise.all([
+      adminRequest("admin_dashboard_resumen"),
+      adminRequest("admin_metricas_visitas").catch(() => null)
+    ]);
     adminDashboardData = result;
+    adminVisitMetrics = visits;
     adminPendingRequests = Array.isArray(result.pendientesVendedores) ? result.pendientesVendedores : [];
     renderPanelAdmin();
   } catch (error) {
@@ -1161,6 +1245,7 @@ function cerrarSesionAdmin() {
   adminSessionPassword = "";
   adminPendingRequests = [];
   adminDashboardData = null;
+  adminVisitMetrics = null;
   const input = document.getElementById("admin-password");
   if (input) input.value = "";
   showPage("page-admin-login");
@@ -1314,6 +1399,7 @@ function manejarHash() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  registrarVisitaSitio();
   setupNavigation();
   setupUrgenciaButtons();
   initFormComprador();
