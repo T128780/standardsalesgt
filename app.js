@@ -1,7 +1,3 @@
-Exit code: 0
-Wall time: 1.4 seconds
-Total output lines: 1465
-Output:
 // Standard Repuestos GT — App Logic
 // v20: Rediseño de lujo. Misma lógica de envío a Google Sheets + WhatsApp.
 //      Se agregan las funciones de paneles (admin, vendedor y accesos) que
