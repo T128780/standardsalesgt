@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>Standard Sales GT — Repuestos de vehículo en Guatemala</title>
+  <title>Standard Sales GT - Repuestos de vehículo en Guatemala</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
 </head>
 <body>
 
-<!-- ═══ NAVBAR ═══ -->
+<!-- NAVBAR -->
 <nav id="navbar">
   <div class="nav-inner">
     <a href="#inicio" class="nav-logo" onclick="smoothTo(event,'#inicio')">
@@ -65,7 +65,7 @@
   </div>
 </nav>
 
-<!-- ═══ LANDING PAGE ═══ -->
+<!-- LANDING PAGE -->
 <div id="page-landing" class="page active">
 
   <!-- HERO -->
@@ -124,7 +124,7 @@
   <div class="urgency-bar" id="urgencyBar">
     <div class="urgency-inner">
       <p>¿Lo necesitas hoy? <span>Registra tu solicitud en 2 minutos y vendedores compatibles podrán contactarte por WhatsApp.</span></p>
-      <button onclick="showPage('page-solicitud')">Solicitar ahora →</button>
+      <button onclick="showPage('page-solicitud')">Solicitar ahora -&gt;</button>
     </div>
   </div>
 
@@ -253,7 +253,7 @@
           <ul class="plan-features">
             <li class="ok">Solicitudes ilimitadas</li>
             <li class="ok">Prioridad alta</li>
-            <li class="ok">Vendedor verificado ✓</li>
+            <li class="ok">Vendedor verificado OK</li>
             <li class="ok">Analítica avanzada</li>
           </ul>
           <button class="plan-btn" onclick="showPage('page-vendedor')">Elegir Premium</button>
@@ -287,10 +287,10 @@
   </footer>
 </div>
 
-<!-- ═══ SOLICITUD ═══ -->
+<!-- SOLICITUD -->
 <div id="page-solicitud" class="page form-page">
   <div class="form-hero">
-    <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
+    <button class="back-btn" onclick="showPage('page-landing')">&lt;- Volver</button>
     <span class="section-eyebrow">Solicitud gratuita</span>
     <h2>Solicitar <em>repuesto</em></h2>
     <p>Gratis · 2 minutos · Registramos tu solicitud para vendedores compatibles</p>
@@ -408,9 +408,9 @@
           <label>Urgencia</label>
           <input type="hidden" name="urgencia" value="Media">
           <div class="urgencia-btns">
-            <button type="button" class="urgencia-btn" data-val="Alta"><span class="u-dot alta"></span>Alta — Hoy</button>
-            <button type="button" class="urgencia-btn active" data-val="Media"><span class="u-dot media"></span>Media — Esta semana</button>
-            <button type="button" class="urgencia-btn" data-val="Baja"><span class="u-dot baja"></span>Baja — Sin prisa</button>
+            <button type="button" class="urgencia-btn" data-val="Alta"><span class="u-dot alta"></span>Alta - Hoy</button>
+            <button type="button" class="urgencia-btn active" data-val="Media"><span class="u-dot media"></span>Media - Esta semana</button>
+            <button type="button" class="urgencia-btn" data-val="Baja"><span class="u-dot baja"></span>Baja - Sin prisa</button>
           </div>
         </div>
         <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" placeholder="Cualquier detalle extra..."></textarea></div>
@@ -422,7 +422,7 @@
   </div>
 </div>
 
-<!-- CONFIRMACIÓN -->
+<!-- CONFIRMACION -->
 <div id="page-confirmacion" class="page">
   <div class="confirm-page">
     <div class="confirm-card">
@@ -438,7 +438,7 @@
 <!-- VENDEDOR -->
 <div id="page-vendedor" class="page form-page">
   <div class="form-hero">
-    <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
+    <button class="back-btn" onclick="showPage('page-landing')">&lt;- Volver</button>
     <span class="section-eyebrow">Membresía de vendedor</span>
     <h2>Únete como <em>vendedor</em></h2>
     <p>Recibe solicitudes calificadas de compradores en Guatemala</p>
@@ -557,10 +557,10 @@
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">6</span> Plan de membresía <span class="req">*</span></div>
         <div class="option-pills">
-          <label class="option-pill"><input type="radio" name="vplan" value="Gratis"><span>Gratis — Q0</span></label>
-          <label class="option-pill"><input type="radio" name="vplan" value="Básico"><span>Básico — Q99/mes</span></label>
-          <label class="option-pill"><input type="radio" name="vplan" value="Pro"><span>Pro — Q199/mes</span></label>
-          <label class="option-pill"><input type="radio" name="vplan" value="Premium"><span>Premium — Q399/mes</span></label>
+          <label class="option-pill"><input type="radio" name="vplan" value="Gratis"><span>Gratis - Q0</span></label>
+          <label class="option-pill"><input type="radio" name="vplan" value="Básico"><span>Básico - Q99/mes</span></label>
+          <label class="option-pill"><input type="radio" name="vplan" value="Pro"><span>Pro - Q199/mes</span></label>
+          <label class="option-pill"><input type="radio" name="vplan" value="Premium"><span>Premium - Q399/mes</span></label>
         </div>
       </div>
 
@@ -571,12 +571,17 @@
         </div>
         <div class="form-group">
           <label>Comprobante de pago (opcional)</label>
-          <input id="comprobante-file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
-          <p class="form-hint">PDF, JPG o PNG. Máximo 5 MB.</p>
+          <div id="comprobante-drop" class="dropzone" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="handleComprobanteDrop(event)">
+            <div class="drop-icon" aria-hidden="true">+</div>
+            <div class="drop-main">Adjunta o arrastra tu comprobante</div>
+            <div class="drop-sub">PDF, JPG o PNG. Maximo 5 MB.</div>
+            <input id="comprobante-file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onchange="mostrarComprobante(this)">
+          </div>
+          <div id="comprobante-preview" class="comprobante-preview" aria-live="polite"></div>
         </div>
       </div>
 
-      <button type="submit" class="btn-submit">Enviar solicitud de adhesión <span class="btn-arrow">→</span></button>
+      <button type="submit" class="btn-submit">Enviar solicitud de adhesión <span class="btn-arrow">-&gt;</span></button>
       <p class="form-footnote">Tu solicitud será revisada en máximo 24 horas. Te contactaremos por WhatsApp.</p>
     </form>
   </div>
@@ -586,7 +591,7 @@
 <div id="page-vendedor-ok" class="page">
   <div class="confirm-page">
     <div class="confirm-card">
-      <div class="confirm-icon ok">✓</div>
+      <div class="confirm-icon ok">OK</div>
       <h2>¡Solicitud recibida!</h2>
       <p>Revisaremos tu perfil y te contactaremos pronto para activar tu cuenta.</p>
       <button class="btn-ghost-dark" onclick="showPage('page-landing')">Volver al inicio</button>
@@ -615,11 +620,11 @@
         <label>Usuario</label>
         <input type="text" id="vendor-user" placeholder="Tu usuario" onkeydown="if(event.key==='Enter')document.getElementById('vendor-pass').focus()">
         <label>Contraseña</label>
-        <input type="password" id="vendor-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkVendorLogin()">
+        <input type="password" id="vendor-pass" placeholder="⬢⬢⬢⬢⬢⬢⬢⬢" onkeydown="if(event.key==='Enter')checkVendorLogin()">
         <div id="vendor-error" class="login-error">Usuario o contraseña incorrectos.</div>
       </div>
-      <button class="btn-submit" onclick="checkVendorLogin()">Ingresar →</button>
-      <button class="btn-ghost-dark" onclick="showPage('page-landing')">← Volver al inicio</button>
+      <button class="btn-submit" onclick="checkVendorLogin()">Ingresar -&gt;</button>
+      <button class="btn-ghost-dark" onclick="showPage('page-landing')">&lt;- Volver al inicio</button>
       <div class="login-foot">
         ¿Aún no tienes membresía? <a href="#" onclick="showPage('page-vendedor');return false">Regístrate aquí</a>
       </div>
@@ -631,12 +636,12 @@
 <div id="page-panel-vendedor" class="page panel-page">
   <div class="panel-header">
     <div>
-      <button class="back-btn" onclick="showPage('page-landing')">← Volver</button>
+      <button class="back-btn" onclick="showPage('page-landing')">&lt;- Volver</button>
       <h2>Panel del vendedor</h2>
       <p>Solicitudes recibidas</p>
     </div>
     <div class="panel-header-actions">
-      <button class="btn-submit small" id="btn-export-sol">⬇ Exportar</button>
+      <button class="btn-submit small" id="btn-export-sol"> Exportar</button>
     </div>
   </div>
   <div class="panel-body">
@@ -644,9 +649,9 @@
       <div class="stat-card"><div class="num" id="v-total">0</div><div class="lbl">Solicitudes</div></div>
       <div class="stat-card"><div class="num red" id="v-alta">0</div><div class="lbl">Urgentes</div></div>
       <div class="stat-card"><div class="num">Pro</div><div class="lbl">Plan activo</div></div>
-      <div class="stat-card"><div class="num gold">✓</div><div class="lbl">Verificado</div></div>
+      <div class="stat-card"><div class="num gold">OK</div><div class="lbl">Verificado</div></div>
     </div>
-    <div id="panel-solicitudes"><div class="empty-state"><div class="empty-icon">📋</div><p>Aún no hay solicitudes disponibles.</p></div></div>
+    <div id="panel-solicitudes"><div class="empty-state"><div class="empty-icon"></div><p>Aún no hay solicitudes disponibles.</p></div></div>
   </div>
 </div>
 
@@ -662,7 +667,7 @@
       <div class="login-fields">
         <label>Contraseña</label>
         <div class="password-input-wrap">
-          <input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkAdminLogin()">
+          <input type="password" id="admin-password" placeholder="⬢⬢⬢⬢⬢⬢⬢⬢" autocomplete="current-password" onkeydown="if(event.key==='Enter')checkAdminLogin()">
           <button class="password-toggle" id="admin-password-toggle" type="button" aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña" onclick="toggleAdminPasswordVisibility()">
             <i data-lucide="eye" aria-hidden="true"></i>
           </button>
@@ -670,7 +675,7 @@
         <div id="admin-error" class="login-error">Contraseña incorrecta.</div>
       </div>
       <button class="btn-submit" id="admin-login-button" onclick="checkAdminLogin()">Ingresar</button>
-      <button class="btn-ghost-dark" onclick="showPage('page-landing')">← Volver al inicio</button>
+      <button class="btn-ghost-dark" onclick="showPage('page-landing')">&lt;- Volver al inicio</button>
     </div>
   </div>
 </div>
@@ -679,9 +684,9 @@
 <div id="page-admin" class="page panel-page">
   <div class="panel-header">
     <div>
-      <button class="back-btn" onclick="cerrarSesionAdmin()">← Volver</button>
+      <button class="back-btn" onclick="cerrarSesionAdmin()">&lt;- Volver</button>
       <h2>Panel administrativo</h2>
-      <p>Standard Repuestos GT — Gestión interna</p>
+      <p>Standard Repuestos GT - Gestión interna</p>
     </div>
     <div class="panel-header-actions">
       <button class="btn-ghost" id="btn-refresh-admin" type="button">
@@ -790,3 +795,4 @@ function switchTab(id, btn) {
 </script>
 </body>
 </html>
+
