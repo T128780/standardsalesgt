@@ -1,3 +1,6 @@
+Exit code: 0
+Wall time: 1.4 seconds
+Output:
 // STANDARD REPUESTOS GT — Catálogos completos
 
 const CAT = {
@@ -61,7 +64,7 @@ const CAT = {
   categorias: {
     "Motor":["Motor completo","Block","Culata","Tapadera de válvulas","Cárter","Pistones","Bielas","Cigüeñal","Eje de levas","Cadena de tiempo","Faja de tiempo","Tensor","Bomba de aceite","Bomba de agua","Termostato","Radiador","Ventilador","Depósito de refrigerante","Mangueras","Múltiple de admisión","Múltiple de escape","Cuerpo de aceleración","Inyectores","Bobinas","Alternador","Sensor MAF","Sensor MAP","Sensor TPS","Sensor de oxígeno","Sensor de cigüeñal","Sensor de eje de levas","Soportes de motor"],
     "Transmisión":["Caja automática","Caja mecánica","Convertidor de torque","Clutch","Canasta","Disco","Collarín","Volante","Palanca","Cable de cambios","Diferencial","Flechas","Punta de flecha","Homocinética","Soporte de caja","Módulo TCM"],
-    "Suspensión":["Shock delantero","Shock trasero","Strut","Resorte","Base de shock","Muleta superior","Muleta inferior","Buje","Rótula","Terminal","Barra estabilizadora","Bieleta","Eje trasero","Mango de rueda","Cubo","Cojinete"],
+    "Suspensión":["Amortiguador","Base de amortiguador","Espiral / resorte","Muleta / brazo de control","Rótula","Buje","Bieleta / link estabilizador","Barra estabilizadora","Terminal","Mangueta","Kit de suspensión","Otro"],
     "Dirección":["Cremallera","Bomba hidráulica","Manguera hidráulica","Columna de dirección","Timón","Caja de dirección","Terminal","Rótula axial","Módulo EPS"],
     "Frenos":["Bomba central","Hidrovac","Mordaza","Caliper","Disco de freno","Tambor","Pastillas","Zapatas","Cilindro auxiliar","Manguera de freno","Sensor ABS","Módulo ABS","Cable de freno de mano"],
     "Carrocería":["Bumper delantero","Bumper trasero","Persiana","Capó","Lodera derecha","Lodera izquierda","Puerta delantera derecha","Puerta delantera izquierda","Puerta trasera derecha","Puerta trasera izquierda","Compuerta","Tapa de baúl","Estribo","Guardafango","Frontal","Marco de radiador","Alma de bumper","Base de bumper","Bisagras"],
