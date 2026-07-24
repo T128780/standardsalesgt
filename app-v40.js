@@ -157,6 +157,8 @@ function showPage(id) {
   if (target) {
     target.classList.add("active");
     window.scrollTo(0, 0);
+    if (id === "page-solicitud") setFormSecurityTimestamp(document.getElementById("form-comprador"));
+    if (id === "page-vendedor") setFormSecurityTimestamp(document.getElementById("form-vendedor"));
   }
 
   document.querySelectorAll(".nav-link").forEach((link) => {
@@ -251,6 +253,20 @@ function getFormValue(form, name) {
   return "";
 }
 
+function setFormSecurityTimestamp(form) {
+  const field = form?.elements?.namedItem("formStartedAt");
+  if (field) field.value = String(Date.now());
+}
+
+function getFormSecurityPayload(form) {
+  return {
+    website: getFormValue(form, "website"),
+    formStartedAt: getFormValue(form, "formStartedAt"),
+    visitorId: getOrCreateStorageId(localStorage, "standard_sales_visitor_id", "visitor"),
+    sessionId: getOrCreateStorageId(sessionStorage, "standard_sales_session_id", "session")
+  };
+}
+
 function appendAliases(params, canonical, value, aliases = []) {
   const cleanValue = value == null ? "" : String(value);
   params.append(canonical, cleanValue);
@@ -259,6 +275,11 @@ function appendAliases(params, canonical, value, aliases = []) {
 
 async function enviarSolicitudAGoogleSheets(sheetPayload) {
   const params = new URLSearchParams();
+  params.append("accion", "registrar_comprador");
+  params.append("website", sheetPayload.security.website);
+  params.append("formStartedAt", sheetPayload.security.formStartedAt);
+  params.append("visitorId", sheetPayload.security.visitorId);
+  params.append("sessionId", sheetPayload.security.sessionId);
 
   appendAliases(params, "nombre", sheetPayload.nombre, ["Nombre"]);
   appendAliases(params, "whatsapp", sheetPayload.whatsapp, ["WhatsApp", "waComprador"]);
@@ -283,17 +304,24 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   appendAliases(params, "detalles", sheetPayload.detalles, ["Detalles"]);
   appendAliases(params, "comentarios", sheetPayload.comentarios, ["Comentarios"]);
 
-  await fetch(GOOGLE_SCRIPT_URL, {
+  const response = await fetch(GOOGLE_SCRIPT_URL, {
     method: "POST",
-    mode: "no-cors",
     body: params
   });
+  if (!response.ok) throw new Error("No se pudo conectar con el formulario.");
+  const result = await response.json();
+  if (!result.ok) throw new Error(result.error || "La solicitud no pudo registrarse.");
+  return result;
 }
 
 async function enviarSolicitudVendedor(vendedor) {
   const params = new URLSearchParams();
 
   params.append("accion", "registrar_vendedor");
+  params.append("website", vendedor.security.website);
+  params.append("formStartedAt", vendedor.security.formStartedAt);
+  params.append("visitorId", vendedor.security.visitorId);
+  params.append("sessionId", vendedor.security.sessionId);
   params.append("origenLead", "web_standard_repuestos_gt");
   params.append("estado", "Pendiente");
   params.append("nombreComercial", vendedor.nombre);
@@ -324,15 +352,19 @@ async function enviarSolicitudVendedor(vendedor) {
     params.append("comprobanteTipo", vendedor.comprobante.tipo);
   }
 
-  await fetch(GOOGLE_SCRIPT_URL, {
+  const response = await fetch(GOOGLE_SCRIPT_URL, {
     method: "POST",
-    mode: "no-cors",
     body: params
   });
+  if (!response.ok) throw new Error("No se pudo conectar con el formulario.");
+  const result = await response.json();
+  if (!result.ok) throw new Error(result.error || "La solicitud de vendedor no pudo registrarse.");
+  return result;
 }
 
 function resetCompradorForm(form) {
   form.reset();
+  setFormSecurityTimestamp(form);
   buildMarcas(form.querySelector('[name="marca"]'));
   buildCategorias(form.querySelector('[name="categoria"]'));
   buildDeptos(form.querySelector('[name="depto"]'));
@@ -355,6 +387,7 @@ function initFormComprador() {
   const form = document.getElementById("form-comprador");
   if (!form || form.dataset.initialized === "true") return;
   form.dataset.initialized = "true";
+  setFormSecurityTimestamp(form);
 
   buildMarcas(form.querySelector('[name="marca"]'));
   buildCategorias(form.querySelector('[name="categoria"]'));
@@ -420,11 +453,12 @@ function initFormComprador() {
       zona: getFormValue(form, "zona"),
       detalles: getFormValue(form, "detalles"),
       comentarios: getFormValue(form, "comentarios"),
-      notas
+      notas,
+      security: getFormSecurityPayload(form)
     };
 
-    if (!sheetPayload.marca || !sheetPayload.categoria || !sheetPayload.nombre || !sheetPayload.whatsapp) {
-      toast("Completa los campos requeridos: Marca, Categoría, Nombre y WhatsApp", "error");
+    if (!sheetPayload.marca || !sheetPayload.linea || !sheetPayload.categoria || !sheetPayload.parte || !sheetPayload.depto || !sheetPayload.nombre || !sheetPayload.whatsapp) {
+      toast("Completa los campos requeridos: Nombre, WhatsApp, marca, línea, categoría, parte y departamento.", "error");
       return;
     }
 
@@ -470,7 +504,7 @@ function initFormComprador() {
       showPage("page-confirmacion");
     } catch (error) {
       console.error("Error enviando a Google Sheets", error);
-      toast("No se pudo enviar la solicitud. Intenta de nuevo.", "error");
+      toast(error.message || "No se pudo enviar la solicitud. Intenta de nuevo.", "error");
     } finally {
       if (submitButton) {
         submitButton.disabled = false;
@@ -484,6 +518,7 @@ function initFormVendedor() {
   const form = document.getElementById("form-vendedor");
   if (!form || form.dataset.initialized === "true") return;
   form.dataset.initialized = "true";
+  setFormSecurityTimestamp(form);
 
   const origenesWrap = document.getElementById("vend-origenes");
   const marcasWrap = document.getElementById("vend-marcas");
@@ -588,7 +623,8 @@ function initFormVendedor() {
         nombre: comprobanteFile.name,
         tipo: comprobanteFile.type,
         base64: await fileToBase64(comprobanteFile)
-      } : null
+      } : null,
+      security: getFormSecurityPayload(form)
     };
 
     if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto || !vendedor.origenes.length || !vendedor.marcas.length || (!vendedor.lineas.length && !vendedor.lineasManuales.length) || !vendedor.categorias.length) {
@@ -607,9 +643,11 @@ function initFormVendedor() {
       await enviarSolicitudVendedor(vendedor);
       const vendedorLocal = Object.assign({}, vendedor);
       delete vendedorLocal.comprobante;
+      delete vendedorLocal.security;
       DB.addVendedor(vendedorLocal);
       toast("¡Solicitud de adhesión enviada! Te contactaremos pronto.");
       form.reset();
+      setFormSecurityTimestamp(form);
       vendLineasSeleccionadas.clear();
       vendLineasManuales.clear();
       renderSellerBrands();
@@ -617,7 +655,7 @@ function initFormVendedor() {
       showPage("page-vendedor-ok");
     } catch (error) {
       console.error("Error enviando solicitud de vendedor", error);
-      toast("No se pudo enviar la solicitud. Intenta de nuevo.", "error");
+      toast(error.message || "No se pudo enviar la solicitud. Intenta de nuevo.", "error");
     } finally {
       if (submitButton) {
         submitButton.disabled = false;

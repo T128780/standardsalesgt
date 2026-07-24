@@ -297,18 +297,22 @@
   </div>
   <div class="form-body">
     <form id="form-comprador" novalidate>
+      <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">
+        <label>No completar<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <input type="hidden" name="formStartedAt" value="">
       <div class="form-section buyer-contact-first">
         <div class="form-section-title"><i data-lucide="user-round" class="form-section-icon" aria-hidden="true"></i><span>Datos del comprador</span></div>
         <div class="form-row">
-          <div class="form-group"><label>Nombre completo <span class="req">*</span></label><input type="text" name="nombre" placeholder="Nombre de quien solicita el repuesto"></div>
-          <div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" name="waComprador" placeholder="502XXXXXXXX"></div>
+          <div class="form-group"><label>Nombre completo <span class="req">*</span></label><input type="text" name="nombre" maxlength="80" autocomplete="name" placeholder="Nombre de quien solicita el repuesto"></div>
+          <div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" name="waComprador" maxlength="15" inputmode="tel" autocomplete="tel" placeholder="502XXXXXXXX"></div>
         </div>
       </div>
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">1</span><i data-lucide="car-front" class="form-section-icon" aria-hidden="true"></i><span>Datos del vehículo</span></div>
         <div class="form-row">
           <div class="form-group"><label>Marca <span class="req">*</span></label><select name="marca"><option value="">Marca</option></select></div>
-          <div class="form-group"><label>Línea / Modelo</label><select name="linea"><option value="">Línea / Modelo</option></select></div>
+          <div class="form-group"><label>Línea / Modelo <span class="req">*</span></label><select name="linea"><option value="">Línea / Modelo</option></select></div>
         </div>
         <div class="form-group"><label>Año</label><select name="anio"><option value="">Año</option></select></div>
         <div class="form-group">
@@ -375,11 +379,11 @@
         <div class="form-section-title"><span class="fs-num">3</span><i data-lucide="wrench" class="form-section-icon" aria-hidden="true"></i><span>Repuesto buscado</span></div>
         <div class="form-row">
           <div class="form-group"><label>Categoría <span class="req">*</span></label><select name="categoria"><option value="">Categoría del repuesto</option></select></div>
-          <div class="form-group"><label>Parte específica</label><select name="parte"><option value="">Parte específica</option></select></div>
+          <div class="form-group"><label>Parte específica <span class="req">*</span></label><select name="parte"><option value="">Parte específica</option></select></div>
         </div>
         <div class="form-group" id="buyer-other-part-wrap" hidden>
           <label>Otra parte</label>
-          <input type="text" name="parteOtra" placeholder="Escribe la parte que necesitas">
+          <input type="text" name="parteOtra" maxlength="120" placeholder="Escribe la parte que necesitas">
         </div>
         <div class="form-group">
           <label>Condición deseada</label>
@@ -390,16 +394,16 @@
             <label class="option-pill"><input type="radio" name="condicion" value="Reconstruida"><span>Reconstruida</span></label>
           </div>
         </div>
-        <div class="form-group"><label>Detalles adicionales</label><textarea name="detalles" placeholder="Color, lado derecho/izquierdo, versión, etc."></textarea></div>
+        <div class="form-group"><label>Detalles adicionales</label><textarea name="detalles" maxlength="500" placeholder="Color, lado derecho/izquierdo, versión, etc."></textarea></div>
       </div>
 
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">4</span><i data-lucide="map-pin" class="form-section-icon" aria-hidden="true"></i><span>¿Dónde necesitas el repuesto?</span></div>
         <div class="form-row">
-          <div class="form-group"><label>Departamento</label><select name="depto"><option value="">Departamento</option></select></div>
+          <div class="form-group"><label>Departamento <span class="req">*</span></label><select name="depto"><option value="">Departamento</option></select></div>
           <div class="form-group"><label>Municipio</label><select name="muni"><option value="">Municipio</option></select></div>
         </div>
-        <div class="form-group"><label>Zona (opcional)</label><input type="text" name="zona" placeholder="Ej: Zona 10"></div>
+        <div class="form-group"><label>Zona (opcional)</label><input type="text" name="zona" maxlength="40" placeholder="Ej: Zona 10"></div>
       </div>
 
       <div class="form-section">
@@ -413,7 +417,7 @@
             <button type="button" class="urgencia-btn" data-val="Baja"><span class="u-dot baja"></span>Baja - Sin prisa</button>
           </div>
         </div>
-        <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" placeholder="Cualquier detalle extra..."></textarea></div>
+        <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" maxlength="500" placeholder="Cualquier detalle extra..."></textarea></div>
       </div>
 
       <button type="submit" class="btn-submit">Enviar solicitud gratis <i data-lucide="send" class="btn-arrow-icon" aria-hidden="true"></i></button>
@@ -445,10 +449,14 @@
   </div>
   <div class="form-body">
     <form id="form-vendedor" novalidate>
+      <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden">
+        <label>No completar<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <input type="hidden" name="formStartedAt" value="">
 
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">1</span> Datos básicos</div>
-        <div class="form-group"><label>Nombre comercial <span class="req">*</span></label><input type="text" name="vnombre" placeholder="Nombre de tu negocio"></div>
+        <div class="form-group"><label>Nombre comercial <span class="req">*</span></label><input type="text" name="vnombre" maxlength="100" autocomplete="organization" placeholder="Nombre de tu negocio"></div>
         <div class="form-group">
           <label>Tipo de vendedor</label>
           <div class="option-pills">
@@ -460,21 +468,21 @@
           </div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>Encargado</label><input type="text" name="vencargado" placeholder="Tu nombre"></div>
-          <div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" name="vwhatsapp" placeholder="502XXXXXXXX"></div>
+          <div class="form-group"><label>Encargado</label><input type="text" name="vencargado" maxlength="100" autocomplete="name" placeholder="Tu nombre"></div>
+          <div class="form-group"><label>WhatsApp <span class="req">*</span></label><input type="tel" name="vwhatsapp" maxlength="15" inputmode="tel" autocomplete="tel" placeholder="502XXXXXXXX"></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>Correo</label><input type="email" name="vemail" placeholder="correo@negocio.com"></div>
-          <div class="form-group"><label>NIT (opcional)</label><input type="text" name="vnit" placeholder="NIT del negocio"></div>
+          <div class="form-group"><label>Correo</label><input type="email" name="vemail" maxlength="120" autocomplete="email" placeholder="correo@negocio.com"></div>
+          <div class="form-group"><label>NIT (opcional)</label><input type="text" name="vnit" maxlength="30" placeholder="NIT del negocio"></div>
         </div>
-        <div class="form-group"><label>Dirección</label><input type="text" name="vdireccion" placeholder="Dirección del local"></div>
+        <div class="form-group"><label>Dirección</label><input type="text" name="vdireccion" maxlength="180" autocomplete="street-address" placeholder="Dirección del local"></div>
         <div class="form-row">
           <div class="form-group"><label>Departamento <span class="req">*</span></label><select name="vdepto"><option value="">Departamento</option></select></div>
           <div class="form-group"><label>Municipio</label><select name="vmuni"><option value="">Municipio</option></select></div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>Zona</label><input type="text" name="vzona" placeholder="Zona (si aplica)"></div>
-          <div class="form-group"><label>Horario</label><input type="text" name="vhorario" placeholder="Lun-Sáb 8am-6pm"></div>
+          <div class="form-group"><label>Zona</label><input type="text" name="vzona" maxlength="40" placeholder="Zona (si aplica)"></div>
+          <div class="form-group"><label>Horario</label><input type="text" name="vhorario" maxlength="100" placeholder="Lun-Sáb 8am-6pm"></div>
         </div>
       </div>
 
@@ -494,7 +502,7 @@
           <div class="form-group">
             <label>¿No encuentras tu línea? Agrégala manualmente</label>
             <div class="inline-add">
-              <input type="text" id="vend-linea-custom-input" placeholder="Ej: Tacoma, Prado, FJ...">
+              <input type="text" id="vend-linea-custom-input" maxlength="80" placeholder="Ej: Tacoma, Prado, FJ...">
               <button type="button" class="btn-ghost" onclick="agregarLineaCustom()">+ Agregar</button>
             </div>
             <div id="vend-lineas-manuales-list" class="manual-lines-list" aria-live="polite"></div>
@@ -538,11 +546,11 @@
         </div>
         <div class="form-group">
           <label>Cobertura de entregas</label>
-          <input type="text" name="ventregasDetalle" placeholder="Ej: Capital y municipios cercanos">
+          <input type="text" name="ventregasDetalle" maxlength="300" placeholder="Ej: Capital y municipios cercanos">
         </div>
         <div class="form-group">
           <label>Observaciones</label>
-          <textarea name="vobservaciones" rows="3" placeholder="Información adicional para revisar tu solicitud"></textarea>
+          <textarea name="vobservaciones" rows="3" maxlength="700" placeholder="Información adicional para revisar tu solicitud"></textarea>
         </div>
       </div>
 
@@ -749,7 +757,7 @@
 <div id="toasts"></div>
 
 <script src="catalogos-v24.js"></script>
-  <script src="app-v40.js?v=7e37c93"></script>
+  <script src="app-v40.js?v=20260724-sec1"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
