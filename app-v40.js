@@ -69,13 +69,6 @@ const SELLER_BRAND_GROUPS = {
 };
 
 const SELLER_CATEGORIES = ["Carrocería", "Motor", "Eléctrico", "Suspensión", "Piezas mecánicas", "Otro"];
-const SELLER_SUSPENSION_PARTS = [
-  "Amortiguadores", "Bases de amortiguador", "Espirales / resortes",
-  "Muletas / brazos de control", "Rótulas", "Bujes",
-  "Bieletas / links estabilizadores", "Barra estabilizadora", "Terminales",
-  "Cremallera / dirección relacionada", "Manguetas", "Tijeras",
-  "Ejes / flechas relacionadas", "Kit de suspensión", "Otros repuestos de suspensión"
-];
 const SELLER_ORIGIN_TITLES = {
   "Japonés": "Marcas japonesas que trabajas",
   "JDM": "Marcas JDM que trabajas",
@@ -549,28 +542,6 @@ function initFormVendedor() {
     });
   }
 
-  const suspensionWrap = document.getElementById("vend-suspension-parts");
-  const suspensionBlock = document.getElementById("vend-suspension-block");
-  if (suspensionWrap && suspensionWrap.children.length === 0) {
-    SELLER_SUSPENSION_PARTS.forEach((part) => {
-      const label = document.createElement("label");
-      label.className = "check-pill";
-      label.innerHTML = `<input type="checkbox" name="vsuspension" value="${part}"><span>${part}</span>`;
-      suspensionWrap.appendChild(label);
-    });
-  }
-  const syncSellerSuspension = () => {
-    const selected = Boolean(form.querySelector('[name="vcat"][value="Suspensión"]:checked'));
-    if (suspensionBlock) suspensionBlock.hidden = !selected;
-    if (!selected) {
-      form.querySelectorAll('[name="vsuspension"]:checked').forEach(input => { input.checked = false; });
-      const otherInput = form.querySelector('[name="votraSuspension"]');
-      if (otherInput) otherInput.value = "";
-    }
-  };
-  categoriasWrap?.addEventListener("change", syncSellerSuspension);
-  syncSellerSuspension();
-
   buildDeptos(form.querySelector('[name="vdepto"]'));
   form.querySelector('[name="vdepto"]')?.addEventListener("change", function () {
     buildMunicipios(this, form.querySelector('[name="vmuni"]'));
@@ -604,8 +575,8 @@ function initFormVendedor() {
       lineas: [...vendLineasSeleccionadas],
       lineasManuales: [...vendLineasManuales],
       categorias: [...form.querySelectorAll('[name="vcat"]:checked')].map((input) => input.value),
-      piezasSuspension: [...form.querySelectorAll('[name="vsuspension"]:checked')].map((input) => input.value),
-      otraPiezaSuspension: getFormValue(form, "votraSuspension"),
+      piezasSuspension: [],
+      otraPiezaSuspension: "",
       condicionPiezas: getFormValue(form, "vcondicion"),
       procedencia: getFormValue(form, "vprocedencia"),
       plan: getFormValue(form, "vplan"),
@@ -643,7 +614,6 @@ function initFormVendedor() {
       vendLineasManuales.clear();
       renderSellerBrands();
       renderLineasVendedor();
-      syncSellerSuspension();
       showPage("page-vendedor-ok");
     } catch (error) {
       console.error("Error enviando solicitud de vendedor", error);
@@ -1210,6 +1180,7 @@ function renderAdminSolicitudesVendedores() {
   container.innerHTML = `<div class="admin-request-list">${adminPendingRequests.map((request) => {
     const rowNumber = Number(request.rowNumber);
     const comprobanteUrl = String(request.comprobanteUrl || request.comprobanteURL || request.comprobante_url || request.comprobante || request.comprobanteLink || request.linkComprobante || request["Comprobante URL"] || "").trim();
+    const hasSuspensionCategory = normalizeAdminValue(request.categorias).includes("suspension");
     return `
       <article class="admin-request-card">
         <header class="admin-request-head">
@@ -1229,8 +1200,8 @@ function renderAdminSolicitudesVendedores() {
           <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" · ") || "—")}</dd></div>
           <div><dt>Marcas</dt><dd>${escapeHtml(request.marcas || "Todas")}</dd></div>
           <div><dt>Categorías</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
-          <div><dt>Piezas suspensión</dt><dd>${escapeHtml(request.piezasSuspension || "—")}</dd></div>
-          <div><dt>Otra pieza de suspensión</dt><dd>${escapeHtml(request.otraPiezaSuspension || "—")}</dd></div>
+          ${hasSuspensionCategory ? `<div><dt>Piezas suspensión</dt><dd>${escapeHtml(request.piezasSuspension || "Sin detalle")}</dd></div>` : ""}
+          ${request.otraPiezaSuspension ? `<div><dt>Otra pieza de suspensión</dt><dd>${escapeHtml(request.otraPiezaSuspension)}</dd></div>` : ""}
           <div><dt>Condición</dt><dd>${escapeHtml(request.condicion || "Todas")}</dd></div>
           <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
         </dl>
