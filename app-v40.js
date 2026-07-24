@@ -5,6 +5,8 @@
 
 const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
+const MAX_RECEIPT_SIZE_BYTES = 20 * 1024 * 1024;
+const ALLOWED_RECEIPT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png"]);
 
 function createTrackingId(prefix) {
   const random = window.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
@@ -350,6 +352,7 @@ async function enviarSolicitudVendedor(vendedor) {
     params.append("comprobanteBase64", vendedor.comprobante.base64);
     params.append("comprobanteNombre", vendedor.comprobante.nombre);
     params.append("comprobanteTipo", vendedor.comprobante.tipo);
+    params.append("comprobanteSize", String(vendedor.comprobante.size));
   }
 
   const response = await fetch(GOOGLE_SCRIPT_URL, {
@@ -585,9 +588,12 @@ function initFormVendedor() {
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
     const comprobanteFile = document.getElementById("comprobante-file")?.files?.[0] || null;
-    const allowedFileTypes = new Set(["application/pdf", "image/jpeg", "image/png"]);
-    if (comprobanteFile && (!allowedFileTypes.has(comprobanteFile.type) || comprobanteFile.size > 5 * 1024 * 1024)) {
-      toast("El comprobante debe ser PDF, JPG o PNG y pesar maximo 5 MB.", "error");
+    if (comprobanteFile && !ALLOWED_RECEIPT_TYPES.has(comprobanteFile.type)) {
+      toast("El comprobante debe ser un archivo PDF, JPG o PNG.", "error");
+      return;
+    }
+    if (comprobanteFile && comprobanteFile.size > MAX_RECEIPT_SIZE_BYTES) {
+      toast("El comprobante supera el tamaño máximo permitido de 20 MB.", "error");
       return;
     }
     const vendedor = {
@@ -622,6 +628,7 @@ function initFormVendedor() {
       comprobante: comprobanteFile ? {
         nombre: comprobanteFile.name,
         tipo: comprobanteFile.type,
+        size: comprobanteFile.size,
         base64: await fileToBase64(comprobanteFile)
       } : null,
       security: getFormSecurityPayload(form)
@@ -767,8 +774,15 @@ function mostrarComprobante(input) {
   const file = input.files && input.files[0];
   if (!file) { preview.style.display = "none"; return; }
 
-  if (file.size > 5 * 1024 * 1024) {
-    toast("El archivo supera los 5MB. Usa una imagen más liviana.", "error");
+  if (!ALLOWED_RECEIPT_TYPES.has(file.type)) {
+    toast("El comprobante debe ser un archivo PDF, JPG o PNG.", "error");
+    input.value = "";
+    preview.style.display = "none";
+    return;
+  }
+
+  if (file.size > MAX_RECEIPT_SIZE_BYTES) {
+    toast("El comprobante supera el tamaño máximo permitido de 20 MB.", "error");
     input.value = "";
     preview.style.display = "none";
     return;
@@ -1201,6 +1215,16 @@ function renderAdminVisitas(metrics) {
   </table></div>`;
 }
 
+function getSafeReceiptUrl(value) {
+  try {
+    const url = new URL(String(value || "").trim());
+    const allowedHosts = new Set(["drive.google.com", "docs.google.com"]);
+    return url.protocol === "https:" && allowedHosts.has(url.hostname) ? url.href : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 function renderAdminSolicitudesVendedores() {
   const container = document.getElementById("admin-solicitudes");
   if (!container) return;
@@ -1217,7 +1241,7 @@ function renderAdminSolicitudesVendedores() {
 
   container.innerHTML = `<div class="admin-request-list">${adminPendingRequests.map((request) => {
     const rowNumber = Number(request.rowNumber);
-    const comprobanteUrl = String(request.comprobanteUrl || request.comprobanteURL || request.comprobante_url || request.comprobante || request.comprobanteLink || request.linkComprobante || request["Comprobante URL"] || "").trim();
+    const comprobanteUrl = getSafeReceiptUrl(request.comprobanteUrl || request.comprobanteURL || request.comprobante_url || request.comprobante || request.comprobanteLink || request.linkComprobante || request["Comprobante URL"]);
     const hasSuspensionCategory = normalizeAdminValue(request.categorias).includes("suspension");
     return `
       <article class="admin-request-card">
@@ -1244,7 +1268,7 @@ function renderAdminSolicitudesVendedores() {
           <div><dt>Entregas</dt><dd>${escapeHtml(request.entregas || "—")}</dd></div>
         </dl>
         ${request.observaciones ? `<p class="admin-request-notes"><strong>Observaciones:</strong> ${escapeHtml(request.observaciones)}</p>` : ""}
-        <p class="admin-request-notes"><strong>Comprobante:</strong> ${comprobanteUrl ? `<a href="${escapeHtml(comprobanteUrl)}" target="_blank" rel="noopener noreferrer">Ver comprobante</a>` : "Sin comprobante"}</p>
+        <p class="admin-request-notes"><strong>Comprobante:</strong> ${comprobanteUrl ? `<a href="${escapeHtml(comprobanteUrl)}" target="_blank" rel="noopener noreferrer">Ver comprobante</a>` : "Comprobante no disponible"}</p>
         <footer class="admin-request-actions">
           <button class="btn-admin-approve" type="button" onclick="aprobarSolicitudAdmin(${rowNumber})">
             <i data-lucide="check"></i><span>Aprobar vendedor</span>
