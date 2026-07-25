@@ -1125,18 +1125,113 @@ function adminEmpty(message) {
   return `<div class="admin-inline-empty">${escapeHtml(message)}</div>`;
 }
 
+async function copyAdminCredentials(message) {
+  try {
+    await navigator.clipboard.writeText(message);
+    return true;
+  } catch (_) {
+    const field = document.createElement("textarea");
+    field.value = message;
+    field.setAttribute("readonly", "");
+    field.style.cssText = "position:fixed;inset:auto auto 0 -9999px;opacity:0";
+    document.body.appendChild(field);
+    field.select();
+    const copied = document.execCommand("copy");
+    field.remove();
+    return copied;
+  }
+}
+
+function showAdminCredentialDialog(credentials) {
+  document.getElementById("admin-credentials-dialog")?.remove();
+  const dialog = document.createElement("dialog");
+  dialog.id = "admin-credentials-dialog";
+  dialog.style.cssText = "width:min(520px,calc(100% - 32px));background:#121212;color:#fff;border:1px solid #806b3a;padding:24px";
+
+  const title = document.createElement("h3");
+  const note = document.createElement("p");
+  const user = document.createElement("code");
+  const password = document.createElement("code");
+  const copy = document.createElement("button");
+  const close = document.createElement("button");
+
+  title.textContent = "Credenciales temporales generadas";
+  note.textContent = "Se mostrarán una sola vez. Entrégalas de forma privada al vendedor.";
+  user.textContent = "Usuario: " + credentials.usuario;
+  password.textContent = "Clave temporal: " + credentials.claveTemporal;
+  [user, password].forEach(element => {
+    element.style.cssText = "display:block;background:#080808;padding:12px;margin:10px 0;overflow-wrap:anywhere";
+  });
+
+  copy.type = "button";
+  copy.className = "btn-admin-approve";
+  copy.textContent = "Copiar credenciales";
+  copy.onclick = async () => {
+    const message = `Tu acceso a Standard Repuestos GT fue creado.\n\nUsuario: ${credentials.usuario}\nClave temporal: ${credentials.claveTemporal}\n\nIngresa al panel del vendedor y cambia tu clave temporal.`;
+    const copied = await copyAdminCredentials(message);
+    toast(copied ? "Credenciales copiadas." : "No se pudieron copiar las credenciales.", copied ? "success" : "error");
+  };
+
+  close.type = "button";
+  close.className = "btn-ghost-dark";
+  close.textContent = "Cerrar";
+  close.onclick = () => dialog.close();
+  dialog.addEventListener("close", () => dialog.remove(), { once: true });
+  dialog.append(title, note, user, password, copy, close);
+  document.body.appendChild(dialog);
+  dialog.showModal();
+}
+
+async function regenerarClaveVendedorAdmin(rowNumber, button) {
+  if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
+  if (!window.confirm("¿Generar una nueva clave temporal? La clave anterior dejará de funcionar.")) return;
+  if (button) button.disabled = true;
+  try {
+    const actions = button?.closest(".admin-vendor-actions");
+    const result = await adminRequest("admin_regenerar_clave_vendedor", {
+      rowNumber,
+      vendedorId: actions?.dataset.vendorId || "",
+      whatsapp: actions?.dataset.vendorWhatsapp || ""
+    });
+    showAdminCredentialDialog(result.credenciales);
+  } catch (error) {
+    toast(error.message || "No se pudo generar la clave.", "error");
+  } finally {
+    if (button?.isConnected) button.disabled = false;
+  }
+}
+
 function renderAdminVendorActions(vendor) {
   const rowNumber = Number(vendor.rowNumber);
   if (!Number.isInteger(rowNumber) || rowNumber < 2 || normalizeAdminValue(vendor.estado) !== "activo") {
     return "—";
   }
-  return `<div class="admin-vendor-actions">
+  return `<div class="admin-vendor-actions" data-vendor-row="${rowNumber}" data-vendor-id="${escapeHtml(vendor.vendedorId || "")}" data-vendor-whatsapp="${escapeHtml(vendor.whatsapp || "")}">
     <button class="btn-admin-suspend" type="button" data-vendor-row="${rowNumber}" onclick="suspenderVendedorAdmin(${rowNumber})" title="Suspender membresía">
       <i data-lucide="pause-circle"></i><span>Suspender</span>
     </button>
     <button class="btn-admin-cancel" type="button" data-vendor-row="${rowNumber}" onclick="cancelarVendedorAdmin(${rowNumber})" title="Cancelar membresía">
       <i data-lucide="ban"></i><span>Cancelar</span>
     </button>
+    <button class="btn-admin-suspend btn-admin-reset-password" type="button" onclick="regenerarClaveVendedorAdmin(${rowNumber}, this)" title="Generar nueva clave temporal">
+      <i data-lucide="key-round"></i><span>Nueva clave</span>
+    </button>
+  </div>`;
+}
+
+function renderAdminVendorAccount(vendor) {
+  const username = vendor.usuarioVendedor || vendor.usuario || vendor.whatsapp || "—";
+  const accountState = vendor.estadoCuentaVendedor || (normalizeAdminValue(vendor.estado) === "activo" ? "Activa" : "Cuenta no activa");
+  const requiresChange = vendor.requiereCambioClave;
+  const requiresChangeText = requiresChange === true || normalizeAdminValue(requiresChange) === "si"
+    ? "Sí"
+    : requiresChange === false || normalizeAdminValue(requiresChange) === "no"
+      ? "No"
+      : "—";
+  return `<div class="admin-vendor-account">
+    <span><strong>Usuario:</strong> ${escapeHtml(username)}</span>
+    <span><strong>Cuenta:</strong> ${escapeHtml(accountState)}</span>
+    <span><strong>Cambio de clave:</strong> ${escapeHtml(requiresChangeText)}</span>
   </div>`;
 }
 
@@ -1150,8 +1245,8 @@ function renderAdminVendedoresDashboard(vendors) {
     return;
   }
   container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th><th>Acciones</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Marcas</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th><th>Acciones</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
   </table></div>`;
   window.lucide?.createIcons();
 }
