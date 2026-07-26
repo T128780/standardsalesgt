@@ -615,15 +615,15 @@
         </svg>
       </div>
       <h2>Panel de Vendedor</h2>
-      <p class="login-sub">Ingresa con tu usuario y contraseña de membresía.</p>
+      <p class="login-sub">Acceso privado para vendedores aprobados.</p>
       <div class="login-fields">
         <label>Usuario</label>
-        <input type="text" id="vendor-user" placeholder="Tu usuario" onkeydown="if(event.key==='Enter')document.getElementById('vendor-pass').focus()">
+        <input type="text" id="vendor-user" inputmode="numeric" autocomplete="username" placeholder="502XXXXXXXX" onkeydown="if(event.key==='Enter')document.getElementById('vendor-pass').focus()">
         <label>Contraseña</label>
-        <input type="password" id="vendor-pass" placeholder="⬢⬢⬢⬢⬢⬢⬢⬢" onkeydown="if(event.key==='Enter')checkVendorLogin()">
-        <div id="vendor-error" class="login-error">Usuario o contraseña incorrectos.</div>
+        <input type="password" id="vendor-pass" autocomplete="current-password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkVendorLogin()">
+        <div id="vendor-error" class="login-error" role="alert">Usuario o clave incorrectos.</div>
       </div>
-      <button class="btn-submit" onclick="checkVendorLogin()">Ingresar -&gt;</button>
+      <button class="btn-submit" id="vendor-login-button" onclick="checkVendorLogin()">Ingresar</button>
       <button class="btn-ghost-dark" onclick="showPage('page-landing')">&lt;- Volver al inicio</button>
       <div class="login-foot">
         ¿Aún no tienes membresía? <a href="#" onclick="showPage('page-vendedor');return false">Regístrate aquí</a>
@@ -636,22 +636,65 @@
 <div id="page-panel-vendedor" class="page panel-page">
   <div class="panel-header">
     <div>
-      <button class="back-btn" onclick="showPage('page-landing')">&lt;- Volver</button>
-      <h2>Panel del vendedor</h2>
-      <p>Solicitudes recibidas</p>
+      <button class="back-btn" onclick="vendorLogout()">&lt;- Cerrar sesión</button>
+      <h2 id="vendor-panel-title">Panel del vendedor</h2>
+      <p>Cuenta privada</p>
     </div>
-    <div class="panel-header-actions">
-      <button class="btn-submit small" id="btn-export-sol"> Exportar</button>
-    </div>
+    <nav class="vendor-tabs" aria-label="Panel vendedor">
+      <button type="button" class="active" data-vendor-tab="leads">Mis solicitudes</button>
+      <button type="button" data-vendor-tab="profile">Mi perfil</button>
+      <button type="button" data-vendor-tab="changes">Solicitar cambios</button>
+      <button type="button" data-vendor-tab="password">Cambiar clave</button>
+    </nav>
   </div>
-  <div class="panel-body">
-    <div class="stat-grid">
-      <div class="stat-card"><div class="num" id="v-total">0</div><div class="lbl">Solicitudes</div></div>
-      <div class="stat-card"><div class="num red" id="v-alta">0</div><div class="lbl">Urgentes</div></div>
-      <div class="stat-card"><div class="num">Pro</div><div class="lbl">Plan activo</div></div>
-      <div class="stat-card"><div class="num gold">OK</div><div class="lbl">Verificado</div></div>
+  <div class="panel-body vendor-portal-body">
+    <section id="vendor-password-required" class="vendor-required-password" hidden>
+      <h3>Debes cambiar tu clave temporal</h3>
+      <p>Define una clave personal de al menos 8 caracteres para continuar.</p>
+      <form id="vendor-required-password-form">
+        <input type="password" name="claveNueva" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="Nueva clave">
+        <input type="password" name="confirmacion" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="Confirmar nueva clave">
+        <button class="btn-submit" type="submit">Cambiar clave</button>
+      </form>
+    </section>
+    <div id="vendor-portal-content">
+      <section data-vendor-view="leads">
+        <div class="vendor-metric-grid">
+          <div><strong id="v-total">0</strong><span>Total de solicitudes</span></div>
+          <div><strong id="v-today">0</strong><span>Hoy</span></div>
+          <div><strong id="v-7d">0</strong><span>7 días</span></div>
+          <div><strong id="v-30d">0</strong><span>30 días</span></div>
+          <div><strong id="v-top-brand">-</strong><span>Marca principal</span></div>
+          <div><strong id="v-top-category">-</strong><span>Categoría principal</span></div>
+        </div>
+        <div id="panel-solicitudes" class="vendor-leads-list"><div class="admin-loading"><span class="spinner"></span>Cargando solicitudes...</div></div>
+      </section>
+      <section data-vendor-view="profile" hidden><div id="vendor-profile" class="vendor-profile-grid"></div></section>
+      <section data-vendor-view="changes" hidden>
+        <form id="vendor-profile-change-form" class="vendor-form">
+          <h3>Solicitar cambios de perfil</h3>
+          <p>Los cambios solo se aplicarán después de revisión administrativa.</p>
+          <label>Orígenes<input name="origenes" maxlength="1000"></label>
+          <label>Marcas<input name="marcas" maxlength="1000"></label>
+          <label>Líneas / modelos<input name="lineas" maxlength="1000"></label>
+          <label>Categorías<input name="categorias" maxlength="1000"></label>
+          <label>Procedencia<input name="procedencia" maxlength="500"></label>
+          <label>Condición<input name="condicion" maxlength="500"></label>
+          <label>Departamento<input name="departamento" maxlength="200"></label>
+          <label>Plan<input name="plan" maxlength="100"></label>
+          <label class="vendor-form-wide">Observaciones<textarea name="observaciones" maxlength="1000" rows="3"></textarea></label>
+          <button class="btn-submit vendor-form-wide" type="submit">Enviar solicitud</button>
+        </form>
+      </section>
+      <section data-vendor-view="password" hidden>
+        <form id="vendor-password-form" class="vendor-form vendor-form-narrow">
+          <h3>Cambiar clave</h3>
+          <label>Nueva clave<input type="password" name="claveNueva" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+          <label>Confirmar clave<input type="password" name="confirmacion" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+          <button class="btn-submit" type="submit">Actualizar clave</button>
+        </form>
+      </section>
     </div>
-    <div id="panel-solicitudes"><div class="empty-state"><div class="empty-icon"></div><p>Aún no hay solicitudes disponibles.</p></div></div>
   </div>
 </div>
 
@@ -729,6 +772,10 @@
         <div class="admin-section-title"><div><p class="admin-request-kicker">Control de planes</p><h3>Membresías y vencimientos</h3></div></div>
         <div id="admin-membresias-dashboard"></div>
       </section>
+      <section class="admin-data-section admin-span-2">
+        <div class="admin-section-title"><div><p class="admin-request-kicker">Revisión administrativa</p><h3>Cambios solicitados por vendedores</h3></div></div>
+        <div id="admin-vendor-changes"><div class="admin-loading"><span class="spinner"></span>Cargando solicitudes...</div></div>
+      </section>
       <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Demanda</p><h3>Top marcas</h3></div></div><div id="admin-top-marcas"></div></section>
       <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Demanda</p><h3>Top partes</h3></div></div><div id="admin-top-partes"></div></section>
       <section class="admin-data-section"><div class="admin-section-title"><div><p class="admin-request-kicker">Parque vehicular</p><h3>Top años</h3></div></div><div id="admin-top-anios"></div></section>
@@ -757,7 +804,9 @@
 <div id="toasts"></div>
 
 <script src="catalogos-v24.js"></script>
+  <link rel="stylesheet" href="vendor-portal.css?v=20260724-local">
   <script src="app-v40.js?v=28f1832"></script>
+  <script src="vendor-portal.js?v=20260724-local"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
