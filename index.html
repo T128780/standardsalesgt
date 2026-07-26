@@ -622,7 +622,12 @@
         <label>Usuario</label>
         <input type="text" id="vendor-user" inputmode="numeric" autocomplete="username" placeholder="502XXXXXXXX" onkeydown="if(event.key==='Enter')document.getElementById('vendor-pass').focus()">
         <label>Contraseña</label>
-        <input type="password" id="vendor-pass" autocomplete="current-password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkVendorLogin()">
+        <div class="password-input-wrap">
+          <input type="password" id="vendor-pass" autocomplete="current-password" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkVendorLogin()">
+          <button class="password-toggle" type="button" aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña" onclick="toggleVendorPasswordVisibility('vendor-pass',this)">
+            <i data-lucide="eye" aria-hidden="true"></i>
+          </button>
+        </div>
         <div id="vendor-error" class="login-error" role="alert">Usuario o clave incorrectos.</div>
       </div>
       <button class="btn-submit" id="vendor-login-button" onclick="checkVendorLogin()">Ingresar</button>
@@ -654,8 +659,18 @@
       <h3>Debes cambiar tu clave temporal</h3>
       <p>Define una clave personal de al menos 8 caracteres para continuar.</p>
       <form id="vendor-required-password-form">
-        <input type="password" name="claveNueva" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="Nueva clave">
-        <input type="password" name="confirmacion" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="Confirmar nueva clave">
+        <div class="password-input-wrap">
+          <input type="password" id="vendor-required-new-password" name="claveNueva" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="Nueva clave">
+          <button class="password-toggle" type="button" aria-label="Mostrar nueva clave" aria-pressed="false" title="Mostrar nueva clave" onclick="toggleVendorPasswordVisibility('vendor-required-new-password',this)">
+            <i data-lucide="eye" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="password-input-wrap">
+          <input type="password" id="vendor-required-confirm-password" name="confirmacion" minlength="8" maxlength="128" autocomplete="new-password" required placeholder="Confirmar nueva clave">
+          <button class="password-toggle" type="button" aria-label="Mostrar confirmación de clave" aria-pressed="false" title="Mostrar confirmación de clave" onclick="toggleVendorPasswordVisibility('vendor-required-confirm-password',this)">
+            <i data-lucide="eye" aria-hidden="true"></i>
+          </button>
+        </div>
         <button class="btn-submit" type="submit">Cambiar clave</button>
       </form>
     </section>
@@ -691,8 +706,18 @@
       <section data-vendor-view="password" hidden>
         <form id="vendor-password-form" class="vendor-form vendor-form-narrow">
           <h3>Cambiar clave</h3>
-          <label>Nueva clave<input type="password" name="claveNueva" minlength="8" maxlength="128" autocomplete="new-password" required></label>
-          <label>Confirmar clave<input type="password" name="confirmacion" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+          <label>Nueva clave<div class="password-input-wrap">
+            <input type="password" id="vendor-new-password" name="claveNueva" minlength="8" maxlength="128" autocomplete="new-password" required>
+            <button class="password-toggle" type="button" aria-label="Mostrar nueva clave" aria-pressed="false" title="Mostrar nueva clave" onclick="toggleVendorPasswordVisibility('vendor-new-password',this)">
+              <i data-lucide="eye" aria-hidden="true"></i>
+            </button>
+          </div></label>
+          <label>Confirmar clave<div class="password-input-wrap">
+            <input type="password" id="vendor-confirm-password" name="confirmacion" minlength="8" maxlength="128" autocomplete="new-password" required>
+            <button class="password-toggle" type="button" aria-label="Mostrar confirmación de clave" aria-pressed="false" title="Mostrar confirmación de clave" onclick="toggleVendorPasswordVisibility('vendor-confirm-password',this)">
+              <i data-lucide="eye" aria-hidden="true"></i>
+            </button>
+          </div></label>
           <button class="btn-submit" type="submit">Actualizar clave</button>
         </form>
       </section>

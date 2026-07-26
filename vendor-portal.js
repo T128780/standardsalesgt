@@ -37,6 +37,20 @@ function restoreVendorSession() {
   return vendorSession;
 }
 
+function toggleVendorPasswordVisibility(inputId, button) {
+  const input = document.getElementById(inputId);
+  if (!input || !button) return;
+  const willShow = input.type === "password";
+  input.type = willShow ? "text" : "password";
+  const label = willShow ? "Ocultar contraseña" : "Mostrar contraseña";
+  button.setAttribute("aria-label", label);
+  button.setAttribute("title", label);
+  button.setAttribute("aria-pressed", String(willShow));
+  button.innerHTML = `<i data-lucide="${willShow ? "eye-off" : "eye"}" aria-hidden="true"></i>`;
+  if (window.lucide) window.lucide.createIcons();
+}
+window.toggleVendorPasswordVisibility = toggleVendorPasswordVisibility;
+
 window.checkVendorLogin = async function checkVendorLoginSecure() {
   const userInput = document.getElementById("vendor-user");
   const passInput = document.getElementById("vendor-pass");
