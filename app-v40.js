@@ -1121,6 +1121,44 @@ function normalizeAdminValue(value) {
   return String(value || "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+function getAdminValue(source, keys) {
+  if (!source) return "";
+  for (const key of keys) {
+    if (source[key] !== undefined && source[key] !== null && String(source[key]).trim()) {
+      return source[key];
+    }
+  }
+  return "";
+}
+
+function formatAdminListValue(value, fallback = "No especificado") {
+  const items = Array.isArray(value)
+    ? value
+    : String(value || "")
+      .split(/[,;\n|]+/)
+      .map(item => item.trim())
+      .filter(Boolean);
+  return items.length ? items.join(", ") : fallback;
+}
+
+function getAdminVendorLines(vendor) {
+  return formatAdminListValue(getAdminValue(vendor, [
+    "lineas",
+    "Lineas",
+    "líneas",
+    "Líneas",
+    "linea",
+    "Linea",
+    "línea",
+    "Línea",
+    "lineasSeleccionadas",
+    "lineasManuales",
+    "lineasManual",
+    "vlineas",
+    "vlineasManuales"
+  ]));
+}
+
 function adminEmpty(message) {
   return `<div class="admin-inline-empty">${escapeHtml(message)}</div>`;
 }
@@ -1245,8 +1283,8 @@ function renderAdminVendedoresDashboard(vendors) {
     return;
   }
   container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Marcas</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th><th>Acciones</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Marcas</th><th>Líneas / modelos</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th><th>Acciones</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(v.marcas || "Todas")}</td><td class="admin-list-cell">${escapeHtml(getAdminVendorLines(v))}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
   </table></div>`;
   window.lucide?.createIcons();
 }
@@ -1338,6 +1376,7 @@ function renderAdminSolicitudesVendedores() {
     const rowNumber = Number(request.rowNumber);
     const comprobanteUrl = getSafeReceiptUrl(request.comprobanteUrl || request.comprobanteURL || request.comprobante_url || request.comprobante || request.comprobanteLink || request.linkComprobante || request["Comprobante URL"]);
     const hasSuspensionCategory = normalizeAdminValue(request.categorias).includes("suspension");
+    const requestLines = getAdminVendorLines(request);
     return `
       <article class="admin-request-card">
         <header class="admin-request-head">
@@ -1356,6 +1395,7 @@ function renderAdminSolicitudesVendedores() {
           <div><dt>Departamento</dt><dd>${escapeHtml(request.departamento || "—")}</dd></div>
           <div><dt>Municipio / zona</dt><dd>${escapeHtml([request.municipio, request.zona].filter(Boolean).join(" · ") || "—")}</dd></div>
           <div><dt>Marcas</dt><dd>${escapeHtml(request.marcas || "Todas")}</dd></div>
+          <div><dt>Líneas / modelos</dt><dd>${escapeHtml(requestLines)}</dd></div>
           <div><dt>Categorías</dt><dd>${escapeHtml(request.categorias || "Todas")}</dd></div>
           ${hasSuspensionCategory ? `<div><dt>Piezas suspensión</dt><dd>${escapeHtml(request.piezasSuspension || "Sin detalle")}</dd></div>` : ""}
           ${request.otraPiezaSuspension ? `<div><dt>Otra pieza de suspensión</dt><dd>${escapeHtml(request.otraPiezaSuspension)}</dd></div>` : ""}

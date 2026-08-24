@@ -300,6 +300,56 @@ async function loadAdminVendorChanges() {
   }
 }
 
+function parseVendorChangeValue(value) {
+  if (!value) return {};
+  if (typeof value === "object") return value;
+  try {
+    const parsed = JSON.parse(String(value));
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function firstVendorChangeValue(...values) {
+  return values.find(value => value !== undefined && value !== null && String(value).trim()) || "";
+}
+
+function formatVendorChangeList(value, fallback = "No especificado") {
+  const items = Array.isArray(value)
+    ? value
+    : String(value || "")
+      .split(/[,;\n|]+/)
+      .map(item => item.trim())
+      .filter(Boolean);
+  return items.length ? items.join(", ") : fallback;
+}
+
+function getVendorChangeLines(item, requestedData, currentData) {
+  const isLineChange = String(item.campoSolicitado || item.campo || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().includes("line");
+  const current = firstVendorChangeValue(
+    item.lineasActuales,
+    item.lineasAntes,
+    item.lineasOriginales,
+    currentData.lineas,
+    currentData.Lineas,
+    currentData["Líneas"],
+    item.lineas
+  );
+  const requested = firstVendorChangeValue(
+    item.lineasSolicitadas,
+    item.lineasNuevas,
+    requestedData.lineas,
+    requestedData.Lineas,
+    requestedData["Líneas"],
+    isLineChange ? item.valorSolicitado : ""
+  );
+  return {
+    current: formatVendorChangeList(current),
+    requested: formatVendorChangeList(requested)
+  };
+}
+
 function renderAdminVendorChanges(items) {
   const container = document.getElementById("admin-vendor-changes");
   if (!container) return;
@@ -309,10 +359,14 @@ function renderAdminVendorChanges(items) {
     return;
   }
   items.forEach(item => {
+    const requestedData = parseVendorChangeValue(item.detalleCompleto || item.valorSolicitado || item.solicitado);
+    const currentData = parseVendorChangeValue(item.valorActual || item.actual || item.antes || item.perfilActual);
+    const lineValues = getVendorChangeLines(item, requestedData, currentData);
     const article = document.createElement("article");
     article.className = "admin-vendor-change";
     const title = document.createElement("h4");
     const detail = document.createElement("p");
+    const comparison = document.createElement("dl");
     const requested = document.createElement("pre");
     const actions = document.createElement("div");
     const approve = document.createElement("button");
@@ -326,8 +380,21 @@ function renderAdminVendorChanges(items) {
     reject.className = "btn-admin-reject";
     approve.onclick = () => decideVendorChange(item.rowNumber, true);
     reject.onclick = () => decideVendorChange(item.rowNumber, false);
+    comparison.className = "admin-vendor-change-comparison";
+    [
+      ["Líneas actuales", lineValues.current],
+      ["Líneas solicitadas", lineValues.requested]
+    ].forEach(([label, value]) => {
+      const wrap = document.createElement("div");
+      const term = document.createElement("dt");
+      const description = document.createElement("dd");
+      term.textContent = label;
+      description.textContent = value;
+      wrap.append(term, description);
+      comparison.appendChild(wrap);
+    });
     actions.append(approve, reject);
-    article.append(title, detail, requested, actions);
+    article.append(title, detail, comparison, requested, actions);
     container.appendChild(article);
   });
 }
