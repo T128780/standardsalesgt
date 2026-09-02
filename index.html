@@ -650,7 +650,7 @@
     <nav class="vendor-tabs" aria-label="Panel vendedor">
       <button type="button" class="active" data-vendor-tab="leads">Mis solicitudes</button>
       <button type="button" data-vendor-tab="profile">Mi perfil</button>
-      <button type="button" data-vendor-tab="changes">Solicitar cambios</button>
+      <button type="button" data-vendor-tab="changes">Actualizar inventario</button>
       <button type="button" data-vendor-tab="password">Cambiar clave</button>
     </nav>
   </div>
@@ -689,18 +689,23 @@
       <section data-vendor-view="profile" hidden><div id="vendor-profile" class="vendor-profile-grid"></div></section>
       <section data-vendor-view="changes" hidden>
         <form id="vendor-profile-change-form" class="vendor-form">
-          <h3>Solicitar cambios de perfil</h3>
-          <p>Los cambios solo se aplicarán después de revisión administrativa.</p>
+          <h3>Actualizar inventario</h3>
+          <p>Guarda tus marcas, líneas, categorías y cobertura actuales para futuras solicitudes.</p>
+          <label>Nombre contacto<input name="nombreContacto" maxlength="100"></label>
           <label>Orígenes<input name="origenes" maxlength="1000"></label>
           <label>Marcas<input name="marcas" maxlength="1000"></label>
           <label>Líneas / modelos<input name="lineas" maxlength="1000"></label>
           <label>Categorías<input name="categorias" maxlength="1000"></label>
+          <label>Piezas suspensión<input name="piezasSuspension" maxlength="500"></label>
+          <label>Otra pieza suspensión<input name="otraPiezaSuspension" maxlength="200"></label>
           <label>Procedencia<input name="procedencia" maxlength="500"></label>
           <label>Condición<input name="condicion" maxlength="500"></label>
           <label>Departamento<input name="departamento" maxlength="200"></label>
-          <label>Plan<input name="plan" maxlength="100"></label>
+          <label>Entregas / cobertura<input name="entregas" maxlength="300"></label>
+          <label>Municipio<input name="municipio" maxlength="80"></label>
+          <label>Zona<input name="zona" maxlength="40"></label>
           <label class="vendor-form-wide">Observaciones<textarea name="observaciones" maxlength="1000" rows="3"></textarea></label>
-          <button class="btn-submit vendor-form-wide" type="submit">Enviar solicitud</button>
+          <button class="btn-submit vendor-form-wide" type="submit">Guardar cambios</button>
         </form>
       </section>
       <section data-vendor-view="password" hidden>
@@ -833,7 +838,7 @@
 <script src="catalogos-v24.js"></script>
   <link rel="stylesheet" href="vendor-portal.css?v=20260724-local">
   <script src="app-v40.js?v=7494aa7"></script>
-  <script src="vendor-portal.js?v=7494aa7"></script>
+  <script src="vendor-portal.js?v=perfil-inmediato-20260901"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 
@@ -869,7 +874,7 @@ function switchTab(id, btn) {
   if (id === 'tab-accesos' && typeof renderListaAccesos === 'function') renderListaAccesos();
 }
 </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"cb0e30cdb9e84190bc8457f353d9893f","r":1}' crossorigin="anonymous"></script>
 </body>
 </html>
-
 
