@@ -212,8 +212,10 @@ async function loadVendorProfile() {
     estado: "Estado", estadoMembresia: "Estado membresía",
     fechaInscripcion: "Fecha de inscripción", fechaVencimiento: "Vencimiento",
     origenes: "Orígenes", marcas: "Marcas", lineas: "Líneas",
-    categorias: "Categorías", procedencia: "Procedencia",
-    condicion: "Condición", departamento: "Departamento"
+    categorias: "Categorías", piezasSuspension: "Piezas suspensión",
+    otraPiezaSuspension: "Otra pieza suspensión", procedencia: "Procedencia",
+    condicion: "Condición", departamento: "Departamento",
+    entregas: "Entregas / cobertura", municipio: "Municipio", zona: "Zona"
   };
   Object.entries(labels).forEach(([key, label]) => {
     const item = document.createElement("div");
@@ -227,6 +229,7 @@ async function loadVendorProfile() {
     item.append(term, value);
     container.appendChild(item);
   });
+  populateVendorProfileEditor();
 }
 
 function formatVendorDate(value) {
@@ -266,23 +269,42 @@ async function submitVendorPassword(form) {
 async function submitVendorProfileChange(form) {
   const data = new FormData(form);
   const changes = {};
-  ["origenes", "marcas", "lineas", "categorias", "procedencia", "condicion", "departamento", "plan"]
-    .forEach(key => {
-      const value = String(data.get(key) || "").trim();
-      if (value) changes[key] = value;
-    });
+  [
+    "nombreContacto", "origenes", "marcas", "lineas", "categorias",
+    "piezasSuspension", "otraPiezaSuspension", "procedencia", "condicion",
+    "departamento", "entregas", "municipio", "zona"
+  ].forEach(key => {
+    changes[key] = String(data.get(key) || "").trim();
+  });
   if (!Object.keys(changes).length) {
-    toast("Indica al menos un cambio.", "error");
+    toast("Indica al menos un dato para actualizar.", "error");
     return;
   }
   const session = requireLocalVendorSession();
-  await vendorApi("vendedor_solicitar_cambio_perfil", {
+  const result = await vendorApi("vendedor_actualizar_perfil", {
     token: session.token,
     detalleCompleto: JSON.stringify(changes),
     observaciones: String(data.get("observaciones") || "")
   });
-  form.reset();
-  toast("Solicitud enviada para revisión.");
+  vendorProfile = result.perfil || vendorProfile;
+  populateVendorProfileEditor();
+  await loadVendorProfile();
+  toast(result.message || "Perfil actualizado correctamente. Tus nuevos parámetros ya serán tomados en cuenta para futuras solicitudes.");
+}
+
+function populateVendorProfileEditor() {
+  const form = document.getElementById("vendor-profile-change-form");
+  if (!form || !vendorProfile) return;
+  [
+    "nombreContacto", "origenes", "marcas", "lineas", "categorias",
+    "piezasSuspension", "otraPiezaSuspension", "procedencia", "condicion",
+    "departamento", "entregas", "municipio", "zona"
+  ].forEach(key => {
+    const field = form.elements.namedItem(key);
+    if (field) field.value = vendorProfile[key] || "";
+  });
+  const observations = form.elements.namedItem("observaciones");
+  if (observations) observations.value = "";
 }
 
 async function loadAdminVendorChanges() {
