@@ -272,10 +272,18 @@ const vendorEditLineasManuales = new Set();
 
 function sellerEditConfig() {
   return window.SRGT_SELLER_FORM_CONFIG || {
-    brandGroups: {},
-    categories: [],
-    originTitles: {},
-    linesByBrand: {}
+    brandGroups: typeof SELLER_BRAND_GROUPS !== "undefined" ? SELLER_BRAND_GROUPS : {},
+    categories: typeof SELLER_CATEGORIES !== "undefined" ? SELLER_CATEGORIES : [],
+    originTitles: typeof SELLER_ORIGIN_TITLES !== "undefined" ? SELLER_ORIGIN_TITLES : {},
+    linesByBrand: typeof SELLER_LINES_BY_BRAND !== "undefined" ? SELLER_LINES_BY_BRAND : {}
+  };
+}
+
+function sellerEditHelpers() {
+  return window.SRGT_SELLER_FORM_HELPERS || {
+    getSellerBrandLines: typeof getSellerBrandLines === "function" ? getSellerBrandLines : null,
+    buildDeptos: typeof buildDeptos === "function" ? buildDeptos : null,
+    buildMunicipios: typeof buildMunicipios === "function" ? buildMunicipios : null
   };
 }
 
@@ -301,7 +309,7 @@ function getVendorProfileValue(...keys) {
 }
 
 function getVendorEditBrandLines(brand) {
-  const helpers = window.SRGT_SELLER_FORM_HELPERS || {};
+  const helpers = sellerEditHelpers();
   if (typeof helpers.getSellerBrandLines === "function") return helpers.getSellerBrandLines(brand);
   const config = sellerEditConfig();
   return config.linesByBrand[brand] || [];
@@ -538,7 +546,7 @@ function initVendorProfileEditorForm() {
       categorias.appendChild(label);
     });
   }
-  const helpers = window.SRGT_SELLER_FORM_HELPERS || {};
+  const helpers = sellerEditHelpers();
   if (typeof helpers.buildDeptos === "function") helpers.buildDeptos(form.querySelector('[name="vdepto"]'));
   form.querySelector('[name="vdepto"]')?.addEventListener("change", function () {
     if (typeof helpers.buildMunicipios === "function") helpers.buildMunicipios(this, form.querySelector('[name="vmuni"]'));
@@ -610,9 +618,9 @@ async function submitVendorProfileChange(form) {
 }
 
 function populateVendorProfileEditor() {
+  initVendorProfileEditorForm();
   const form = document.getElementById("vendor-profile-change-form");
   if (!form || !vendorProfile) return;
-  initVendorProfileEditorForm();
   setVendorEditValue(form, "vnombre", getVendorProfileValue("nombreComercial", "nombre"));
   setVendorEditValue(form, "vencargado", getVendorProfileValue("nombreContacto", "encargado"));
   setVendorEditValue(form, "vwhatsapp", getVendorProfileValue("whatsapp"));
@@ -650,7 +658,7 @@ function populateVendorProfileEditor() {
   const muniField = form.elements.namedItem("vmuni");
   if (deptoField) {
     deptoField.value = depto;
-    const helpers = window.SRGT_SELLER_FORM_HELPERS || {};
+    const helpers = sellerEditHelpers();
     if (typeof helpers.buildMunicipios === "function") helpers.buildMunicipios(deptoField, muniField);
   }
   if (muniField) muniField.value = getVendorProfileValue("municipio", "muni") || "";
