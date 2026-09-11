@@ -88,7 +88,7 @@
     const bot=message.author==='assistant';
     const action=message.action?`<button class="standard-assistant__inline-action" data-page="${message.action.page}">${escapeHtml(message.action.label)}</button>`:'';
     const wa=message.whatsapp?`<a class="standard-assistant__inline-action standard-assistant__whatsapp" href="https://wa.me/${CONFIG.publicWhatsApp}" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a>`:'';
-    return `<div class="standard-assistant__row standard-assistant__row--${bot?'bot':'user'}">${bot?'<span class="standard-assistant__mini-avatar" aria-hidden="true">S</span>':''}<div class="standard-assistant__bubble">${escapeHtml(message.text)}${action}${wa}</div></div>`;
+    return `<div class="standard-assistant__row standard-assistant__row--${bot?'bot':'user'}">${bot?'<span class="standard-assistant__mini-avatar"><img src="assets/luna-avatar.png" alt=""></span>':''}<div class="standard-assistant__bubble">${escapeHtml(message.text)}${action}${wa}</div></div>`;
   }
   function render(root){const list=root.querySelector('.standard-assistant__messages');list.innerHTML=state.messages.map(messageMarkup).join('');list.scrollTop=list.scrollHeight;}
   function add(root,message){state.messages.push(message);render(root);}
@@ -100,10 +100,10 @@
 
   function initAssistant(){
     if(document.getElementById('standard-assistant')) return;
-    state.messages=[{author:'assistant',text:'Hola, soy el asistente de Standard Sales GT. Contame qué necesitás y te orientaré.'}];
+    state.messages=[{author:'assistant',text:'Hola, soy Luna IA de Standard Sales. ¿En qué te puedo ayudar hoy?'}];
     const root=document.createElement('aside');root.id='standard-assistant';root.className='standard-assistant';
     root.innerHTML=`<section class="standard-assistant__panel" id="standard-assistant-panel" role="dialog" aria-modal="false" aria-labelledby="standard-assistant-title" hidden>
-      <header class="standard-assistant__header"><div class="standard-assistant__identity"><span class="standard-assistant__avatar" aria-hidden="true">S</span><div><p class="standard-assistant__eyebrow">Asistencia en línea</p><h2 class="standard-assistant__title" id="standard-assistant-title">Asistente Standard</h2><span class="standard-assistant__presence">Disponible</span></div></div><button class="standard-assistant__close" type="button" aria-label="Cerrar asistente">×</button></header>
+      <header class="standard-assistant__header"><div class="standard-assistant__identity"><span class="standard-assistant__avatar"><img src="assets/luna-avatar.png" alt="Avatar de Luna"></span><div><p class="standard-assistant__eyebrow">Asistente virtual · Standard Sales GT</p><h2 class="standard-assistant__title" id="standard-assistant-title">Luna <span class="standard-assistant__title-moon" aria-label="Luna"></span><b>IA</b></h2><span class="standard-assistant__presence">Disponible ahora</span><span class="standard-assistant__openai-seal"><i aria-hidden="true">✦</i> Impulsado por <strong>OpenAI</strong></span></div></div><button class="standard-assistant__close" type="button" aria-label="Cerrar asistente">×</button></header>
       <div class="standard-assistant__messages" aria-live="polite"></div>
       <div class="standard-assistant__suggestions">${suggestions.map(item=>`<button type="button" data-suggestion="${escapeHtml(item)}">${escapeHtml(item)}</button>`).join('')}</div>
       <form class="standard-assistant__composer"><label class="sr-only" for="standard-assistant-input">Escribí tu consulta</label><textarea id="standard-assistant-input" rows="1" maxlength="500" placeholder="Escribí tu consulta…"></textarea><button type="submit" aria-label="Enviar mensaje"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 4 17 8-17 8 3-8-3-8Zm3 8h14" fill="none" stroke="currentColor" stroke-width="2"/></svg></button></form>
