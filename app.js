@@ -3,7 +3,6 @@
 //      Se agregan las funciones de paneles (admin, vendedor y accesos) que
 //      la versión anterior referenciaba pero nunca incluyó.
 
-const WA_VENDEDOR_PRUEBA = "50230317750";
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbboRVvcsJfMoq78K6LUMscsChJPwfQ7YsMzZ8V2Pj_Ia_b250ShbUfcI/exec";
 
 function createTrackingId(prefix) {
