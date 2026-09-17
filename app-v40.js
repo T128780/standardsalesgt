@@ -1161,7 +1161,7 @@ function formatAdminListValue(value, fallback = "No especificado") {
 }
 
 function getAdminVendorLines(vendor) {
-  return formatAdminListValue(getAdminValue(vendor, [
+  const values = [
     "lineas",
     "Lineas",
     "líneas",
@@ -1171,11 +1171,19 @@ function getAdminVendorLines(vendor) {
     "línea",
     "Línea",
     "lineasSeleccionadas",
+    "Lineas seleccionadas",
     "lineasManuales",
+    "Lineas manuales",
     "lineasManual",
     "vlineas",
     "vlineasManuales"
-  ]));
+  ].flatMap(key => {
+    const value = vendor && vendor[key];
+    return Array.isArray(value) ? value : String(value || "").split(/[,;\n|]+/);
+  }).map(value => String(value || "").trim()).filter(Boolean).filter((value, index, all) =>
+    all.findIndex(item => normalizeAdminValue(item) === normalizeAdminValue(value)) === index
+  );
+  return formatAdminListValue(values, "No especificado");
 }
 
 function adminEmpty(message) {
