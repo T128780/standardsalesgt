@@ -58,6 +58,38 @@ const CAT = {
     "Wuling":["Confero","Almaz","Air EV","Formo"]
   },
 
+  tiposVehiculo: ["Vehículo liviano", "Pickup / comercial liviano", "Camión", "Bus / microbús"],
+
+  marcasPorTipo: {
+    "Pickup / comercial liviano": {
+      "Toyota": ["Hilux", "Hiace", "Land Cruiser", "Prado"],
+      "Nissan": ["Frontier", "NP300", "Urvan"],
+      "Mitsubishi": ["L200"], "Mazda": ["BT-50"], "Ford": ["Ranger", "F-150"],
+      "Chevrolet": ["Colorado", "Silverado"], "Isuzu": ["D-Max"],
+      "Hyundai": ["H100", "Porter"], "Kia": ["K2700", "K3000"]
+    },
+    "Camión": {
+      "Hino": ["Serie 200", "Serie 300", "Serie 500", "Serie 700"],
+      "Isuzu": ["NPR", "NQR", "FRR", "FVR", "ELF"],
+      "Fuso / Mitsubishi": ["Canter", "FE71", "FE73", "FE84", "FE85", "Fighter", "Rosa"],
+      "JAC": ["N-Series", "HFC"], "Foton": ["Aumark", "Forland"],
+      "Hyundai": ["Mighty", "HD65", "HD72", "HD78"], "Kia": ["K2700", "K3000", "K4000"],
+      "Toyota": ["Dyna"], "Nissan": ["Cabstar", "Atleon"],
+      "Mercedes-Benz": ["Atego", "Actros"], "International": ["Durastar", "WorkStar"],
+      "Freightliner": ["M2", "Cascadia"], "Volvo": ["VM", "FM", "FH"],
+      "Scania": ["P-Series", "G-Series", "R-Series"], "MAN": ["TGM", "TGS"],
+      "Iveco": ["Daily", "Eurocargo"]
+    },
+    "Bus / microbús": {
+      "Toyota": ["Coaster", "Hiace"], "Hyundai": ["County", "H1", "H100"],
+      "Nissan": ["Civilian", "Urvan"], "Mitsubishi / Fuso": ["Rosa"],
+      "Hino": ["Bus", "Serie 300 Bus", "Serie 500 Bus"], "Isuzu": ["Journey", "NPR Bus"],
+      "Mercedes-Benz": ["Sprinter", "LO", "OF"], "Volkswagen": ["Volksbus"],
+      "Yutong": ["ZK Series"], "King Long": ["XMQ Series"], "Golden Dragon": ["XML Series"],
+      "Scania": ["K-Series"], "Volvo": ["B-Series"], "International": ["Bus Chassis"]
+    }
+  },
+
   categorias: {
     "Motor":["Motor completo","Block","Culata","Tapadera de válvulas","Cárter","Pistones","Bielas","Cigüeñal","Eje de levas","Cadena de tiempo","Faja de tiempo","Tensor","Bomba de aceite","Bomba de agua","Termostato","Radiador","Ventilador","Depósito de refrigerante","Mangueras","Múltiple de admisión","Múltiple de escape","Cuerpo de aceleración","Inyectores","Bobinas","Alternador","Sensor MAF","Sensor MAP","Sensor TPS","Sensor de oxígeno","Sensor de cigüeñal","Sensor de eje de levas","Soportes de motor"],
     "Transmisión":["Caja automática","Caja mecánica","Convertidor de torque","Clutch","Canasta","Disco","Collarín","Volante","Palanca","Cable de cambios","Diferencial","Flechas","Punta de flecha","Homocinética","Soporte de caja","Módulo TCM"],

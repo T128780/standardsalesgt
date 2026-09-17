@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles-v34.css?v=7494aa7">
+  <link rel="stylesheet" href="styles-v34.css?v=tipo-vehiculo-20260917">
   <link rel="stylesheet" href="web-assistant.css?v=20260910-luna2">
 </head>
 <body>
@@ -313,9 +313,14 @@
       </div>
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">1</span><i data-lucide="car-front" class="form-section-icon" aria-hidden="true"></i><span>Datos del vehículo</span></div>
+        <div class="form-group"><label>Tipo de vehículo <span class="req">*</span></label><select name="tipoVehiculo"><option value="">Tipo de vehículo</option></select></div>
         <div class="form-row">
           <div class="form-group"><label>Marca <span class="req">*</span></label><select name="marca"><option value="">Marca</option></select></div>
           <div class="form-group"><label>Línea / Modelo <span class="req">*</span></label><select name="linea"><option value="">Línea / Modelo</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group" id="buyer-other-brand-wrap" hidden><label>Otra marca</label><input type="text" name="marcaOtra" maxlength="80" placeholder="Escribe la marca"></div>
+          <div class="form-group" id="buyer-other-line-wrap" hidden><label>Otra línea / modelo</label><input type="text" name="lineaOtra" maxlength="80" placeholder="Escribe la línea o modelo"></div>
         </div>
         <div class="form-group"><label>Año</label><select name="anio"><option value="">Año</option></select></div>
         <div class="form-group">
@@ -491,6 +496,8 @@
 
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">2</span> Origen y marcas que trabajas <span class="req">*</span></div>
+        <p class="form-hint seller-field-label">Tipos de vehículo que trabajas</p>
+        <div class="check-pills" id="vend-tipos-vehiculo"></div>
         <p class="form-hint seller-field-label">Origen del vehículo</p>
         <div class="check-pills" id="vend-origenes"></div>
         <p class="form-hint seller-field-label" id="vend-marcas-label" hidden>Marcas que trabajas</p>
@@ -820,8 +827,8 @@
 
 <script src="catalogos-v24.js"></script>
   <link rel="stylesheet" href="vendor-portal.css?v=20260724-local">
-  <script src="app-v40.js?v=perfil-form-20260902"></script>
-  <script src="vendor-portal.js?v=perfil-form-fix-20260906"></script>
+  <script src="app-v40.js?v=tipo-vehiculo-20260917"></script>
+  <script src="vendor-portal.js?v=tipo-vehiculo-20260917"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
 <script src="web-assistant.js?v=20260910-luna2"></script>

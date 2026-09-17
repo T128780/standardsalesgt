@@ -183,14 +183,32 @@ function setOptions(select, placeholder, values) {
 function buildMarcas(select) {
   const cat = catalogos();
   const values = Object.keys(cat.marcas || {}).sort();
-  setOptions(select, "Marca", values);
+  setOptions(select, "Marca", [...values, "Otra marca"]);
 }
 
-function buildLineas(marcaSelect, lineaSelect) {
+function buildTiposVehiculo(select) {
+  const values = catalogos().tiposVehiculo || ["Vehículo liviano", "Pickup / comercial liviano", "Camión", "Bus / microbús"];
+  setOptions(select, "Tipo de vehículo", values);
+}
+
+function getVehicleCatalog(type) {
+  const cat = catalogos();
+  if (!type || type === "Vehículo liviano") return cat.marcas || {};
+  return cat.marcasPorTipo?.[type] || cat.marcas || {};
+}
+
+function buildMarcasByTipo(typeSelect, marcaSelect) {
+  const values = Object.keys(getVehicleCatalog(typeSelect?.value)).sort();
+  setOptions(marcaSelect, "Marca", [...values, "Otra marca"]);
+}
+
+function buildLineas(marcaSelect, lineaSelect, typeSelect) {
   const cat = catalogos();
   const marca = marcaSelect?.value || "";
-  const values = marca && cat.marcas?.[marca] ? cat.marcas[marca] : [];
-  setOptions(lineaSelect, "Línea / Modelo", values);
+  const values = marca && getVehicleCatalog(typeSelect?.value)?.[marca]
+    ? getVehicleCatalog(typeSelect?.value)[marca]
+    : [];
+  setOptions(lineaSelect, "Línea / Modelo", [...values, "Otra línea / modelo"]);
 }
 
 function buildCategorias(select) {
@@ -284,6 +302,7 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
 
   appendAliases(params, "nombre", sheetPayload.nombre, ["Nombre"]);
   appendAliases(params, "whatsapp", sheetPayload.whatsapp, ["WhatsApp", "waComprador"]);
+  appendAliases(params, "tipoVehiculo", sheetPayload.tipoVehiculo, ["Tipo vehiculo", "Tipo de vehículo"]);
   appendAliases(params, "marca", sheetPayload.marca, ["Marca"]);
   appendAliases(params, "linea", sheetPayload.linea, ["Linea", "Línea"]);
   appendAliases(params, "categoria", sheetPayload.categoria, ["Categoria", "Categoría"]);
@@ -326,6 +345,10 @@ async function enviarSolicitudVendedor(vendedor) {
   params.append("origenLead", "web_standard_repuestos_gt");
   params.append("estado", "Pendiente");
   params.append("nombreComercial", vendedor.nombre);
+  params.append("tipoVehiculo", vendedor.tiposVehiculo.join(", "));
+  params.append("tiposVehiculo", vendedor.tiposVehiculo.join(", "));
+  params.append("Tipo vehiculo", vendedor.tiposVehiculo.join(", "));
+  params.append("Tipo de vehículo", vendedor.tiposVehiculo.join(", "));
   params.append("nombreContacto", vendedor.encargado);
   params.append("whatsapp", vendedor.whatsapp);
   params.append("departamento", vendedor.depto);
@@ -367,12 +390,17 @@ async function enviarSolicitudVendedor(vendedor) {
 function resetCompradorForm(form) {
   form.reset();
   setFormSecurityTimestamp(form);
+  buildTiposVehiculo(form.querySelector('[name="tipoVehiculo"]'));
   buildMarcas(form.querySelector('[name="marca"]'));
   buildCategorias(form.querySelector('[name="categoria"]'));
   buildDeptos(form.querySelector('[name="depto"]'));
   buildCilindraje(form.querySelector('[name="cilindraje"]'));
   buildYearOptions(form.querySelector('[name="anio"]'));
   setOptions(form.querySelector('[name="linea"]'), "Línea / Modelo", []);
+  const otherBrandWrap = document.getElementById("buyer-other-brand-wrap");
+  const otherLineWrap = document.getElementById("buyer-other-line-wrap");
+  if (otherBrandWrap) otherBrandWrap.hidden = true;
+  if (otherLineWrap) otherLineWrap.hidden = true;
   setOptions(form.querySelector('[name="parte"]'), "Parte específica", []);
   const otherPartWrap = document.getElementById("buyer-other-part-wrap");
   if (otherPartWrap) otherPartWrap.hidden = true;
@@ -391,14 +419,37 @@ function initFormComprador() {
   form.dataset.initialized = "true";
   setFormSecurityTimestamp(form);
 
-  buildMarcas(form.querySelector('[name="marca"]'));
+  const typeSelect = form.querySelector('[name="tipoVehiculo"]');
+  const brandSelect = form.querySelector('[name="marca"]');
+  const lineSelect = form.querySelector('[name="linea"]');
+  const otherBrandWrap = document.getElementById("buyer-other-brand-wrap");
+  const otherLineWrap = document.getElementById("buyer-other-line-wrap");
+  buildTiposVehiculo(typeSelect);
+  buildMarcasByTipo(typeSelect, brandSelect);
   buildCategorias(form.querySelector('[name="categoria"]'));
   buildDeptos(form.querySelector('[name="depto"]'));
   buildCilindraje(form.querySelector('[name="cilindraje"]'));
   buildYearOptions(form.querySelector('[name="anio"]'));
 
-  form.querySelector('[name="marca"]')?.addEventListener("change", function () {
-    buildLineas(this, form.querySelector('[name="linea"]'));
+  typeSelect?.addEventListener("change", function () {
+    buildMarcasByTipo(this, brandSelect);
+    setOptions(lineSelect, "Línea / Modelo", []);
+    if (otherBrandWrap) otherBrandWrap.hidden = true;
+    if (otherLineWrap) otherLineWrap.hidden = true;
+  });
+
+  brandSelect?.addEventListener("change", function () {
+    buildLineas(this, lineSelect, typeSelect);
+    const other = this.value === "Otra marca";
+    if (otherBrandWrap) otherBrandWrap.hidden = !other;
+    if (!other && form.elements.namedItem("marcaOtra")) form.elements.namedItem("marcaOtra").value = "";
+    if (otherLineWrap) otherLineWrap.hidden = true;
+  });
+
+  lineSelect?.addEventListener("change", function () {
+    const other = this.value === "Otra línea / modelo";
+    if (otherLineWrap) otherLineWrap.hidden = !other;
+    if (!other && form.elements.namedItem("lineaOtra")) form.elements.namedItem("lineaOtra").value = "";
   });
 
   form.querySelector('[name="categoria"]')?.addEventListener("change", function () {
@@ -436,8 +487,9 @@ function initFormComprador() {
     const sheetPayload = {
       nombre: getFormValue(form, "nombre"),
       whatsapp: getFormValue(form, "waComprador"),
-      marca: getFormValue(form, "marca"),
-      linea: getFormValue(form, "linea"),
+      tipoVehiculo: getFormValue(form, "tipoVehiculo"),
+      marca: getFormValue(form, "marca") === "Otra marca" ? getFormValue(form, "marcaOtra") : getFormValue(form, "marca"),
+      linea: getFormValue(form, "linea") === "Otra línea / modelo" ? getFormValue(form, "lineaOtra") : getFormValue(form, "linea"),
       categoria: getFormValue(form, "categoria"),
       parte: getFormValue(form, "parteOtra") || getFormValue(form, "parte"),
       anio: getFormValue(form, "anio"),
@@ -459,8 +511,8 @@ function initFormComprador() {
       security: getFormSecurityPayload(form)
     };
 
-    if (!sheetPayload.marca || !sheetPayload.linea || !sheetPayload.categoria || !sheetPayload.parte || !sheetPayload.depto || !sheetPayload.nombre || !sheetPayload.whatsapp) {
-      toast("Completa los campos requeridos: Nombre, WhatsApp, marca, línea, categoría, parte y departamento.", "error");
+    if (!sheetPayload.tipoVehiculo || !sheetPayload.marca || !sheetPayload.linea || !sheetPayload.categoria || !sheetPayload.parte || !sheetPayload.depto || !sheetPayload.nombre || !sheetPayload.whatsapp) {
+      toast("Completa los campos requeridos: Nombre, WhatsApp, tipo, marca, línea, categoría, parte y departamento.", "error");
       return;
     }
 
@@ -468,6 +520,7 @@ function initFormComprador() {
       id: genId(),
       fecha: new Date().toISOString(),
       estado: "nueva",
+      tipoVehiculo: sheetPayload.tipoVehiculo,
       marca: sheetPayload.marca,
       linea: sheetPayload.linea,
       anio: sheetPayload.anio,
@@ -523,13 +576,38 @@ function initFormVendedor() {
   setFormSecurityTimestamp(form);
 
   const origenesWrap = document.getElementById("vend-origenes");
+  const tiposWrap = document.getElementById("vend-tipos-vehiculo");
   const marcasWrap = document.getElementById("vend-marcas");
   const marcasLabel = document.getElementById("vend-marcas-label");
+  if (tiposWrap && tiposWrap.children.length === 0) {
+    [...(catalogos().tiposVehiculo || []) , "Todos"].forEach((tipo) => {
+      const label = document.createElement("label");
+      label.className = "check-pill";
+      label.innerHTML = `<input type="checkbox" name="tiposVehiculo" value="${tipo}"><span>${tipo}</span>`;
+      tiposWrap.appendChild(label);
+    });
+    tiposWrap.addEventListener("change", (event) => {
+      const input = event.target.closest('input[name="tiposVehiculo"]');
+      if (!input) return;
+      const all = tiposWrap.querySelector('input[value="Todos"]');
+      if (input.value === "Todos" && input.checked) {
+        tiposWrap.querySelectorAll('input[name="tiposVehiculo"]:not([value="Todos"])').forEach(item => { item.checked = false; });
+      } else if (input.value !== "Todos" && input.checked && all) {
+        all.checked = false;
+      }
+      renderSellerBrands();
+    });
+  }
   const renderSellerBrands = () => {
     if (!marcasWrap) return;
     const selectedOrigins = [...form.querySelectorAll('[name="vorigenes"]:checked')].map(input => input.value);
+    const selectedTypes = [...form.querySelectorAll('[name="tiposVehiculo"]:checked')].map(input => input.value);
     const selectedBrands = new Set([...form.querySelectorAll('[name="marcas"]:checked')].map(input => input.value));
-    const allowedBrands = new Set(selectedOrigins.flatMap(origin => SELLER_BRAND_GROUPS[origin] || []));
+    const typeCatalogs = selectedTypes.includes("Todos")
+      ? ["Vehículo liviano", "Pickup / comercial liviano", "Camión", "Bus / microbús"]
+      : selectedTypes;
+    const typeBrands = typeCatalogs.flatMap(type => Object.keys(getVehicleCatalog(type)));
+    const allowedBrands = new Set([...selectedOrigins.flatMap(origin => SELLER_BRAND_GROUPS[origin] || []), ...typeBrands]);
     selectedBrands.forEach((brand) => {
       if (!allowedBrands.has(brand)) {
         selectedBrands.delete(brand);
@@ -551,6 +629,19 @@ function initFormVendedor() {
       });
       marcasWrap.appendChild(group);
     });
+    if (typeBrands.length) {
+      const group = document.createElement("section");
+      group.className = "seller-brand-group";
+      group.innerHTML = `<h4>Marcas por tipo de vehículo</h4><div class="check-pills"></div>`;
+      const pills = group.querySelector(".check-pills");
+      [...new Set(typeBrands)].sort().forEach((marca) => {
+        const label = document.createElement("label");
+        label.className = "check-pill";
+        label.innerHTML = `<input type="checkbox" name="marcas" value="${marca}" ${selectedBrands.has(marca) ? "checked" : ""}><span>${marca}</span>`;
+        pills.appendChild(label);
+      });
+      marcasWrap.appendChild(group);
+    }
     renderLineasVendedor();
   };
   if (origenesWrap && origenesWrap.children.length === 0) {
@@ -580,6 +671,7 @@ function initFormVendedor() {
   }
 
   buildDeptos(form.querySelector('[name="vdepto"]'));
+  renderSellerBrands();
   form.querySelector('[name="vdepto"]')?.addEventListener("change", function () {
     buildMunicipios(this, form.querySelector('[name="vmuni"]'));
   });
@@ -610,6 +702,7 @@ function initFormVendedor() {
       muni: getFormValue(form, "vmuni"),
       zona: getFormValue(form, "vzona"),
       horario: getFormValue(form, "vhorario"),
+      tiposVehiculo: [...form.querySelectorAll('[name="tiposVehiculo"]:checked')].map((input) => input.value),
       origenes: [...form.querySelectorAll('[name="vorigenes"]:checked')].map((input) => input.value),
       marcas: [...form.querySelectorAll('[name="marcas"]:checked')].map((input) => input.value),
       lineas: [...vendLineasSeleccionadas],
@@ -633,8 +726,8 @@ function initFormVendedor() {
       security: getFormSecurityPayload(form)
     };
 
-    if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto || !vendedor.origenes.length || !vendedor.marcas.length || (!vendedor.lineas.length && !vendedor.lineasManuales.length) || !vendedor.categorias.length) {
-      toast("Completa los datos requeridos, incluyendo orígenes, marcas, líneas y categorías.", "error");
+    if (!vendedor.nombre || !vendedor.whatsapp || !vendedor.depto || !vendedor.tiposVehiculo.length || !vendedor.origenes.length || !vendedor.marcas.length || (!vendedor.lineas.length && !vendedor.lineasManuales.length) || !vendedor.categorias.length) {
+      toast("Completa los datos requeridos, incluyendo tipo de vehículo, orígenes, marcas, líneas y categorías.", "error");
       return;
     }
 
@@ -679,7 +772,11 @@ const vendLineasSeleccionadas = new Set();
 const vendLineasManuales = new Set();
 
 function getSellerBrandLines(marca) {
-  return SELLER_LINES_BY_BRAND[marca] || catalogos().marcas?.[marca] || [];
+  const form = document.getElementById("form-vendedor");
+  const selected = [...(form?.querySelectorAll('[name="tiposVehiculo"]:checked') || [])].map(input => input.value);
+  const types = selected.includes("Todos") ? ["Vehículo liviano", "Pickup / comercial liviano", "Camión", "Bus / microbús"] : selected;
+  const typedLines = types.flatMap(type => getVehicleCatalog(type)?.[marca] || []);
+  return [...new Set([...typedLines, ...(SELLER_LINES_BY_BRAND[marca] || []), ...(catalogos().marcas?.[marca] || [])])];
 }
 
 function removeSellerBrandLines(marca) {
@@ -1057,8 +1154,8 @@ function renderPanelVendedor() {
         <div class="sol-pieza">${s.parte || s.categoria}</div>
         <span class="badge">${s.urgencia || "Media"}</span>
       </div>
-      <div class="sol-meta">
-        <span>🚗 ${s.marca || ""} ${s.linea || ""} ${s.anio || ""}</span>
+    <div class="sol-meta">
+        <span>🚗 ${s.tipoVehiculo || ""} · ${s.marca || ""} ${s.linea || ""} ${s.anio || ""}</span>
         <span>📍 ${s.muni || ""}, ${s.depto || ""}</span>
         <span>👤 ${s.nombre || ""} · ${s.waComprador || ""}</span>
       </div>
@@ -1282,8 +1379,8 @@ function renderAdminVendedoresDashboard(vendors) {
     return;
   }
   container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Marcas</th><th>Líneas / modelos</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th><th>Acciones</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(v.marcas || "Todas")}</td><td class="admin-list-cell">${escapeHtml(getAdminVendorLines(v))}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Tipo de vehículo</th><th>Marcas</th><th>Líneas / modelos</th><th>Categorías</th><th>Cobertura / departamento</th><th>Acciones</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(formatAdminListValue(getAdminValue(v, ["tipoVehiculo", "tiposVehiculo"])))}</td><td>${escapeHtml(formatAdminListValue(v.marcas, "No especificado"))}</td><td class="admin-list-cell">${escapeHtml(getAdminVendorLines(v))}</td><td>${escapeHtml(formatAdminListValue(v.categorias, "No especificado"))}</td><td>${escapeHtml(formatAdminListValue([v.municipio, v.departamento].filter(Boolean), "No especificado"))}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
   </table></div>`;
   window.lucide?.createIcons();
 }
