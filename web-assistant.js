@@ -26,7 +26,7 @@
     if (/como funciona|que es standard|plataforma/.test(value)) return 'about';
     if (/donde.*registro|registrarme|inscribirme/.test(value)) return state.role==='buyer'?'buyer':'seller';
     if (/vender|vendedor|vendo|repuestos de|manejo repuestos/.test(value)) return 'seller';
-    if (/busco|necesito|comprador|repuesto|bumper|retrovisor|motor|pieza/.test(value)) return 'buyer';
+    if (/busco|necesito|comprador|repuesto|alternador|bumper|retrovisor|motor|pieza/.test(value)) return 'buyer';
     return 'unknown';
   }
 
@@ -37,13 +37,14 @@
     const rule=PART_RULES.find(item=>item.match.test(value));
     const year=(value.match(/\b(19|20)\d{2}\b/)||[])[0]||'';
     const condition=(value.match(/\b(nueva|nuevo|usada|usado|reconstruida|reconstruido)\b/)||[])[0]||'';
-    const piecePatterns=[['sensor de oxigeno','Sensor de oxígeno'],['bumper','Bumper'],['amortiguador','Amortiguador'],['caja','Caja / transmisión'],['retrovisor','Retrovisor'],['stop','Stop'],['lodera','Lodera']];
+    const piecePatterns=[['sensor de oxigeno','Sensor de oxígeno'],['alternador','Alternador'],['bumper','Bumper'],['amortiguador','Amortiguador'],['caja','Caja / transmisión'],['retrovisor','Retrovisor'],['stop','Stop'],['lodera','Lodera']];
     const piece=(piecePatterns.find(item=>value.includes(item[0]))||[])[1]||'';
     return {brand:findNamed(text,BRANDS),model:findNamed(text,MODELS),year,piece,condition:titleCase(condition),category:rule?.category||'Otro',reason:rule?.reason||'No hay una coincidencia segura; podés usar “Otro” y describir claramente la pieza.'};
   }
   function buyerReply(text) {
     const data=extractBuyerData(text);
     if(!data.piece) return 'Con gusto te ayudamos. Indicá la pieza, marca, línea o modelo y año. También necesitaremos condición, departamento y WhatsApp para completar la solicitud gratuita.';
+    if (data.piece === 'Alternador' && /donde|ubic|va/.test(normalize(text))) return 'El alternador va montado en el motor, normalmente sujeto al bloque o a un soporte lateral y conectado por una correa. Es el componente que genera electricidad para cargar la batería y alimentar el sistema eléctrico mientras el motor está encendido.';
     const oxygen=normalize(data.piece).includes('sensor de oxigeno');
     const reason=oxygen?'El sensor envía información a la computadora para regular la mezcla de aire y combustible. Aunque se relaciona con motor y escape, en el formulario conviene colocarlo como Eléctrico.':data.reason;
     return `La categoría recomendada es ${data.category}. ${reason}\n\nDatos para el formulario:\nMarca: ${data.brand||'Pendiente de confirmar'}\nLínea/modelo: ${data.model||'Pendiente de confirmar'}\nAño: ${data.year||'Pendiente de confirmar'}\nCategoría: ${data.category}\nPieza: ${data.piece}\nCondición: ${data.condition||'nueva, usada o reconstruida, según lo que aceptés'}\nDepartamento: pendiente de indicar\n\nEnviá la solicitud y vendedores compatibles podrán contactarte si tienen disponibilidad. El chat no confirma precio ni existencia.`;
@@ -103,7 +104,11 @@
     if (composer) composer.querySelector('button[type="submit"]')?.setAttribute('disabled', '');
     if (suggestionsEl) suggestionsEl.setAttribute('aria-disabled', 'true');
     add(root,{author:'user',text});root.querySelector('.standard-assistant__status').textContent='Preparando respuesta…';
-    try { add(root,{author:'assistant',...(await callBackend(text))}); }
+    try {
+      const localIntent = classify(text);
+      const reply = localIntent === 'buyer' || localIntent === 'seller' ? localReply(text) : await callBackend(text);
+      add(root,{author:'assistant',...reply});
+    }
     catch(error) { add(root,{author:'assistant',...localReply(text)}); }
     finally {
       root.querySelector('.standard-assistant__status').textContent='';
