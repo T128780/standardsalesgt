@@ -1,7 +1,10 @@
 (function () {
   'use strict';
+  if (window.__standardSalesLunaBootstrapped) return;
+  window.__standardSalesLunaBootstrapped = true;
   const CONFIG = Object.freeze({ mode: 'backend-with-fallback', backendEnabled: true, backendAction: 'assistant_web_chat', publicWhatsApp: '50255212375' });
   const state = { role: '', messages: [] };
+  let responseInFlight = false;
   const suggestions = ['Busco un repuesto','Quiero vender repuestos','¿Cómo funciona?','Hablar con una persona'];
   const PART_RULES = [
     { match:/sensor de oxigeno|sensor maf|sensor map|sensor tps|sensor ckp|sensor cmp|ecu|computadora|arnes|fusible|rele|switch|bobina|alternador/, category:'Eléctrico', reason:'Es un componente eléctrico o electrónico que envía, recibe o gestiona información del vehículo.' },
@@ -93,9 +96,21 @@
   function render(root){const list=root.querySelector('.standard-assistant__messages');list.innerHTML=state.messages.map(messageMarkup).join('');list.scrollTop=list.scrollHeight;}
   function add(root,message){state.messages.push(message);render(root);}
   async function respond(root,text){
+    if (responseInFlight) return;
+    responseInFlight = true;
+    const composer = root.querySelector('.standard-assistant__composer');
+    const suggestionsEl = root.querySelector('.standard-assistant__suggestions');
+    if (composer) composer.querySelector('button[type="submit"]')?.setAttribute('disabled', '');
+    if (suggestionsEl) suggestionsEl.setAttribute('aria-disabled', 'true');
     add(root,{author:'user',text});root.querySelector('.standard-assistant__status').textContent='Preparando respuesta…';
-    try { add(root,{author:'assistant',...(await callBackend(text))});root.querySelector('.standard-assistant__status').textContent=''; }
-    catch(error) { add(root,{author:'assistant',...localReply(text)});root.querySelector('.standard-assistant__status').textContent=''; }
+    try { add(root,{author:'assistant',...(await callBackend(text))}); }
+    catch(error) { add(root,{author:'assistant',...localReply(text)}); }
+    finally {
+      root.querySelector('.standard-assistant__status').textContent='';
+      if (composer) composer.querySelector('button[type="submit"]')?.removeAttribute('disabled');
+      if (suggestionsEl) suggestionsEl.removeAttribute('aria-disabled');
+      responseInFlight = false;
+    }
   }
 
   function initAssistant(){
