@@ -106,8 +106,6 @@ const DB = {
   saveSolicitudes: (items) => localStorage.setItem("srgt_solicitudes", JSON.stringify(items)),
   getVendedores: () => JSON.parse(localStorage.getItem("srgt_vendedores") || "[]"),
   saveVendedores: (items) => localStorage.setItem("srgt_vendedores", JSON.stringify(items)),
-  getAccesos: () => JSON.parse(localStorage.getItem("srgt_accesos") || "[]"),
-  saveAccesos: (items) => localStorage.setItem("srgt_accesos", JSON.stringify(items)),
   addSolicitud: (item) => {
     const items = DB.getSolicitudes();
     items.unshift(item);
@@ -1029,106 +1027,6 @@ function toggleAdminPasswordVisibility() {
   input.focus();
 }
 
-function checkVendorLogin() {
-  const userInput = document.getElementById("vendor-user");
-  const passInput = document.getElementById("vendor-pass");
-  const errorEl = document.getElementById("vendor-error");
-  if (!userInput || !passInput) return;
-
-  const user = userInput.value.trim();
-  const pass = passInput.value;
-  const acceso = DB.getAccesos().find((a) => a.user === user && a.pass === pass && a.activo);
-
-  if (acceso) {
-    if (errorEl) errorEl.style.display = "none";
-    userInput.value = "";
-    passInput.value = "";
-    showPage("page-panel-vendedor");
-    renderPanelVendedor();
-    toast(`Bienvenido, ${acceso.nombre}`);
-  } else if (errorEl) {
-    errorEl.style.display = "block";
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   GESTIÓN DE ACCESOS (pestaña Accesos del panel admin)
-   ══════════════════════════════════════════════════════════════ */
-
-function mostrarMsgAcceso(texto, esError) {
-  const msg = document.getElementById("acceso-msg");
-  if (!msg) return;
-  msg.textContent = texto;
-  msg.style.display = "block";
-  msg.style.color = esError ? "#E0655A" : "#7FB069";
-  msg.style.fontWeight = "700";
-}
-
-function agregarVendedorAcceso() {
-  const nombre = (document.getElementById("new-nombre")?.value || "").trim();
-  const plan = document.getElementById("new-plan")?.value || "Pro";
-  const user = (document.getElementById("new-user")?.value || "").trim();
-  const pass = (document.getElementById("new-pass")?.value || "").trim();
-
-  if (!nombre || !user || !pass) {
-    mostrarMsgAcceso("Completa: nombre del negocio, usuario y contraseña.", true);
-    return;
-  }
-  if (/\s/.test(user)) {
-    mostrarMsgAcceso("El usuario no debe llevar espacios.", true);
-    return;
-  }
-
-  const accesos = DB.getAccesos();
-  if (accesos.some((a) => a.user === user)) {
-    mostrarMsgAcceso(`El usuario "${user}" ya existe. Elige otro.`, true);
-    return;
-  }
-
-  accesos.unshift({ id: genId(), nombre, plan, user, pass, activo: true, fecha: new Date().toISOString() });
-  DB.saveAccesos(accesos);
-  mostrarMsgAcceso(`Vendedor agregado. Usuario: ${user}`, false);
-
-  ["new-nombre", "new-user", "new-pass"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-  renderListaAccesos();
-}
-
-function toggleAcceso(id) {
-  const accesos = DB.getAccesos();
-  const acceso = accesos.find((a) => a.id === id);
-  if (!acceso) return;
-  acceso.activo = !acceso.activo;
-  DB.saveAccesos(accesos);
-  toast(acceso.activo ? `Acceso de "${acceso.nombre}" reactivado` : `Acceso de "${acceso.nombre}" desactivado`);
-  renderListaAccesos();
-}
-
-function renderListaAccesos() {
-  const lista = document.getElementById("lista-accesos");
-  if (!lista) return;
-  const accesos = DB.getAccesos();
-
-  if (accesos.length === 0) {
-    lista.innerHTML = '<div class="empty-state" style="padding:34px 20px"><p>Aún no has creado usuarios de vendedores.</p></div>';
-    return;
-  }
-
-  lista.innerHTML = accesos.map((a) => `
-    <div class="acceso-row">
-      <div class="a-info">
-        <span class="a-nombre">${a.nombre}</span>
-        <span class="a-user">Usuario: ${a.user} · Contraseña: ${a.pass}</span>
-      </div>
-      <span class="a-plan">${a.plan}</span>
-      <span class="a-estado ${a.activo ? "on" : "off"}">${a.activo ? "● Activo" : "● Inactivo"}</span>
-      <button class="btn-ghost" onclick="toggleAcceso('${a.id}')">${a.activo ? "Desactivar" : "Reactivar"}</button>
-    </div>
-  `).join("");
-}
-
 /* ══════════════════════════════════════════════════════════════
    PANELES
    ══════════════════════════════════════════════════════════════ */
@@ -1292,7 +1190,7 @@ function showAdminCredentialDialog(credentials) {
   title.textContent = "Credenciales temporales generadas";
   note.textContent = "Se mostrarán una sola vez. Entrégalas de forma privada al vendedor.";
   user.textContent = "Usuario: " + credentials.usuario;
-  password.textContent = "Clave temporal: " + credentials.claveTemporal;
+  password.textContent = "Contraseña temporal: " + credentials.claveTemporal;
   [user, password].forEach(element => {
     element.style.cssText = "display:block;background:#080808;padding:12px;margin:10px 0;overflow-wrap:anywhere";
   });
@@ -1301,7 +1199,7 @@ function showAdminCredentialDialog(credentials) {
   copy.className = "btn-admin-approve";
   copy.textContent = "Copiar credenciales";
   copy.onclick = async () => {
-    const message = `Tu acceso a Standard Repuestos GT fue creado.\n\nUsuario: ${credentials.usuario}\nClave temporal: ${credentials.claveTemporal}\n\nIngresa al panel del vendedor y cambia tu clave temporal.`;
+    const message = `Tu acceso a Standard Repuestos GT fue creado.\n\nUsuario: ${credentials.usuario}\nContraseña temporal: ${credentials.claveTemporal}\n\nIngresa al panel del vendedor y cambia tu contraseña temporal.`;
     const copied = await copyAdminCredentials(message);
     toast(copied ? "Credenciales copiadas." : "No se pudieron copiar las credenciales.", copied ? "success" : "error");
   };
