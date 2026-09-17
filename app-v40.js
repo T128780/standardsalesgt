@@ -178,6 +178,13 @@ function setOptions(select, placeholder, values) {
   });
 }
 
+function filterCatalogSelect(select, query) {
+  const needle = String(query || "").toLocaleLowerCase("es").trim();
+  [...(select?.options || [])].forEach(option => {
+    option.hidden = Boolean(needle && option.value && !option.textContent.toLocaleLowerCase("es").includes(needle));
+  });
+}
+
 function buildMarcas(select) {
   const cat = catalogos();
   const values = Object.keys(cat.marcas || {}).sort();
@@ -203,9 +210,9 @@ function buildMarcasByTipo(typeSelect, marcaSelect) {
 function buildLineas(marcaSelect, lineaSelect, typeSelect) {
   const cat = catalogos();
   const marca = marcaSelect?.value || "";
-  const values = marca && getVehicleCatalog(typeSelect?.value)?.[marca]
-    ? getVehicleCatalog(typeSelect?.value)[marca]
-    : [];
+  const values = marca && typeof cat.getLineas === "function"
+    ? cat.getLineas(marca, typeSelect?.value)
+    : (marca ? (getVehicleCatalog(typeSelect?.value)?.[marca] || []) : []);
   setOptions(lineaSelect, "Línea / Modelo", [...values, "Otra línea / modelo"]);
 }
 
@@ -420,6 +427,7 @@ function initFormComprador() {
   const typeSelect = form.querySelector('[name="tipoVehiculo"]');
   const brandSelect = form.querySelector('[name="marca"]');
   const lineSelect = form.querySelector('[name="linea"]');
+  const lineSearch = document.getElementById("buyer-linea-search");
   const otherBrandWrap = document.getElementById("buyer-other-brand-wrap");
   const otherLineWrap = document.getElementById("buyer-other-line-wrap");
   buildTiposVehiculo(typeSelect);
@@ -428,6 +436,7 @@ function initFormComprador() {
   buildDeptos(form.querySelector('[name="depto"]'));
   buildCilindraje(form.querySelector('[name="cilindraje"]'));
   buildYearOptions(form.querySelector('[name="anio"]'));
+  lineSearch?.addEventListener("input", () => filterCatalogSelect(lineSelect, lineSearch.value));
 
   typeSelect?.addEventListener("change", function () {
     buildMarcasByTipo(this, brandSelect);
@@ -657,6 +666,7 @@ function initFormVendedor() {
     if (!input.checked) removeSellerBrandLines(input.value);
     renderLineasVendedor();
   });
+  document.getElementById("vend-lineas-search")?.addEventListener("input", filtrarLineasVendedor);
 
   const categoriasWrap = document.getElementById("vend-categorias");
   if (categoriasWrap && categoriasWrap.children.length === 0) {
@@ -772,9 +782,13 @@ const vendLineasManuales = new Set();
 function getSellerBrandLines(marca) {
   const form = document.getElementById("form-vendedor");
   const selected = [...(form?.querySelectorAll('[name="tiposVehiculo"]:checked') || [])].map(input => input.value);
-  const types = selected.includes("Todos") ? ["Vehículo liviano", "Pickup / comercial liviano", "Camión", "Bus / microbús"] : selected;
+  const types = selected.includes("Todos") ? ["Vehículo liviano", "Pickup / comercial liviano", "Camión", "Bus / microbús"] : (selected.length ? selected : ["Vehículo liviano"]);
+  const cat = catalogos();
+  if (typeof cat.getLineas === "function") {
+    return [...new Set(types.flatMap(type => cat.getLineas(marca, type)))].sort((a, b) => a.localeCompare(b, "es"));
+  }
   const typedLines = types.flatMap(type => getVehicleCatalog(type)?.[marca] || []);
-  return [...new Set([...typedLines, ...(SELLER_LINES_BY_BRAND[marca] || []), ...(catalogos().marcas?.[marca] || [])])];
+  return [...new Set([...typedLines, ...(SELLER_LINES_BY_BRAND[marca] || []), ...(cat.marcas?.[marca] || [])])];
 }
 
 function removeSellerBrandLines(marca) {
@@ -835,7 +849,18 @@ function renderLineasVendedor() {
 }
 
 function filtrarLineasVendedor() {
+  const query = String(document.getElementById("vend-lineas-search")?.value || "").toLocaleLowerCase("es").trim();
   renderLineasVendedor();
+  if (!query) return;
+  document.querySelectorAll("#vend-lineas .seller-line-group").forEach(group => {
+    let visible = 0;
+    group.querySelectorAll(".check-pill").forEach(pill => {
+      const match = pill.textContent.toLocaleLowerCase("es").includes(query);
+      pill.hidden = !match;
+      if (match) visible++;
+    });
+    group.hidden = visible === 0;
+  });
 }
 
 function agregarLineaCustom() {

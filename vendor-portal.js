@@ -309,6 +309,8 @@ function getVendorProfileValue(...keys) {
 }
 
 function getVendorEditBrandLines(brand) {
+  const cat = typeof catalogos === "function" ? catalogos() : null;
+  if (cat && typeof cat.getLineas === "function") return cat.getLineas(brand);
   const helpers = sellerEditHelpers();
   if (typeof helpers.getSellerBrandLines === "function") return helpers.getSellerBrandLines(brand);
   const config = sellerEditConfig();

@@ -47,7 +47,7 @@ const CAT = {
     "Chrysler":["300","Pacifica","Town & Country","PT Cruiser"],
     "Citroën":["C3","C4","C5","Berlingo","Jumpy","Jumper"],
     "Daihatsu":["Terios","Feroza","Charade","Rocky","Move"],
-    "Foton":["Tunland","Sauvana","View C2"],
+    "Foton":["Tunland","Sauvana","View CS2"],
     "Genesis":["G70","G80","G90","GV70","GV80"],
     "Jaguar":["XE","XF","XJ","E-Pace","F-Pace","F-Type"],
     "Mahindra":["Scorpio","Bolero","XUV500","Thar","Pik Up"],
@@ -85,7 +85,7 @@ const CAT = {
       "Nissan": ["Civilian", "Urvan"], "Mitsubishi / Fuso": ["Rosa"],
       "Hino": ["Bus", "Serie 300 Bus", "Serie 500 Bus"], "Isuzu": ["Journey", "NPR Bus"],
       "Mercedes-Benz": ["Sprinter", "LO", "OF"], "Volkswagen": ["Volksbus"],
-      "Yutong": ["ZK Series"], "King Long": ["XMQ Series"], "Golden Dragon": ["XML Series"],
+      "Yutong": [], "King Long": [], "Golden Dragon": [],
       "Scania": ["K-Series"], "Volvo": ["B-Series"], "International": ["Bus Chassis"]
     }
   },
@@ -157,4 +157,160 @@ const CAT = {
     "6.0": "6000"
   }
 
+};
+
+/* Catálogo central: comprador, Soy Vendedor e inventario consumen estas
+   mismas líneas. Las listas por tipo se mantienen como subconjuntos. */
+const CAT_EXTRA_LINEAS = {
+  Toyota: ["Corolla Cross", "Yaris Cross", "Raize", "Rush", "Coaster", "Lite Ace", "Alphard"],
+  Honda: ["City", "WR-V", "BR-V", "ZR-V", "CR-Z", "S2000"],
+  Mazda: ["CX-50", "CX-60", "CX-90", "Mazda5", "RX-7", "RX-8"],
+  Nissan: ["Kicks", "Qashqai", "Patrol", "Armada", "XTerra", "370Z", "Leaf", "Ariya", "Civilian"],
+  Hyundai: ["Grand i10", "i10", "i20", "i30", "Ioniq", "Ioniq 5", "Palisade", "Staria", "Mighty", "County"],
+  Kia: ["K3", "K4", "K5", "Niro", "EV6", "EV9", "Telluride", "K2700", "K3000"],
+  Mitsubishi: ["Eclipse Cross", "Xpander", "Nativa", "Fuso Canter", "Fuso Fighter", "Rosa"],
+  Suzuki: ["S-Presso", "Celerio", "Fronx", "Ignis", "S-Cross", "XL6", "APV"],
+  Ford: ["Maverick", "Bronco Sport", "Territory", "F-350", "F-450", "Super Duty", "Transit Connect"],
+  Chevrolet: ["Tracker", "Blazer", "Traverse", "Trailblazer", "Bolt", "Onix", "Montana", "Express"],
+  Volkswagen: ["ID.4", "Taos", "Atlas", "Atlas Cross Sport", "Transporter", "Crafter", "Saveiro"],
+  BMW: ["X2", "X4", "X7", "iX", "i4", "i5", "i7", "Serie 2", "Serie 4", "Serie 6"],
+  "Mercedes-Benz": ["Clase B", "Clase G", "GLB", "GLC Coupe", "EQA", "EQB", "EQS", "Sprinter Cargo"],
+  Audi: ["A1", "A7", "A8", "Q2", "Q4 e-tron", "Q8", "e-tron GT"],
+  Lexus: ["LBX", "LM", "RZ", "TX", "LC", "RC"],
+  Jeep: ["Wagoneer", "Grand Wagoneer", "Avenger", "Patriot", "Liberty"],
+  Dodge: ["Hornet", "Viper", "Neon", "Caravan", "Ram 1500"],
+  RAM: ["4500", "5500", "Chassis Cab", "ProMaster City"],
+  GMC: ["Hummer EV", "Sierra HD", "Sierra EV", "Canyon AT4", "Envoy"],
+  Subaru: ["Ascent", "Solterra", "Tribeca", "Baja", "Impreza WRX"],
+  Isuzu: ["Traviz", "QLR", "QMR", "NKR", "NMR", "NPS", "NPR", "NQR", "FTR", "FVR", "MU-X", "Journey"],
+  Peugeot: ["408", "508", "Rifter", "Expert", "Boxer", "Bipper"],
+  Renault: ["Koleos", "Arkana", "Austral", "Oroch", "Kangoo", "Master", "Trafic"],
+  Fiat: ["Mobi", "Argo", "Pulse", "Fastback", "Strada", "Fiorino"],
+  BYD: ["Dolphin Mini", "Seal U", "Song Plus", "Yuan Pro", "Shark"],
+  Changan: ["CS15", "CS95", "Hunter Plus", "Lumin", "Deepal S07"],
+  Chery: ["Tiggo 5", "Tiggo 8 Pro", "Tiggo 9", "Arrizo 8", "Exeed VX"],
+  Geely: ["Geometry C", "Galaxy E5", "Monjaro", "Emgrand X7"],
+  MG: ["MG4", "MG7", "Marvel R", "ZS EV", "HS PHEV"],
+  "Great Wall": ["Wingle 5", "Wingle 7", "Poer KingKong", "Cannon Alpha", "Tank 500"],
+  Haval: ["H5", "H6 GT", "H6 HEV", "H7", "Jolion HEV", "Big Dog"],
+  JAC: ["X200", "T9", "JS2", "JS3", "JS4", "Sunray", "N-Series"],
+  Jetour: ["X50", "X70 Plus", "X70 Pro", "X90 Plus", "Traveller"],
+  "Land Rover": ["Range Rover Sport", "Range Rover Evoque", "Range Rover Velar", "Defender 90", "Defender 110", "Discovery Sport"],
+  Porsche: ["718 Cayman", "718 Boxster", "718 Spyder", "911 GT3", "Cayenne Coupe", "Macan Electric"],
+  Volvo: ["EX30", "EX40", "EX90", "C40", "V90", "V90 Cross Country"],
+  MINI: ["Countryman", "Aceman", "Clubman", "Convertible", "Paceman"],
+  Acura: ["Integra", "ZDX", "RLX", "TSX", "RSX"],
+  Infiniti: ["QX30", "QX55", "QX70", "Q70", "G35", "G37"],
+  Lincoln: ["Aviator", "MKC", "MKS", "MKT", "MKZ"],
+  Cadillac: ["Lyriq", "Celestiq", "CT6", "XT4", "Escalade IQ", "Escalade ESV"],
+  Chrysler: ["Voyager", "Aspen", "Sebring", "Crossfire", "Pacifica Hybrid"],
+  "Citroën": ["C1", "C2", "C4 Cactus", "C5 Aircross", "Jumper", "Jumpy"],
+  Daihatsu: ["Mira", "Hijet", "Be-go", "Copen", "Gran Max", "Taft"],
+  Foton: ["Aumark S", "Auman", "Miler", "View CS2", "Tunland G7"],
+  Genesis: ["GV60", "GV80 Coupe", "G70 Shooting Brake", "Electrified G80", "Electrified GV70"],
+  Jaguar: ["E-Pace", "F-Pace", "I-Pace", "F-Type", "XK", "S-Type"],
+  Mahindra: ["XUV300", "XUV700", "Thar Roxx", "Scorpio N", "Bolero Pik Up"],
+  Seat: ["Mii", "Toledo", "Alhambra", "Ibiza Cupra", "Leon Cupra"],
+  Skoda: ["Kamiq", "Scala", "Karoq", "Kodiaq", "Enyaq", "Rapid"],
+  SsangYong: ["Torres", "Torres EVX", "Musso Grand", "Rexton Sports", "Korando e-Motion"],
+  Tesla: ["Model 3 Highland", "Model Y Juniper", "Model Y", "Model X Plaid", "Cybertruck", "Roadster"],
+  Wuling: ["Mini EV", "Hongguang", "Starlight"],
+  Hino: ["Serie 200", "Serie 300", "Serie 500", "Serie 700", "Dutro", "Ranger", "Profia"],
+  International: ["Durastar", "MV", "HV", "LT", "HX", "CV"],
+  Freightliner: ["M2", "Cascadia", "114SD", "122SD"],
+  Scania: ["P-Series", "G-Series", "R-Series", "K-Series", "S-Series"],
+  MAN: ["TGM", "TGS", "TGX", "TGL", "Lion's Coach"],
+  Iveco: ["Daily", "Eurocargo", "S-Way", "T-Way"],
+  Yutong: ["E12", "E13", "T12", "T15"],
+  "King Long": ["XMQ6127", "XMQ6900", "XML6125"],
+  "Golden Dragon": ["XML6125", "XML6925"],
+  "Fuso / Mitsubishi": ["Canter", "FE71", "FE73", "FE84", "FE85", "Fighter", "Rosa"]
+};
+
+const CAT_ALIASES = {
+  "eco sport": "EcoSport", "ecosport": "EcoSport", "eco-sport": "EcoSport",
+  "rav 4": "RAV4", "rav-4": "RAV4", "rav4": "RAV4", "hi ace": "HiAce", "hi-ace": "HiAce",
+  "h 1": "H-1", "h1": "H-1", "h 100": "H100", "h100": "H100",
+  "microbus": "microbús", "buses": "Bus",
+  "serie 300 hino": "Serie 300", "serie 500 hino": "Serie 500"
+};
+
+function catNormalizarLinea_(value) {
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+Object.entries(CAT_EXTRA_LINEAS).forEach(([marca, lineas]) => {
+  if (!CAT.marcas[marca]) CAT.marcas[marca] = [];
+  CAT.marcas[marca].push(...lineas);
+});
+
+Object.values(CAT.marcasPorTipo || {}).forEach(group => Object.entries(group).forEach(([marca, lineas]) => {
+  if (!CAT.marcas[marca]) CAT.marcas[marca] = [];
+  CAT.marcas[marca].push(...lineas);
+}));
+
+CAT.marcasPorTipo["Camión"].Isuzu = ["Traviz", "QLR", "QMR", "NKR", "NMR", "NPS", "NPR", "NQR", "FTR", "FVR"];
+
+const CAT_MARCA_ALIASES = { "Fuso / Mitsubishi": "Mitsubishi / Fuso" };
+const CAT_LINEAS_NO_EXACTAS = new Set(["ZK Series", "XMQ Series", "XML Series"]);
+
+Object.entries(CAT.marcasPorTipo || {}).forEach(([tipo, group]) => {
+  Object.entries(group).forEach(([marca, lineas]) => {
+    const canonica = CAT_MARCA_ALIASES[marca] || marca;
+    if (canonica !== marca) {
+      group[canonica] = [...(group[canonica] || []), ...lineas];
+      delete group[marca];
+    }
+    group[canonica] = group[canonica].filter(linea => !CAT_LINEAS_NO_EXACTAS.has(linea));
+  });
+});
+
+Object.entries(CAT.marcas).forEach(([marca, lineas]) => {
+  const canonica = CAT_MARCA_ALIASES[marca] || marca;
+  if (canonica !== marca) {
+    CAT.marcas[canonica] = [...(CAT.marcas[canonica] || []), ...lineas];
+    delete CAT.marcas[marca];
+  }
+  CAT.marcas[canonica] = CAT.marcas[canonica].filter(linea => !CAT_LINEAS_NO_EXACTAS.has(linea));
+});
+
+Object.entries(CAT.marcas).forEach(([marca, lineas]) => {
+  const seen = new Set();
+  CAT.marcas[marca] = lineas.filter(linea => {
+    const canonical = CAT_ALIASES[catNormalizarLinea_(linea)] || linea;
+    const key = catNormalizarLinea_(canonical);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map(linea => CAT_ALIASES[catNormalizarLinea_(linea)] || linea);
+});
+
+Object.entries(CAT.marcas).forEach(([marca, lineas]) => {
+  const seen = new Set();
+  CAT.marcas[marca] = lineas.filter(linea => {
+    const key = catNormalizarLinea_(linea);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+});
+
+CAT.aliases = Object.fromEntries(Object.entries(CAT_ALIASES).map(([alias, canonical]) => [catNormalizarLinea_(alias), canonical]));
+CAT.aliasesMarca = Object.fromEntries(Object.entries(CAT_MARCA_ALIASES).map(([alias, canonical]) => [catNormalizarLinea_(alias), canonical]));
+CAT.normalizarLinea = catNormalizarLinea_;
+CAT.canonicalizarMarca = function (value) {
+  const raw = String(value || "").trim();
+  return CAT.aliasesMarca[catNormalizarLinea_(raw)] || raw;
+};
+CAT.canonicalizarLinea = function (value) {
+  const raw = String(value || "").trim();
+  return CAT.aliases[catNormalizarLinea_(raw)] || raw;
+};
+CAT.getLineas = function (marca, tipo) {
+  marca = CAT.canonicalizarMarca(marca);
+  const source = tipo && tipo !== "Vehículo liviano"
+    ? (CAT.marcasPorTipo?.[tipo]?.[marca] || CAT.marcas[marca] || [])
+    : (CAT.marcas[marca] || []);
+  return [...new Map(source.map(linea => [catNormalizarLinea_(CAT.canonicalizarLinea(linea)), CAT.canonicalizarLinea(linea)])).values()]
+    .sort((a, b) => a.localeCompare(b, "es"));
 };

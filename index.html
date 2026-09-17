@@ -316,7 +316,7 @@
         <div class="form-group"><label>Tipo de vehículo <span class="req">*</span></label><select name="tipoVehiculo"><option value="">Tipo de vehículo</option></select></div>
         <div class="form-row">
           <div class="form-group"><label>Marca <span class="req">*</span></label><select name="marca"><option value="">Marca</option></select></div>
-          <div class="form-group"><label>Línea / Modelo <span class="req">*</span></label><select name="linea"><option value="">Línea / Modelo</option></select></div>
+          <div class="form-group"><label>Línea / Modelo <span class="req">*</span></label><input type="search" id="buyer-linea-search" placeholder="Buscar línea o modelo" autocomplete="off"><select name="linea"><option value="">Línea / Modelo</option></select></div>
         </div>
         <div class="form-row">
           <div class="form-group" id="buyer-other-brand-wrap" hidden><label>Otra marca</label><input type="text" name="marcaOtra" maxlength="80" placeholder="Escribe la marca"></div>
@@ -507,6 +507,7 @@
       <div class="form-section">
         <div class="form-section-title"><span class="fs-num">3</span> Líneas / Modelos que trabajas <span class="req">*</span></div>
         <p class="form-hint">Selecciona una marca primero para ver sus líneas. Puedes seleccionar varias.</p>
+        <input type="search" id="vend-lineas-search" placeholder="Buscar línea o modelo" autocomplete="off" aria-label="Buscar línea o modelo">
         <div id="vend-lineas" class="seller-brand-groups"></div>
         <div id="vend-lineas-custom" style="margin-top:10px">
           <div class="form-group">
@@ -825,9 +826,9 @@
 
 <div id="toasts"></div>
 
-<script src="catalogos-v24.js"></script>
+  <script src="catalogos-v24.js?v=catalogo-central-20260917-r2"></script>
   <link rel="stylesheet" href="vendor-portal.css?v=20260724-local">
-  <script src="app-v40.js?v=login-seguro-20260917"></script>
+  <script src="app-v40.js?v=catalogo-central-20260917-r2"></script>
   <script src="vendor-portal.js?v=tipo-vehiculo-20260917"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
