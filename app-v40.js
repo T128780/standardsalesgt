@@ -277,6 +277,19 @@ function getFormValue(form, name) {
   return "";
 }
 
+function normalizeSellerWhatsApp(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.length === 8) return `502${digits}`;
+  if (digits.length === 11 && digits.startsWith("502")) return digits;
+  return digits;
+}
+
+function getSellerWhatsApp(form) {
+  const field = form?.querySelector("#vwhatsapp, [name=\"vwhatsapp\"]");
+  return normalizeSellerWhatsApp(field?.value);
+}
+
 function setFormSecurityTimestamp(form) {
   const field = form?.elements?.namedItem("formStartedAt");
   if (field) field.value = String(Date.now());
@@ -702,7 +715,7 @@ function initFormVendedor() {
       nombre: getFormValue(form, "vnombre"),
       tipo: getFormValue(form, "vtipo"),
       encargado: getFormValue(form, "vencargado"),
-      whatsapp: getFormValue(form, "vwhatsapp"),
+      whatsapp: getSellerWhatsApp(form),
       email: getFormValue(form, "vemail"),
       nit: getFormValue(form, "vnit"),
       direccion: getFormValue(form, "vdireccion"),
