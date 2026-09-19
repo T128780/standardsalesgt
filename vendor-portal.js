@@ -327,9 +327,10 @@ function inferVendorEditOrigins(brands) {
 }
 
 function setVendorEditChecked(form, name, values) {
-  const normalized = new Set(values.map(normalizeVendorOption));
+  const optionKey = value => normalizeVendorOption(name === "marcas" ? catalogos().canonicalizarMarca?.(value) || value : value);
+  const normalized = new Set(values.map(optionKey));
   form.querySelectorAll(`input[name="${name}"]`).forEach(input => {
-    input.checked = normalized.has(normalizeVendorOption(input.value));
+    input.checked = normalized.has(optionKey(input.value));
   });
 }
 
@@ -374,23 +375,22 @@ function renderVendorEditBrands(form) {
   if (!wrap) return;
   const selectedOrigins = [...form.querySelectorAll('input[name="vorigenes"]:checked')].map(input => input.value);
   const selectedBrands = new Set([...form.querySelectorAll('input[name="marcas"]:checked')].map(input => input.value));
-  const allowedBrands = new Set(selectedOrigins.flatMap(origin => config.brandGroups[origin] || []));
-  selectedBrands.forEach(brand => {
-    if (!allowedBrands.has(brand)) selectedBrands.delete(brand);
-  });
+  const sections = getSellerBrandSections(selectedOrigins, [
+    ...splitVendorList(getVendorProfileValue("marcas")), ...selectedBrands
+  ]);
   wrap.replaceChildren();
-  if (label) label.hidden = selectedOrigins.length === 0;
-  selectedOrigins.forEach(origin => {
+  if (label) label.hidden = !sections.length;
+  sections.forEach(({ title: heading, brands }) => {
     const group = document.createElement("section");
     const title = document.createElement("h4");
     const pills = document.createElement("div");
     group.className = "seller-brand-group";
-    title.textContent = config.originTitles[origin] || origin;
+    title.textContent = heading;
     pills.className = "check-pills";
-    (config.brandGroups[origin] || []).forEach(marca => {
+    brands.forEach(marca => {
       const item = document.createElement("label");
       item.className = "check-pill";
-      item.innerHTML = `<input type="checkbox" name="marcas" value="${marca}"><span>${marca}</span>`;
+      item.innerHTML = `<input type="checkbox" name="marcas" value="${escapeHtml(marca)}"><span>${escapeHtml(marca)}</span>`;
       item.querySelector("input").checked = selectedBrands.has(marca);
       pills.appendChild(item);
     });
@@ -398,6 +398,13 @@ function renderVendorEditBrands(form) {
     wrap.appendChild(group);
   });
   renderVendorEditLines(form);
+}
+
+function filterVendorEditLines() {
+  const query = normalizeVendorOption(document.getElementById("vendor-edit-lineas-search")?.value);
+  document.querySelectorAll("#vendor-edit-lineas .check-pill").forEach(label => {
+    label.hidden = Boolean(query && !normalizeVendorOption(label.textContent).includes(query));
+  });
 }
 
 function renderVendorEditLines(form) {
@@ -423,6 +430,7 @@ function renderVendorEditLines(form) {
     wrap.appendChild(group);
   });
   syncVendorEditLines();
+  filterVendorEditLines();
 }
 
 function renameVendorInventoryId(form, currentId, editId) {
@@ -454,6 +462,9 @@ function ensureVendorInventoryMatrixForm() {
   form.querySelector('[name="vplan"]')?.closest(".form-section")?.remove();
   form.querySelector("#seccion-comprobante")?.remove();
 
+  renameVendorInventoryId(form, "vwhatsapp", "vendor-edit-vwhatsapp");
+  form.querySelector('label[for="vwhatsapp"]')?.setAttribute("for", "vendor-edit-vwhatsapp");
+  renameVendorInventoryId(form, "vend-lineas-search", "vendor-edit-lineas-search");
   renameVendorInventoryId(form, "vend-origenes", "vendor-edit-origenes");
   renameVendorInventoryId(form, "vend-marcas-label", "vendor-edit-marcas-label");
   renameVendorInventoryId(form, "vend-marcas", "vendor-edit-marcas");
@@ -522,6 +533,7 @@ function initVendorProfileEditorForm() {
     else vendorEditLineasSeleccionadas.delete(input.value);
     syncVendorEditLines();
   });
+  document.getElementById("vendor-edit-lineas-search")?.addEventListener("input", filterVendorEditLines);
   document.getElementById("vendor-edit-add-line")?.addEventListener("click", () => {
     const input = document.getElementById("vendor-edit-linea-custom-input");
     const value = String(input?.value || "").trim();
@@ -577,11 +589,7 @@ function collectVendorProfileEditorChanges(form) {
     categorias: [...form.querySelectorAll('input[name="vcat"]:checked')].map(input => input.value).join(", "),
     piezasSuspension: getVendorProfileValue("piezasSuspension"),
     otraPiezaSuspension: getVendorProfileValue("otraPiezaSuspension"),
-    procedencia: String(form.querySelector('input[name="vprocedencia"]:checked')?.value || "").trim(),
-    condicion: String(form.querySelector('input[name="vcondicion"]:checked')?.value || "").trim(),
     departamento: String(form.elements.namedItem("vdepto")?.value || "").trim(),
-    entregas: String(form.elements.namedItem("ventregasDetalle")?.value || "").trim() ||
-      (form.elements.namedItem("ventregas")?.checked ? "Sí" : "No"),
     municipio: String(form.elements.namedItem("vmuni")?.value || "").trim(),
     zona: String(form.elements.namedItem("vzona")?.value || "").trim(),
     horario: String(form.elements.namedItem("vhorario")?.value || "").trim()
@@ -604,8 +612,7 @@ async function submitVendorProfileChange(form) {
   try {
     const result = await vendorApi("vendedor_actualizar_perfil", {
       token: session.token,
-      detalleCompleto: JSON.stringify(changes),
-      observaciones: String(form.elements.namedItem("vobservaciones")?.value || "")
+      detalleCompleto: JSON.stringify(changes)
     });
     vendorProfile = result.perfil || vendorProfile;
     populateVendorProfileEditor();
@@ -652,8 +659,6 @@ function populateVendorProfileEditor() {
   renderVendorEditLines(form);
 
   setVendorEditChecked(form, "vcat", splitVendorList(getVendorProfileValue("categorias")));
-  setVendorEditRadio(form, "vprocedencia", getVendorProfileValue("procedencia"));
-  setVendorEditRadio(form, "vcondicion", getVendorProfileValue("condicion", "condicionPiezas"));
 
   const depto = getVendorProfileValue("departamento", "depto");
   const deptoField = form.elements.namedItem("vdepto");
@@ -665,15 +670,7 @@ function populateVendorProfileEditor() {
   }
   if (muniField) muniField.value = getVendorProfileValue("municipio", "muni") || "";
 
-  const entregas = String(getVendorProfileValue("entregas", "cobertura") || "");
-  const enviosField = form.elements.namedItem("venvios");
-  const entregasField = form.elements.namedItem("ventregas");
-  const detalleField = form.elements.namedItem("ventregasDetalle");
-  if (enviosField) enviosField.checked = /env[ií]o|toda guatemala|capital y departamentos/i.test(entregas);
-  if (entregasField) entregasField.checked = !/^no$/i.test(entregas) && Boolean(entregas);
-  if (detalleField) detalleField.value = entregas;
-  const observations = form.elements.namedItem("vobservaciones");
-  if (observations) observations.value = "";
+
 }
 
 async function loadAdminVendorChanges() {
