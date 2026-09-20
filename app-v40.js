@@ -1301,6 +1301,7 @@ function renderAdminVendorAccount(vendor) {
 function renderAdminVendedoresDashboard(vendors) {
   const container = document.getElementById("admin-vendedores-dashboard");
   if (!container) return;
+  container.classList.remove("admin-loading");
   if (!adminVendedoresPruebaMap) adminCargarEsPruebaVendedores_();
 
   const active = vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length;
