@@ -1035,7 +1035,7 @@ function renderPanelAdmin() {
   const sends = data.metricasEnvios || {};
   setAdminText("admin-total-sol", adminPendingRequests.length);
   setAdminText("admin-total-vendedores", vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length);
-  setAdminText("admin-membresias-vencer", memberships.porVencer || 0);
+  setAdminText("admin-membresias-vencer", "31/12");
   setAdminText("admin-solicitudes-7d", buyers.solicitudesUltimos7Dias || 0);
   setAdminText("admin-envios-ok", sends.enviadosGupshup || 0);
   setAdminText("admin-envios-error", sends.errores || 0);
@@ -1337,14 +1337,19 @@ function renderAdminMembresias(vendors, summary) {
     return;
   }
   const formatDate = value => value ? new Date(value).toLocaleDateString("es-GT") : "—";
+  const activePromo = vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length;
   container.innerHTML = `<div class="admin-membership-summary">
-      <span>Vigentes <strong>${summary.vigentes || 0}</strong></span><span>Por vencer <strong>${summary.porVencer || 0}</strong></span><span>Vencidas <strong>${summary.vencidas || 0}</strong></span><span>Suspendidas <strong>${summary.suspendidas || 0}</strong></span><span>Canceladas <strong>${summary.canceladas || 0}</strong></span><span>Sin configurar <strong>${summary.sinConfigurar || 0}</strong></span>
+      <span>Promoción vigente <strong>hasta 31/12/2026</strong></span><span>Vendedores activos <strong>${activePromo}</strong></span><span>Fechas siguientes <strong>históricas</strong></span>
     </div><div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-      <thead><tr><th>Vendedor</th><th>Plan</th><th>Fecha inicio membresía</th><th>Vencimiento histórico</th><th>Estado</th><th>Días</th></tr></thead>
-      <tbody>${vendors.map(v => `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${normalizeAdminValue(v.estadoMembresia).replaceAll(" ", "-")}">${escapeHtml(v.estadoMembresia || "Sin configurar")}</span></td><td>${v.diasRestantes ?? "—"}</td></tr>`).join("")}</tbody>
+      <thead><tr><th>Vendedor</th><th>Plan</th><th>Inicio histórico</th><th>Vencimiento histórico</th><th>Estado promocional</th><th>Estado histórico</th></tr></thead>
+      <tbody>${vendors.map(v => {
+        const active = normalizeAdminValue(v.estado) === "activo";
+        const promoState = active ? "Vigente hasta 31/12/2026" : "No aplica";
+        const promoClass = active ? "vigente" : normalizeAdminValue(v.estado).replaceAll(" ", "-");
+        return `<tr><td>${escapeHtml(v.nombreComercial || "Sin nombre")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td>${formatDate(v.fechaInicioMembresia)}</td><td>${formatDate(v.fechaVencimientoMembresia)}</td><td><span class="admin-status ${promoClass}">${escapeHtml(promoState)}</span></td><td>${escapeHtml(v.estadoMembresia || "Sin configurar")}</td></tr>`;
+      }).join("")}</tbody>
     </table></div>`;
 }
-
 function renderAdminTop(id, entries) {
   const container = document.getElementById(id);
   if (!container) return;
