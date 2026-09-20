@@ -1101,151 +1101,19 @@ function adminEmpty(message) {
   return `<div class="admin-inline-empty">${escapeHtml(message)}</div>`;
 }
 
-let adminVendedoresGestionData = null;
-let adminVendedoresFiltro = "todos";
-
-const ADMIN_VENDEDORES_FILTROS = [
-  { id: "todos", label: "Todos" },
-  { id: "activos", label: "Activos" },
-  { id: "inactivos", label: "Inactivos" },
-  { id: "eliminados", label: "Eliminados" },
-  { id: "prueba", label: "Prueba" }
-];
-
-function adminVendedorEsPrueba(v) {
-  const value = normalizeAdminValue(v.esPrueba);
-  return value === "si" || value === "sí";
-}
-
-function adminFiltrarVendedoresLista(vendors, filtro) {
-  switch (filtro) {
-    case "activos": return vendors.filter(v => normalizeAdminValue(v.estado) === "activo");
-    case "inactivos": return vendors.filter(v => normalizeAdminValue(v.estado) === "inactivo");
-    case "eliminados": return vendors.filter(v => normalizeAdminValue(v.estado) === "eliminado");
-    case "prueba": return vendors.filter(adminVendedorEsPrueba);
-    default: return vendors;
-  }
-}
-
-function adminFiltrarVendedores(filtro) {
-  adminVendedoresFiltro = filtro;
-  renderAdminVendedoresDashboard();
-}
-
-async function renderAdminVendedoresDashboard() {
+function renderAdminVendedoresDashboard(vendors) {
   const container = document.getElementById("admin-vendedores-dashboard");
   if (!container) return;
-
-  if (!adminVendedoresGestionData) {
-    container.innerHTML = `<div class="admin-loading"><span class="spinner"></span>Cargando vendedores...</div>`;
-    try {
-      const result = await adminRequest("admin_listar_vendedores");
-      adminVendedoresGestionData = Array.isArray(result.vendedores) ? result.vendedores : [];
-    } catch (error) {
-      container.innerHTML = adminEmpty(error.message || "No se pudieron cargar los vendedores.");
-      return;
-    }
-  }
-
-  const vendors = adminVendedoresGestionData;
   const active = vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length;
-  const inactive = vendors.filter(v => normalizeAdminValue(v.estado) === "inactivo").length;
-  const eliminados = vendors.filter(v => normalizeAdminValue(v.estado) === "eliminado").length;
-  setAdminText("admin-vendedores-resumen", `${active} activos · ${inactive} inactivos · ${eliminados} eliminados`);
-
-  const filterBar = `<div class="admin-vendor-filters">${ADMIN_VENDEDORES_FILTROS.map(f =>
-    `<button type="button" class="admin-filter-chip${adminVendedoresFiltro === f.id ? " active" : ""}" onclick="adminFiltrarVendedores('${f.id}')">${f.label}</button>`
-  ).join("")}</div>`;
-
-  const filtered = adminFiltrarVendedoresLista(vendors, adminVendedoresFiltro);
-
-  if (!filtered.length) {
-    container.innerHTML = filterBar + adminEmpty("Sin vendedores en este filtro");
+  setAdminText("admin-vendedores-resumen", `${active} activos · ${vendors.length - active} inactivos/retirados`);
+  if (!vendors.length) {
+    container.innerHTML = adminEmpty("Sin vendedores registrados");
     return;
   }
-
-  container.innerHTML = filterBar + `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Departamento</th><th>Acciones</th></tr></thead>
-    <tbody>${filtered.map(v => {
-      const estado = normalizeAdminValue(v.estado);
-      const esPrueba = adminVendedorEsPrueba(v);
-      const nombre = escapeHtml(v.nombreComercial || "Sin nombre");
-      const acciones = [];
-      if (estado === "activo") {
-        acciones.push(`<button class="btn-admin-vendor" type="button" onclick="adminDesactivarVendedor(${v.rowNumber})">Desactivar</button>`);
-      }
-      if (estado === "inactivo") {
-        acciones.push(`<button class="btn-admin-vendor" type="button" onclick="adminReactivarVendedor(${v.rowNumber})">Reactivar</button>`);
-      }
-      if (estado !== "eliminado") {
-        acciones.push(`<button class="btn-admin-vendor danger" type="button" onclick="adminEliminarVendedor(${v.rowNumber})">Eliminar</button>`);
-        acciones.push(`<button class="btn-admin-vendor ghost" type="button" onclick="adminTogglePruebaVendedor(${v.rowNumber}, ${esPrueba ? "false" : "true"})">${esPrueba ? "Quitar prueba" : "Marcar prueba"}</button>`);
-      }
-      return `<tr><td><strong>${nombre}</strong>${esPrueba ? ` <span class="badge-prueba">PRUEBA</span>` : ""}</td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${estado}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.departamento || "—")}</td><td class="admin-vendor-actions">${acciones.join("")}</td></tr>`;
-    }).join("")}</tbody>
+  container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Marcas</th><th>Categorías</th><th>Piezas suspensión</th><th>Departamento</th></tr></thead>
+    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${escapeHtml(v.marcas || "Todas")}</td><td>${escapeHtml(v.categorias || "Todas")}</td><td>${escapeHtml(v.piezasSuspension || "—")}</td><td>${escapeHtml(v.departamento || "—")}</td></tr>`).join("")}</tbody>
   </table></div>`;
-}
-
-function adminNombreVendedorPorFila_(rowNumber) {
-  const vendor = (adminVendedoresGestionData || []).find(v => v.rowNumber === rowNumber);
-  return vendor ? (vendor.nombreComercial || "este vendedor") : "este vendedor";
-}
-
-async function adminEjecutarAccionVendedor_(accion, rowNumber, params, confirmMessage, successMessage) {
-  if (!Number.isInteger(rowNumber) || rowNumber < 2) return;
-  if (confirmMessage && !window.confirm(confirmMessage)) return;
-
-  try {
-    const result = await adminRequest(accion, Object.assign({ rowNumber }, params || {}));
-    toast(result.message || successMessage);
-    adminVendedoresGestionData = null;
-    await renderAdminVendedoresDashboard();
-  } catch (error) {
-    toast(error.message || "No se pudo completar la acción.", "error");
-  }
-}
-
-function adminDesactivarVendedor(rowNumber) {
-  const nombre = adminNombreVendedorPorFila_(rowNumber);
-  return adminEjecutarAccionVendedor_(
-    "admin_desactivar_vendedor",
-    rowNumber,
-    null,
-    `¿Desactivar a ${nombre}? Deja de recibir leads pero conserva su historial.`,
-    "Vendedor desactivado."
-  );
-}
-
-function adminReactivarVendedor(rowNumber) {
-  const nombre = adminNombreVendedorPorFila_(rowNumber);
-  return adminEjecutarAccionVendedor_(
-    "admin_reactivar_vendedor",
-    rowNumber,
-    null,
-    `¿Reactivar a ${nombre}? Volverá a recibir leads según Marca + Línea + Categoría.`,
-    "Vendedor reactivado."
-  );
-}
-
-function adminEliminarVendedor(rowNumber) {
-  const nombre = adminNombreVendedorPorFila_(rowNumber);
-  return adminEjecutarAccionVendedor_(
-    "admin_eliminar_vendedor",
-    rowNumber,
-    null,
-    `¿Eliminar a ${nombre}? Si es una cuenta real o tiene historial, se hará una baja lógica (se conserva el historial, no recibe leads y no puede iniciar sesión). Solo se borra físicamente si es de prueba y no tiene historial.`,
-    "Vendedor eliminado."
-  );
-}
-
-function adminTogglePruebaVendedor(rowNumber, marcar) {
-  return adminEjecutarAccionVendedor_(
-    "admin_marcar_prueba_vendedor",
-    rowNumber,
-    { esPrueba: marcar ? "Si" : "No" },
-    null,
-    marcar ? "Vendedor marcado como PRUEBA." : "Se quitó la marca de PRUEBA."
-  );
 }
 
 function renderAdminMembresias(vendors, summary) {

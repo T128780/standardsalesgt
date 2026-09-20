@@ -1874,7 +1874,8 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
 .admin-status.por-vencer { color: #dfb25c; border-color: rgba(223,178,92,.38); background: rgba(223,178,92,.08); }
 .admin-status.suspendido, .admin-status.suspendida { color: #dfb25c; border-color: rgba(223,178,92,.38); background: rgba(223,178,92,.08); }
 .admin-status.vencida, .admin-status.retirado, .admin-status.inactivo, .admin-status.cancelado, .admin-status.cancelada { color: #eb8484; border-color: rgba(235,108,108,.34); background: rgba(235,108,108,.07); }
-.admin-vendor-actions { display: flex; align-items: center; gap: 7px; min-width: 205px; }
+.admin-status.eliminado { color: #8a8f98; border-color: rgba(138,143,152,.4); background: rgba(138,143,152,.1); }
+.admin-vendor-actions { display: flex; align-items: center; gap: 7px; min-width: 205px; flex-wrap: wrap; }
 .admin-vendor-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 34px; padding: 7px 9px; border-radius: 4px; font: 700 11px var(--font-body); cursor: pointer; }
 .admin-vendor-actions .lucide { width: 14px; height: 14px; }
 .admin-vendor-actions button:disabled { cursor: wait; opacity: .55; }
@@ -1882,6 +1883,36 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
 .btn-admin-cancel { border: 1px solid rgba(235,108,108,.45); background: transparent; color: #F0A0A0; }
 .btn-admin-suspend:hover:not(:disabled) { background: rgba(223,178,92,.08); border-color: rgba(223,178,92,.75); }
 .btn-admin-cancel:hover:not(:disabled) { background: rgba(235,108,108,.08); border-color: rgba(235,108,108,.7); }
+.btn-admin-deactivate { border: 1px solid rgba(223,178,92,.48); background: transparent; color: #E4C47F; }
+.btn-admin-deactivate:hover:not(:disabled) { background: rgba(223,178,92,.08); border-color: rgba(223,178,92,.75); }
+.btn-admin-reactivate { border: 1px solid rgba(128,201,150,.45); background: transparent; color: #80c996; }
+.btn-admin-reactivate:hover:not(:disabled) { background: rgba(128,201,150,.08); border-color: rgba(128,201,150,.75); }
+
+.admin-vendor-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.admin-filter-chip {
+  padding: 6px 14px;
+  border: 1px solid var(--line2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text3);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+.admin-filter-chip:hover { color: var(--text2); border-color: rgba(232,206,140,.4); }
+.admin-filter-chip.active { color: #0A0B0D; background: var(--gold2); border-color: var(--gold2); }
+
+.badge-prueba {
+  display: inline-flex;
+  font-size: 9.5px; font-weight: 800; letter-spacing: .12em;
+  color: #dfb25c;
+  border: 1px solid rgba(223,178,92,.4);
+  background: rgba(223,178,92,.1);
+  padding: 2px 7px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
 .admin-membership-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .admin-membership-summary span { padding: 7px 10px; border: 1px solid var(--line2); border-radius: 4px; color: var(--text3); font-size: 11px; }
 .admin-membership-summary strong { margin-left: 5px; color: var(--text); }

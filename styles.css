@@ -1865,51 +1865,6 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
 .admin-status.activo, .admin-status.vigente { color: #80c996; border-color: rgba(128,201,150,.35); background: rgba(128,201,150,.07); }
 .admin-status.por-vencer { color: #dfb25c; border-color: rgba(223,178,92,.38); background: rgba(223,178,92,.08); }
 .admin-status.vencida, .admin-status.retirado, .admin-status.inactivo { color: #eb8484; border-color: rgba(235,108,108,.34); background: rgba(235,108,108,.07); }
-.admin-status.eliminado { color: #8a8f98; border-color: rgba(138,143,152,.4); background: rgba(138,143,152,.1); }
-
-.admin-vendor-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.admin-filter-chip {
-  padding: 6px 14px;
-  border: 1px solid var(--line2);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--text3);
-  font-size: 11.5px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
-}
-.admin-filter-chip:hover { color: var(--text2); border-color: rgba(232,206,140,.4); }
-.admin-filter-chip.active { color: #0A0B0D; background: var(--gold2); border-color: var(--gold2); }
-
-.badge-prueba {
-  display: inline-flex;
-  font-size: 9.5px; font-weight: 800; letter-spacing: .12em;
-  color: #dfb25c;
-  border: 1px solid rgba(223,178,92,.4);
-  background: rgba(223,178,92,.1);
-  padding: 2px 7px;
-  border-radius: 999px;
-  vertical-align: middle;
-}
-
-.admin-vendor-actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.btn-admin-vendor {
-  padding: 5px 10px;
-  border: 1px solid var(--line2);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text2);
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
-}
-.btn-admin-vendor:hover { border-color: rgba(232,206,140,.4); color: var(--gold2); }
-.btn-admin-vendor.danger { color: #eb8484; border-color: rgba(235,108,108,.34); }
-.btn-admin-vendor.danger:hover { background: rgba(235,108,108,.08); border-color: rgba(235,108,108,.6); }
-.btn-admin-vendor.ghost { color: var(--text3); }
 .admin-membership-summary { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .admin-membership-summary span { padding: 7px 10px; border: 1px solid var(--line2); border-radius: 4px; color: var(--text3); font-size: 11px; }
 .admin-membership-summary strong { margin-left: 5px; color: var(--text); }

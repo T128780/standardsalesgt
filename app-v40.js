@@ -1186,22 +1186,100 @@ async function regenerarClaveVendedorAdmin(rowNumber, button) {
   }
 }
 
+let adminVendedoresPruebaMap = null;
+let adminVendedoresPruebaLoading = false;
+let adminVendedoresFiltro = "todos";
+
+const ADMIN_VENDEDORES_FILTROS = [
+  { id: "todos", label: "Todos" },
+  { id: "activos", label: "Activos" },
+  { id: "inactivos", label: "Inactivos" },
+  { id: "eliminados", label: "Eliminados" },
+  { id: "prueba", label: "Prueba" }
+];
+
+function adminVendorEsPrueba(vendor) {
+  const rowNumber = Number(vendor?.rowNumber);
+  if (adminVendedoresPruebaMap && adminVendedoresPruebaMap.has(rowNumber)) {
+    return adminVendedoresPruebaMap.get(rowNumber);
+  }
+  const value = normalizeAdminValue(vendor?.esPrueba);
+  return value === "si" || value === "sí";
+}
+
+function adminFiltrarVendedoresLista(vendors, filtro) {
+  switch (filtro) {
+    case "activos": return vendors.filter(v => normalizeAdminValue(v.estado) === "activo");
+    case "inactivos": return vendors.filter(v => normalizeAdminValue(v.estado) === "inactivo");
+    case "eliminados": return vendors.filter(v => normalizeAdminValue(v.estado) === "eliminado");
+    case "prueba": return vendors.filter(adminVendorEsPrueba);
+    default: return vendors;
+  }
+}
+
+function adminFiltrarVendedores(filtro) {
+  adminVendedoresFiltro = filtro;
+  renderPanelAdmin();
+}
+
+async function adminCargarEsPruebaVendedores_() {
+  if (adminVendedoresPruebaLoading) return;
+  adminVendedoresPruebaLoading = true;
+  try {
+    const result = await adminRequest("admin_listar_vendedores");
+    const list = Array.isArray(result.vendedores) ? result.vendedores : [];
+    adminVendedoresPruebaMap = new Map(list.map(v => {
+      const value = normalizeAdminValue(v.esPrueba);
+      return [Number(v.rowNumber), value === "si" || value === "sí"];
+    }));
+    renderPanelAdmin();
+  } catch (error) {
+    // Silencioso: si falla, el badge/filtro "Prueba" simplemente no distingue hasta el próximo refresco.
+  } finally {
+    adminVendedoresPruebaLoading = false;
+  }
+}
+
 function renderAdminVendorActions(vendor) {
   const rowNumber = Number(vendor.rowNumber);
-  if (!Number.isInteger(rowNumber) || rowNumber < 2 || normalizeAdminValue(vendor.estado) !== "activo") {
-    return "—";
-  }
-  return `<div class="admin-vendor-actions" data-vendor-row="${rowNumber}" data-vendor-id="${escapeHtml(vendor.vendedorId || "")}" data-vendor-whatsapp="${escapeHtml(vendor.whatsapp || "")}">
-    <button class="btn-admin-suspend" type="button" data-vendor-row="${rowNumber}" onclick="suspenderVendedorAdmin(${rowNumber})" title="Suspender membresía">
+  if (!Number.isInteger(rowNumber) || rowNumber < 2) return "—";
+  const estado = normalizeAdminValue(vendor.estado);
+  const esPrueba = adminVendorEsPrueba(vendor);
+  const attrs = `data-vendor-row="${rowNumber}" data-vendor-id="${escapeHtml(vendor.vendedorId || "")}" data-vendor-whatsapp="${escapeHtml(vendor.whatsapp || "")}"`;
+  const buttons = [];
+
+  if (estado === "activo") {
+    buttons.push(`<button class="btn-admin-suspend" type="button" data-vendor-row="${rowNumber}" onclick="suspenderVendedorAdmin(${rowNumber})" title="Suspender membresía">
       <i data-lucide="pause-circle"></i><span>Suspender</span>
-    </button>
-    <button class="btn-admin-cancel" type="button" data-vendor-row="${rowNumber}" onclick="cancelarVendedorAdmin(${rowNumber})" title="Cancelar membresía">
+    </button>`);
+    buttons.push(`<button class="btn-admin-cancel" type="button" data-vendor-row="${rowNumber}" onclick="cancelarVendedorAdmin(${rowNumber})" title="Cancelar membresía">
       <i data-lucide="ban"></i><span>Cancelar</span>
-    </button>
-    <button class="btn-admin-suspend btn-admin-reset-password" type="button" onclick="regenerarClaveVendedorAdmin(${rowNumber}, this)" title="Generar nueva clave temporal">
+    </button>`);
+    buttons.push(`<button class="btn-admin-suspend btn-admin-reset-password" type="button" onclick="regenerarClaveVendedorAdmin(${rowNumber}, this)" title="Generar nueva clave temporal">
       <i data-lucide="key-round"></i><span>Nueva clave</span>
-    </button>
-  </div>`;
+    </button>`);
+    buttons.push(`<button class="btn-admin-deactivate" type="button" data-vendor-row="${rowNumber}" onclick="desactivarVendedorAdmin(${rowNumber})" title="Desactivar cuenta (deja de recibir leads, conserva historial)">
+      <i data-lucide="power-off"></i><span>Desactivar</span>
+    </button>`);
+  }
+
+  if (estado === "inactivo") {
+    buttons.push(`<button class="btn-admin-reactivate" type="button" data-vendor-row="${rowNumber}" onclick="reactivarVendedorAdmin(${rowNumber})" title="Reactivar cuenta">
+      <i data-lucide="power"></i><span>Reactivar</span>
+    </button>`);
+  }
+
+  if (estado !== "eliminado") {
+    buttons.push(`<button class="btn-admin-cancel btn-admin-delete" type="button" data-vendor-row="${rowNumber}" onclick="eliminarVendedorAdmin(${rowNumber})" title="Eliminar cuenta">
+      <i data-lucide="trash-2"></i><span>Eliminar</span>
+    </button>`);
+    buttons.push(`<button class="btn-admin-suspend btn-admin-test-toggle" type="button" data-vendor-row="${rowNumber}" onclick="marcarPruebaVendedorAdmin(${rowNumber}, ${esPrueba ? "false" : "true"})" title="${esPrueba ? "Quitar marca de prueba" : "Marcar como cuenta de prueba"}">
+      <i data-lucide="flask-conical"></i><span>${esPrueba ? "Quitar prueba" : "Marcar prueba"}</span>
+    </button>`);
+  }
+
+  if (!buttons.length) return "—";
+  return `<div class="admin-vendor-actions" ${attrs}>${buttons.join("")}</div>`;
 }
 
 function renderAdminVendorAccount(vendor) {
@@ -1223,15 +1301,29 @@ function renderAdminVendorAccount(vendor) {
 function renderAdminVendedoresDashboard(vendors) {
   const container = document.getElementById("admin-vendedores-dashboard");
   if (!container) return;
+  if (!adminVendedoresPruebaMap) adminCargarEsPruebaVendedores_();
+
   const active = vendors.filter(v => normalizeAdminValue(v.estado) === "activo").length;
   setAdminText("admin-vendedores-resumen", `${active} activos · ${vendors.length - active} inactivos/retirados`);
   if (!vendors.length) {
     container.innerHTML = adminEmpty("Sin vendedores registrados");
     return;
   }
-  container.innerHTML = `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
+
+  const filterBar = `<div class="admin-vendor-filters">${ADMIN_VENDEDORES_FILTROS.map(f =>
+    `<button type="button" class="admin-filter-chip${adminVendedoresFiltro === f.id ? " active" : ""}" onclick="adminFiltrarVendedores('${f.id}')">${f.label}</button>`
+  ).join("")}</div>`;
+  const filtered = adminFiltrarVendedoresLista(vendors, adminVendedoresFiltro);
+
+  if (!filtered.length) {
+    container.innerHTML = filterBar + adminEmpty("Sin vendedores en este filtro");
+    window.lucide?.createIcons();
+    return;
+  }
+
+  container.innerHTML = filterBar + `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
     <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Tipo de vehículo</th><th>Marcas</th><th>Líneas / modelos</th><th>Categorías</th><th>Cobertura / departamento</th><th>Acciones</th></tr></thead>
-    <tbody>${vendors.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong></td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(formatAdminListValue(getAdminValue(v, ["tipoVehiculo", "tiposVehiculo"])))}</td><td>${escapeHtml(formatAdminListValue(v.marcas, "No especificado"))}</td><td class="admin-list-cell">${escapeHtml(getAdminVendorLines(v))}</td><td>${escapeHtml(formatAdminListValue(v.categorias, "No especificado"))}</td><td>${escapeHtml(formatAdminListValue([v.municipio, v.departamento].filter(Boolean), "No especificado"))}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
+    <tbody>${filtered.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong>${adminVendorEsPrueba(v) ? ` <span class="badge-prueba">PRUEBA</span>` : ""}</td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(formatAdminListValue(getAdminValue(v, ["tipoVehiculo", "tiposVehiculo"])))}</td><td>${escapeHtml(formatAdminListValue(v.marcas, "No especificado"))}</td><td class="admin-list-cell">${escapeHtml(getAdminVendorLines(v))}</td><td>${escapeHtml(formatAdminListValue(v.categorias, "No especificado"))}</td><td>${escapeHtml(formatAdminListValue([v.municipio, v.departamento].filter(Boolean), "No especificado"))}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
   </table></div>`;
   window.lucide?.createIcons();
 }
@@ -1461,12 +1553,78 @@ function cancelarVendedorAdmin(rowNumber) {
   );
 }
 
+async function ejecutarAccionVendedorAdmin_(rowNumber, action, params, confirmation, successMessage) {
+  if (!Number.isInteger(rowNumber) || rowNumber < 2 || adminVendorActionsPending.has(rowNumber)) return;
+  if (confirmation && !window.confirm(confirmation)) return;
+
+  adminVendorActionsPending.add(rowNumber);
+  document.querySelectorAll(`[data-vendor-row="${rowNumber}"]`).forEach(button => {
+    button.disabled = true;
+  });
+
+  try {
+    const result = await adminRequest(action, Object.assign({ rowNumber }, params || {}));
+    toast(result.message || successMessage);
+    adminVendedoresPruebaMap = null;
+    await cargarDashboardAdmin();
+  } catch (error) {
+    toast(error.message || "No se pudo completar la acción.", "error");
+  } finally {
+    adminVendorActionsPending.delete(rowNumber);
+    document.querySelectorAll(`[data-vendor-row="${rowNumber}"]`).forEach(button => {
+      button.disabled = false;
+    });
+  }
+}
+
+function desactivarVendedorAdmin(rowNumber) {
+  return ejecutarAccionVendedorAdmin_(
+    rowNumber,
+    "admin_desactivar_vendedor",
+    null,
+    "¿Desactivar esta cuenta? Deja de recibir leads pero conserva su historial.",
+    "Vendedor desactivado."
+  );
+}
+
+function reactivarVendedorAdmin(rowNumber) {
+  return ejecutarAccionVendedorAdmin_(
+    rowNumber,
+    "admin_reactivar_vendedor",
+    null,
+    "¿Reactivar esta cuenta? Volverá a recibir leads según Marca + Línea + Categoría.",
+    "Vendedor reactivado."
+  );
+}
+
+function eliminarVendedorAdmin(rowNumber) {
+  return ejecutarAccionVendedorAdmin_(
+    rowNumber,
+    "admin_eliminar_vendedor",
+    null,
+    "¿Eliminar esta cuenta? Si es real o tiene historial se hará baja lógica (conserva historial, no recibe leads, no puede iniciar sesión). Solo se borra físicamente si es de prueba y sin historial.",
+    "Vendedor eliminado."
+  );
+}
+
+function marcarPruebaVendedorAdmin(rowNumber, marcar) {
+  return ejecutarAccionVendedorAdmin_(
+    rowNumber,
+    "admin_marcar_prueba_vendedor",
+    { esPrueba: marcar ? "Si" : "No" },
+    null,
+    marcar ? "Vendedor marcado como PRUEBA." : "Se quitó la marca de PRUEBA."
+  );
+}
+
 function cerrarSesionAdmin() {
   adminSessionPassword = "";
   adminPendingRequests = [];
   adminDashboardData = null;
   adminVisitMetrics = null;
   adminVendorActionsPending.clear();
+  adminVendedoresPruebaMap = null;
+  adminVendedoresFiltro = "todos";
   const input = document.getElementById("admin-password");
   if (input) input.value = "";
   showPage("page-admin-login");
