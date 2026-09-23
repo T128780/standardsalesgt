@@ -69,7 +69,8 @@ const SELLER_BRAND_GROUPS = {
   "Otros": ["Tata", "Mahindra", "Maruti Suzuki", "Proton", "Perodua", "Otras marcas"]
 };
 
-const SELLER_CATEGORIES = ["Carrocería", "Motor", "Eléctrico", "Suspensión", "Piezas mecánicas", "Otro"];
+// Misma fuente que el formulario de comprador (buildCategorias): Object.keys(CAT.categorias).sort()
+const SELLER_CATEGORIES = Object.keys(catalogos().categorias || {}).sort();
 const SELLER_ORIGIN_TITLES = {
   "Japonés": "Marcas japonesas que trabajas",
   "JDM": "Marcas JDM que trabajas",
