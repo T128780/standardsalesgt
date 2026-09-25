@@ -826,18 +826,17 @@ document.addEventListener("DOMContentLoaded", () => {
     event.preventDefault();
     submitVendorProfileChange(event.currentTarget).catch(error => toast(error.message, "error"));
   });
-  const observer = new MutationObserver(() => {
-    if (document.getElementById("page-admin")?.classList.contains("active")) {
-      loadAdminVendorChanges();
-    }
-  });
-  observer.observe(document.body, {
-    subtree: true,
-    childList: true,
-    attributes: true,
-    attributeFilter: ["class"]
-  });
+  document.getElementById("btn-refresh-admin")?.addEventListener("click", () => loadAdminVendorChanges());
   routeVendorPortal();
 });
 
 window.addEventListener("hashchange", routeVendorPortal);
+
+// Carga explícita de cambios de vendedor al abrir el panel admin (sin MutationObserver).
+if (typeof window.showPage === "function") {
+  const baseShowPage = window.showPage;
+  window.showPage = function (id) {
+    baseShowPage(id);
+    if (id === "page-admin") loadAdminVendorChanges();
+  };
+}
