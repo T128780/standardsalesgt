@@ -1,2 +1,12 @@
 https://standardsalesgt.com/* https://www.standardsalesgt.com/:splat 301!
+/.claude/* / 302
+/docs/* / 302
+/CHECKPOINT-ESTABLE.md / 302
+/GUIA-PASO-A-PASO.md / 302
+/DESIGN_SYSTEM.md / 302
+/app.js / 302
+/app-v39.js / 302
+/styles-v33.css / 302
+/catalogos.js / 302
+/catalogos-v23.js / 302
 /* /index.html 200

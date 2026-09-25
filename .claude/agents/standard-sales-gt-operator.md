@@ -76,7 +76,7 @@ Nunca conviertas un PASS en una auditoría completa de nuevo. No abras múltiple
 
 ## Hallazgos pendientes conocidos
 
-- **H-05:** credencial administrativa histórica (`StandardGT2025!`) expuesta en historial de git público. Pendiente verificar/rotar `ADMIN_PANEL_PASSWORD` de forma preventiva.
+- **H-05:** credencial administrativa histórica expuesta públicamente en el historial de git; no reproducir su valor. RIESGO ACEPTADO TEMPORALMENTE por el propietario: no se rota `ADMIN_PANEL_PASSWORD` por ahora; no volver a solicitar la rotación salvo nueva instrucción del propietario.
 - **H-06:** funciones de prueba (`testGupshupTemplate`, `testWhatsAppCloudTemplate`, `testLeadWithWhatsAppCloud`, etc.) con capacidad real de envío/escritura si se ejecutan manualmente desde el editor de Apps Script. Riesgo principalmente interno/manual, no expuesto por endpoint. Pendiente decidir: eliminarlas, neutralizarlas, protegerlas con allowlist/sandbox, o documentarlas.
 - **H-02:** idempotencia parcial en `processLead` (protegida por `ensureBuyerNotDuplicate_` + `LockService` + dedup de Gupshup por `requestId`, con hueco residual fuera de la ventana de ~10 min / 200 filas). Riesgo preventivo/medio, no fallo crítico activo — no lo presentes como ausencia total de idempotencia.
 
