@@ -7,6 +7,46 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyh_HwnZ_vEbb
 const MAX_RECEIPT_SIZE_BYTES = 20 * 1024 * 1024;
 const ALLOWED_RECEIPT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png"]);
 
+let buyerTurnstileWidgetId = null;
+let buyerTurnstileToken = "";
+
+function renderBuyerTurnstile() {
+  const container = document.getElementById("buyer-turnstile");
+  if (!container || !window.turnstile || buyerTurnstileWidgetId !== null) return;
+  if (!document.getElementById("page-solicitud")?.classList.contains("active")) return;
+  try {
+    buyerTurnstileWidgetId = window.turnstile.render(container, {
+      sitekey: container.dataset.sitekey,
+      action: "registrar_comprador",
+      theme: "auto",
+      size: "flexible",
+      callback: (token) => { buyerTurnstileToken = token; },
+      "expired-callback": () => { buyerTurnstileToken = ""; },
+      "error-callback": () => { buyerTurnstileToken = ""; },
+      "timeout-callback": () => { buyerTurnstileToken = ""; }
+    });
+  } catch (error) {
+    buyerTurnstileToken = "";
+  }
+}
+
+function resetBuyerTurnstile() {
+  buyerTurnstileToken = "";
+  if (buyerTurnstileWidgetId !== null && window.turnstile) {
+    try {
+      window.turnstile.reset(buyerTurnstileWidgetId);
+    } catch (error) {
+      // Permitir otro intento sin conservar un token de un envío anterior.
+    }
+  } else {
+    renderBuyerTurnstile();
+  }
+}
+
+function onBuyerTurnstileLoad() {
+  renderBuyerTurnstile();
+}
+
 function createTrackingId(prefix) {
   const random = window.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
   return `${prefix}_${random}`;
@@ -157,7 +197,10 @@ function showPage(id) {
   if (target) {
     target.classList.add("active");
     window.scrollTo(0, 0);
-    if (id === "page-solicitud") setFormSecurityTimestamp(document.getElementById("form-comprador"));
+    if (id === "page-solicitud") {
+      setFormSecurityTimestamp(document.getElementById("form-comprador"));
+      renderBuyerTurnstile();
+    }
     if (id === "page-vendedor") setFormSecurityTimestamp(document.getElementById("form-vendedor"));
   }
 
@@ -314,6 +357,7 @@ function appendAliases(params, canonical, value, aliases = []) {
 async function enviarSolicitudAGoogleSheets(sheetPayload) {
   const params = new URLSearchParams();
   params.append("accion", "registrar_comprador");
+  params.append("turnstileToken", sheetPayload.turnstileToken || "");
   params.append("website", sheetPayload.security.website);
   params.append("formStartedAt", sheetPayload.security.formStartedAt);
   params.append("visitorId", sheetPayload.security.visitorId);
@@ -339,7 +383,14 @@ async function enviarSolicitudAGoogleSheets(sheetPayload) {
   });
   if (!response.ok) throw new Error("No se pudo conectar con el formulario.");
   const result = await response.json();
-  if (!result.ok) throw new Error(result.error || "La solicitud no pudo registrarse.");
+  if (!result.ok) {
+    const messages = {
+      TURNSTILE_REQUIRED: "No pudimos validar la solicitud. Intentá nuevamente.",
+      TURNSTILE_FAILED: "No pudimos validar la solicitud. Intentá nuevamente.",
+      RATE_LIMIT_BUYER: "Recibimos varias solicitudes en poco tiempo. Esperá unos minutos e intentá nuevamente."
+    };
+    throw new Error(messages[result.error] || result.error || "La solicitud no pudo registrarse.");
+  }
   return result;
 }
 
@@ -459,6 +510,7 @@ function initFormComprador() {
   form.addEventListener("submit", async function (event) {
     event.preventDefault();
     event.stopPropagation();
+    if (form.dataset.submitting === "true") return;
 
     const notas = [getFormValue(form, "detalles"), getFormValue(form, "comentarios")]
       .filter(Boolean)
@@ -478,6 +530,7 @@ function initFormComprador() {
       detalles: getFormValue(form, "detalles"),
       comentarios: getFormValue(form, "comentarios"),
       notas,
+      turnstileToken: buyerTurnstileToken,
       security: getFormSecurityPayload(form)
     };
 
@@ -506,6 +559,7 @@ function initFormComprador() {
 
     const submitButton = form.querySelector('button[type="submit"]');
     const originalText = submitButton?.innerHTML;
+    form.dataset.submitting = "true";
     if (submitButton) {
       submitButton.disabled = true;
       submitButton.textContent = "Enviando solicitud...";
@@ -521,6 +575,8 @@ function initFormComprador() {
       console.error("Error enviando a Google Sheets", error);
       toast(error.message || "No se pudo enviar la solicitud. Intenta de nuevo.", "error");
     } finally {
+      resetBuyerTurnstile();
+      form.dataset.submitting = "false";
       if (submitButton) {
         submitButton.disabled = false;
         submitButton.innerHTML = originalText;

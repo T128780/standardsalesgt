@@ -371,6 +371,7 @@
         <div class="form-group"><label>Comentarios adicionales</label><textarea name="comentarios" maxlength="500" placeholder="Cualquier detalle extra..."></textarea></div>
       </div>
 
+      <div id="buyer-turnstile" class="form-group" data-sitekey="0x4AAAAAAFM7EQKsw_MJw5RL"></div>
       <button type="submit" class="btn-submit">Enviar solicitud gratis <i data-lucide="send" class="btn-arrow-icon" aria-hidden="true"></i></button>
       <p class="form-footnote">Registraremos tu solicitud y los vendedores compatibles podrán contactarte por WhatsApp.</p>
     </form>
@@ -737,7 +738,8 @@
 
   <script src="catalogos-v24.js?v=catalogo-central-20260917-r2"></script>
   <link rel="stylesheet" href="vendor-portal.css?v=20260724-local">
-  <script src="app-v40.js?v=categorias-sync-20260922"></script>
+  <script src="app-v40.js?v=h08-turnstile-20261003"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=onBuyerTurnstileLoad" async defer></script>
   <script src="vendor-portal.js?v=admin-loop-fix-20260924"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@1.25.0/dist/umd/lucide.min.js"></script>
 <script src="animations.js?v=25"></script>
