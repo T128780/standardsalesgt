@@ -766,8 +766,8 @@ function renderAdminVendorChanges(items) {
     approve.className = "btn-admin-approve";
     reject.textContent = "Rechazar cambio";
     reject.className = "btn-admin-reject";
-    approve.onclick = () => decideVendorChange(item.rowNumber, true);
-    reject.onclick = () => decideVendorChange(item.rowNumber, false);
+    approve.onclick = () => decideVendorChange(item.rowNumber, true, item);
+    reject.onclick = () => decideVendorChange(item.rowNumber, false, item);
     comparison.className = "admin-vendor-change-comparison";
     [
       ["Líneas actuales", lineValues.current],
@@ -787,15 +787,24 @@ function renderAdminVendorChanges(items) {
   });
 }
 
-async function decideVendorChange(rowNumber, approve) {
+async function decideVendorChange(rowNumber, approve, item) {
   const verb = approve ? "aprobar" : "rechazar";
   if (!window.confirm(`¿${verb[0].toUpperCase() + verb.slice(1)} esta solicitud?`)) return;
   try {
-    await adminRequest(approve ? "admin_aprobar_cambio_vendedor" : "admin_rechazar_cambio_vendedor", { rowNumber });
+    await adminRequest(approve ? "admin_aprobar_cambio_vendedor" : "admin_rechazar_cambio_vendedor", {
+      rowNumber,
+      expectedVendedorId: String(item?.vendedorId || "").trim(),
+      expectedFecha: String(item?.fecha || "").trim()
+    });
     toast(approve ? "Cambio aprobado." : "Cambio rechazado.");
     await loadAdminVendorChanges();
     if (approve) await cargarDashboardAdmin();
   } catch (error) {
+    if (error && error.message === "VENDOR_ROW_STALE") {
+      toast("La información del vendedor cambió. Actualizá la lista e intentá nuevamente.", "error");
+      loadAdminVendorChanges();
+      return;
+    }
     toast(error.message || "No se pudo procesar la solicitud.", "error");
   }
 }

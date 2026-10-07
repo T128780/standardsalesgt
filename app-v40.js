@@ -947,6 +947,33 @@ async function adminRequest(action, data = {}) {
   return result;
 }
 
+// H-12: identidad estable del registro para que el backend verifique que la fila no cambió.
+const ADMIN_ROW_STALE_MESSAGE = "La información del vendedor cambió. Actualizá la lista e intentá nuevamente.";
+
+function adminVendorIdentity_(rowNumber) {
+  const list = Array.isArray(adminDashboardData?.vendedores) ? adminDashboardData.vendedores : [];
+  const vendor = list.find(item => Number(item.rowNumber) === rowNumber) || {};
+  return {
+    expectedVendedorId: String(vendor.vendedorId || "").trim(),
+    expectedWhatsapp: String(vendor.whatsapp || "").trim()
+  };
+}
+
+function adminSolicitudIdentity_(rowNumber) {
+  const request = adminPendingRequests.find(item => Number(item.rowNumber) === rowNumber) || {};
+  return {
+    expectedWhatsapp: String(request.whatsapp || "").trim(),
+    expectedFecha: String(request.fecha || "").trim()
+  };
+}
+
+function adminHandleRowStale_(error) {
+  if (!error || error.message !== "VENDOR_ROW_STALE") return false;
+  toast(ADMIN_ROW_STALE_MESSAGE, "error");
+  cargarDashboardAdmin();
+  return true;
+}
+
 async function checkAdminLogin() {
   const input = document.getElementById("admin-password");
   const errorEl = document.getElementById("admin-error");
@@ -1233,10 +1260,12 @@ async function regenerarClaveVendedorAdmin(rowNumber, button) {
     const result = await adminRequest("admin_regenerar_clave_vendedor", {
       rowNumber,
       vendedorId: actions?.dataset.vendorId || "",
-      whatsapp: actions?.dataset.vendorWhatsapp || ""
+      whatsapp: actions?.dataset.vendorWhatsapp || "",
+      ...adminVendorIdentity_(rowNumber)
     });
     showAdminCredentialDialog(result.credenciales);
   } catch (error) {
+    if (adminHandleRowStale_(error)) return;
     toast(error.message || "No se pudo generar la clave.", "error");
   } finally {
     if (button?.isConnected) button.disabled = false;
@@ -1554,10 +1583,11 @@ async function aprobarSolicitudAdmin(rowNumber) {
   if (!window.confirm("¿Aprobar este vendedor y activarlo para recibir leads?")) return;
 
   try {
-    await adminRequest("admin_aprobar_vendedor", { rowNumber });
+    await adminRequest("admin_aprobar_vendedor", { rowNumber, ...adminSolicitudIdentity_(rowNumber) });
     toast("Vendedor aprobado y activado.");
     await cargarSolicitudesAdmin();
   } catch (error) {
+    if (adminHandleRowStale_(error)) return;
     toast(error.message || "No se pudo aprobar al vendedor.", "error");
   }
 }
@@ -1567,10 +1597,11 @@ async function rechazarSolicitudAdmin(rowNumber) {
   if (!window.confirm("¿Marcar esta solicitud como rechazada? La fila se conservará en Sheets.")) return;
 
   try {
-    await adminRequest("admin_rechazar_vendedor", { rowNumber });
+    await adminRequest("admin_rechazar_vendedor", { rowNumber, ...adminSolicitudIdentity_(rowNumber) });
     toast("Solicitud marcada como rechazada.");
     await cargarSolicitudesAdmin();
   } catch (error) {
+    if (adminHandleRowStale_(error)) return;
     toast(error.message || "No se pudo rechazar la solicitud.", "error");
   }
 }
@@ -1585,10 +1616,11 @@ async function cambiarEstadoMembresiaAdmin(rowNumber, action, confirmation, succ
   });
 
   try {
-    await adminRequest(action, { rowNumber });
+    await adminRequest(action, { rowNumber, ...adminVendorIdentity_(rowNumber) });
     toast(successMessage);
     await cargarDashboardAdmin();
   } catch (error) {
+    if (adminHandleRowStale_(error)) return;
     toast(error.message || "No se pudo actualizar la membresía.", "error");
   } finally {
     adminVendorActionsPending.delete(rowNumber);
@@ -1626,11 +1658,12 @@ async function ejecutarAccionVendedorAdmin_(rowNumber, action, params, confirmat
   });
 
   try {
-    const result = await adminRequest(action, Object.assign({ rowNumber }, params || {}));
+    const result = await adminRequest(action, Object.assign({ rowNumber }, params || {}, adminVendorIdentity_(rowNumber)));
     toast(result.message || successMessage);
     adminVendedoresPruebaMap = null;
     await cargarDashboardAdmin();
   } catch (error) {
+    if (adminHandleRowStale_(error)) return;
     toast(error.message || "No se pudo completar la acción.", "error");
   } finally {
     adminVendorActionsPending.delete(rowNumber);
