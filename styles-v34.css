@@ -1862,6 +1862,33 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
 .admin-span-2 { grid-column: 1 / -1; }
 .admin-section-title { margin-bottom: 14px; }
 .admin-dashboard-table { min-width: 900px; }
+
+/* Admin UX — keep vendor actions visible while the wide table scrolls. admin-sticky-actions-20261010 */
+@media (min-width: 821px) {
+  .admin-dashboard-table th:last-child,
+  .admin-dashboard-table td:last-child {
+    position: sticky;
+    right: 0;
+    min-width: 220px;
+    border-left: 1px solid var(--line2);
+  }
+
+  .admin-dashboard-table th:last-child {
+    z-index: 4;
+    background: var(--ink3);
+    box-shadow: -12px 0 18px rgba(0, 0, 0, .28);
+  }
+
+  .admin-dashboard-table td:last-child {
+    z-index: 3;
+    background: var(--ink2);
+    box-shadow: -12px 0 18px rgba(0, 0, 0, .22);
+  }
+
+  .admin-dashboard-table tr:hover td:last-child {
+    background: var(--ink2);
+  }
+}
 .admin-list-cell {
   max-width: 220px;
   white-space: normal;
