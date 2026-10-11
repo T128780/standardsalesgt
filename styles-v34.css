@@ -1862,11 +1862,6 @@ input:focus, select:focus, textarea:focus { background: #0C0D10; }
 .admin-span-2 { grid-column: 1 / -1; }
 .admin-section-title { margin-bottom: 14px; }
 .admin-dashboard-table { min-width: 900px; }
-/* fix-eliminar-20261011: tabla de vendedores sin scroll horizontal a 1366 para que Acciones (Eliminar) quede visible. */
-#admin-vendedores-dashboard .admin-dashboard-table th { white-space: normal; letter-spacing: .08em; padding: 11px 8px; }
-#admin-vendedores-dashboard .admin-dashboard-table td { padding: 10px 8px; }
-#admin-vendedores-dashboard .admin-vendor-actions { min-width: 0; max-width: 200px; }
-#admin-vendedores-dashboard .admin-vendor-account { min-width: 140px; }
 .admin-list-cell {
   max-width: 220px;
   white-space: normal;
