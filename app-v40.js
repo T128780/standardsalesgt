@@ -1368,6 +1368,94 @@ function renderAdminVendorActions(vendor) {
   return `<div class="admin-vendor-actions" ${attrs}>${buttons.join("")}</div>`;
 }
 
+// Menú compacto "Acciones ▾": reutiliza renderAdminVendorActions(vendor) tal cual (mismos botones,
+// onclick y data-vendor-row). Se renderiza en un único elemento position:fixed en <body> para no
+// quedar recortado por .admin-table-wrap (overflow-x:auto).
+let adminVendorsRendered = [];
+let adminActionsMenuState = null;
+
+function renderAdminVendorActionsToggle(vendor) {
+  if (renderAdminVendorActions(vendor) === "—") return "";
+  const rowNumber = Number(vendor.rowNumber);
+  return `<div class="admin-actions-menu-cell"><button type="button" class="admin-actions-menu-toggle" data-actions-row="${rowNumber}" aria-haspopup="menu" aria-expanded="false" onclick="adminToggleVendorActionsMenu(${rowNumber}, this)">Acciones <span aria-hidden="true">▾</span></button></div>`;
+}
+
+function adminActionsMenuEl_() {
+  let menu = document.getElementById("admin-actions-menu");
+  if (menu) return menu;
+  menu = document.createElement("div");
+  menu.id = "admin-actions-menu";
+  menu.className = "admin-actions-menu";
+  menu.setAttribute("role", "menu");
+  menu.hidden = true;
+  // Fase de captura: se cierra (oculta) el menú ANTES de que corra el onclick original del botón.
+  // El botón permanece en el DOM (sólo oculto) para que los handlers que usan `this` sigan funcionando.
+  menu.addEventListener("click", event => {
+    if (event.target.closest("button")) adminCloseVendorActionsMenu();
+  }, true);
+  document.body.appendChild(menu);
+  document.addEventListener("click", event => {
+    if (!adminActionsMenuState) return;
+    if (menu.contains(event.target) || event.target.closest?.(".admin-actions-menu-toggle")) return;
+    adminCloseVendorActionsMenu();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && adminActionsMenuState) adminCloseVendorActionsMenu();
+  });
+  window.addEventListener("resize", () => adminCloseVendorActionsMenu());
+  window.addEventListener("scroll", event => {
+    if (adminActionsMenuState && !menu.contains(event.target)) adminCloseVendorActionsMenu();
+  }, true);
+  return menu;
+}
+
+function adminActionsMenuOpenRow_() {
+  return adminActionsMenuState ? adminActionsMenuState.row : null;
+}
+
+function adminCloseVendorActionsMenu() {
+  const menu = document.getElementById("admin-actions-menu");
+  if (menu) menu.hidden = true;
+  if (adminActionsMenuState?.toggle) adminActionsMenuState.toggle.setAttribute("aria-expanded", "false");
+  adminActionsMenuState = null;
+}
+
+function adminToggleVendorActionsMenu(rowNumber, toggle) {
+  const menu = adminActionsMenuEl_();
+  const wasSame = adminActionsMenuState && adminActionsMenuState.toggle === toggle;
+  adminCloseVendorActionsMenu();
+  if (wasSame) return;
+  const vendor = adminVendorsRendered.find(v => Number(v.rowNumber) === rowNumber);
+  const html = vendor ? renderAdminVendorActions(vendor) : "—";
+  if (html === "—") return;
+  menu.innerHTML = html;
+  menu.style.visibility = "hidden";
+  menu.hidden = false;
+  window.lucide?.createIcons();
+  adminPositionVendorActionsMenu_(menu, toggle);
+  menu.style.visibility = "";
+  toggle.setAttribute("aria-expanded", "true");
+  adminActionsMenuState = { row: rowNumber, toggle };
+}
+
+function adminPositionVendorActionsMenu_(menu, toggle) {
+  const gap = 4, margin = 8;
+  const rect = toggle.getBoundingClientRect();
+  const vw = document.documentElement.clientWidth || window.innerWidth;
+  const vh = window.innerHeight;
+  menu.style.left = "0px";
+  menu.style.top = "0px";
+  const width = menu.offsetWidth, height = menu.offsetHeight;
+  let left = rect.left;
+  if (left + width > vw - margin) left = rect.right - width;
+  left = Math.max(margin, Math.min(left, vw - margin - width));
+  let top = rect.bottom + gap;
+  if (top + height > vh - margin && rect.top - gap - height >= margin) top = rect.top - gap - height;
+  top = Math.max(margin, Math.min(top, vh - margin - height));
+  menu.style.left = `${Math.round(left)}px`;
+  menu.style.top = `${Math.round(top)}px`;
+}
+
 function renderAdminVendorAccount(vendor) {
   const username = vendor.usuarioVendedor || vendor.usuario || vendor.whatsapp || "—";
   const accountState = vendor.estadoCuentaVendedor || (normalizeAdminValue(vendor.estado) === "activo" ? "Activa" : "Cuenta no activa");
@@ -1408,11 +1496,18 @@ function renderAdminVendedoresDashboard(vendors) {
     return;
   }
 
+  adminVendorsRendered = vendors;
+  const reopenRow = adminActionsMenuOpenRow_();
+  adminCloseVendorActionsMenu();
   container.innerHTML = filterBar + `<div class="admin-table-wrap"><table class="admin-table admin-dashboard-table">
-    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Tipo de vehículo</th><th>Marcas</th><th>Líneas / modelos</th><th>Categorías</th><th>Cobertura / departamento</th><th>Acciones</th></tr></thead>
-    <tbody>${filtered.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong>${adminVendorEsPrueba(v) ? ` <span class="badge-prueba">PRUEBA</span>` : ""}</td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(formatAdminListValue(getAdminValue(v, ["tipoVehiculo", "tiposVehiculo"])))}</td><td>${escapeHtml(formatAdminListValue(v.marcas, "No especificado"))}</td><td class="admin-list-cell">${escapeHtml(getAdminVendorLines(v))}</td><td>${escapeHtml(formatAdminListValue(v.categorias, "No especificado"))}</td><td>${escapeHtml(formatAdminListValue([v.municipio, v.departamento].filter(Boolean), "No especificado"))}</td><td>${renderAdminVendorActions(v)}</td></tr>`).join("")}</tbody>
+    <thead><tr><th>Vendedor</th><th>WhatsApp</th><th>Plan</th><th>Estado</th><th>Acceso vendedor</th><th>Tipo de vehículo</th><th>Marcas</th><th>Líneas / modelos</th><th>Categorías</th><th>Cobertura / departamento</th></tr></thead>
+    <tbody>${filtered.map(v => `<tr><td><strong>${escapeHtml(v.nombreComercial || "Sin nombre")}</strong>${adminVendorEsPrueba(v) ? ` <span class="badge-prueba">PRUEBA</span>` : ""}${renderAdminVendorActionsToggle(v)}</td><td>${escapeHtml(v.whatsapp || "—")}</td><td>${escapeHtml(v.plan || "Gratis")}</td><td><span class="admin-status ${normalizeAdminValue(v.estado)}">${escapeHtml(v.estado || "Inactivo")}</span></td><td>${renderAdminVendorAccount(v)}</td><td>${escapeHtml(formatAdminListValue(getAdminValue(v, ["tipoVehiculo", "tiposVehiculo"])))}</td><td>${escapeHtml(formatAdminListValue(v.marcas, "No especificado"))}</td><td class="admin-list-cell">${escapeHtml(getAdminVendorLines(v))}</td><td>${escapeHtml(formatAdminListValue(v.categorias, "No especificado"))}</td><td>${escapeHtml(formatAdminListValue([v.municipio, v.departamento].filter(Boolean), "No especificado"))}</td></tr>`).join("")}</tbody>
   </table></div>`;
   window.lucide?.createIcons();
+  if (reopenRow) {
+    const toggle = container.querySelector(`.admin-actions-menu-toggle[data-actions-row="${reopenRow}"]`);
+    if (toggle) adminToggleVendorActionsMenu(reopenRow, toggle);
+  }
 }
 
 function renderAdminMembresias(vendors, summary) {
