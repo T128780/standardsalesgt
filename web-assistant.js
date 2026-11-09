@@ -115,16 +115,10 @@
     var minBtn = el("button", "luna-icon-btn luna-min", "–");
     minBtn.type = "button";
     minBtn.setAttribute("aria-label", "Minimizar");
-    var expandBtn = el("button", "luna-icon-btn luna-expand", "⤢");
-    expandBtn.type = "button";
-    expandBtn.setAttribute("aria-label", "Expandir ventana de Luna");
-    expandBtn.setAttribute("aria-pressed", "false");
-    expandBtn.title = "Expandir ventana";
     var closeBtn = el("button", "luna-icon-btn luna-close", "×");
     closeBtn.type = "button";
     closeBtn.setAttribute("aria-label", "Cerrar");
     headerBtns.appendChild(minBtn);
-    headerBtns.appendChild(expandBtn);
     headerBtns.appendChild(closeBtn);
     header.appendChild(titles);
     header.appendChild(headerBtns);
@@ -158,11 +152,10 @@
     document.body.appendChild(root);
     document.body.classList.add("luna-enabled");
 
-    els = { root: root, fab: fab, panel: panel, log: log, typing: typing, form: form, input: input, send: send, minBtn: minBtn, expandBtn: expandBtn };
+    els = { root: root, fab: fab, panel: panel, log: log, typing: typing, form: form, input: input, send: send };
 
     fab.addEventListener("click", function () { panel.hidden ? openPanel() : closePanel(); });
-    minBtn.addEventListener("click", function () { toggleMinimized(); });
-    expandBtn.addEventListener("click", function () { toggleExpanded(); });
+    minBtn.addEventListener("click", function () { closePanel(); });
     closeBtn.addEventListener("click", function () { closePanel(); });
     panel.addEventListener("keydown", function (event) {
       if (event.key === "Escape") { event.stopPropagation(); closePanel(); }
@@ -186,49 +179,15 @@
     if (disabled || !els.panel) return;
     els.panel.hidden = false;
     els.root.classList.add("luna-open");
-    els.root.classList.remove("luna-minimized");
-    els.minBtn.textContent = "–";
-    els.minBtn.setAttribute("aria-label", "Minimizar");
     els.fab.setAttribute("aria-expanded", "true");
     scrollLog();
     try { els.input.focus(); } catch (e) {}
   }
 
-  function toggleMinimized() {
-    if (!els.panel || els.panel.hidden) return;
-    var minimized = els.root.classList.toggle("luna-minimized");
-    els.minBtn.textContent = minimized ? "▢" : "–";
-    els.minBtn.setAttribute("aria-label", minimized ? "Restaurar ventana de Luna" : "Minimizar");
-    els.minBtn.title = minimized ? "Restaurar" : "Minimizar";
-    if (!minimized) {
-      scrollLog();
-      try { els.input.focus(); } catch (e) {}
-    }
-  }
-
-  function toggleExpanded() {
-    if (!els.panel || els.panel.hidden) return;
-    els.root.classList.remove("luna-minimized");
-    els.minBtn.textContent = "–";
-    els.minBtn.setAttribute("aria-label", "Minimizar");
-    var expanded = els.root.classList.toggle("luna-expanded");
-    els.expandBtn.textContent = expanded ? "⤡" : "⤢";
-    els.expandBtn.setAttribute("aria-label", expanded ? "Restaurar tamaño de Luna" : "Expandir ventana de Luna");
-    els.expandBtn.setAttribute("aria-pressed", String(expanded));
-    els.expandBtn.title = expanded ? "Tamaño normal" : "Expandir ventana";
-    scrollLog();
-  }
-
   function closePanel() {
     if (!els.panel) return;
     els.panel.hidden = true;
-    els.root.classList.remove("luna-open", "luna-minimized", "luna-expanded");
-    els.minBtn.textContent = "–";
-    els.minBtn.setAttribute("aria-label", "Minimizar");
-    els.expandBtn.textContent = "⤢";
-    els.expandBtn.setAttribute("aria-label", "Expandir ventana de Luna");
-    els.expandBtn.setAttribute("aria-pressed", "false");
-    els.expandBtn.title = "Expandir ventana";
+    els.root.classList.remove("luna-open");
     els.fab.setAttribute("aria-expanded", "false");
     try { els.fab.focus(); } catch (e) {}
   }
